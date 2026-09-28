@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "name": "🤖 ESP32 (Prototipo)",
+            "path": "esp32"
+        },
+        {
+            "name": "🎓 EDU-CIAA (Final)",
+            "path": "edu-ciaa"
+        },
+        {
+            "name": "🧠 Lógica Compartida",
+            "path": "shared"
+        }
+    ],
+    "settings": {
+        "C_Cpp.default.compileCommands": "esp32/.pio/build/esp32dev/compile_commands.json"
+    }
+}

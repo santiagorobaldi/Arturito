@@ -1,7 +1,7 @@
 #include "config.h"
-#include "hal/hal_sensors.h"
-#include "drivers/driver_mpu6050.h"
-#include "drivers/driver_distancia.h"
+#include "hal_sensors.h"       
+#include "driver_mpu6050.h"     
+#include "driver_distancia.h"  
 
 #if defined(BOARD_ESP32)
   #include <Arduino.h>
@@ -11,8 +11,6 @@
 #endif
 
 // --- Estado compartido entre la tarea de sensores y el resto (capa 3/4) ---
-// Capa 3 todavía no existe (está en diseño), así que este struct es lo
-// que capa 3 va a consumir el día que exista.
 struct SensorData {
   float theta_rad;
   float distancia_cm;
@@ -22,6 +20,7 @@ static SensorData g_sensor_data = {0, -1};
 static SemaphoreHandle_t g_mutex;
 
 void task_sensores(void* pv) {
+  // Inicialización de HAL y Drivers (Nombres corregidos)
   hal_sensors_init();
   mpu6050_init();
   mpu6050_calibrate();
@@ -42,8 +41,7 @@ void task_sensores(void* pv) {
   }
 }
 
-// Placeholder de lo que hoy hace capa 3/4: nada todavía, solo imprime
-// para poder seguir usando el visualizador de Processing tal cual lo tenías.
+// Placeholder de lo que hoy hace capa 3/4
 void task_publicar(void* pv) {
   while (true) {
     SensorData local;

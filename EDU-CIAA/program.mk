@@ -11,5 +11,5 @@
 
 # ---------- Your paths: -----------------------------------------------
 
-PROGRAM_PATH = examples/c
+PROGRAM_PATH = 
 PROGRAM_NAME = rover
