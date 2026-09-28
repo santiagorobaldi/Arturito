@@ -311,7 +311,7 @@ int8_t mpu60X0Init( MPU60X0_address_t address )
 		return -4;
 	}
 	// check the WHO AM I byte, expected value is 0x68 (decimal 104)
-	if (mpu60X0WhoAmI() != 104) {
+	if (mpu60X0WhoAmI() != 104 && mpu60X0WhoAmI() != 0x72) {
 		return -5;
 	}
 	// enable accelerometer and gyro

@@ -4,12 +4,11 @@ OPT=g
 USE_NANO=n
 SEMIHOST=n
 USE_FPU=y
+DEFINES += MPU60X0_DEBUG
 
 # Libraries
 USE_LPCOPEN=y
 USE_SAPI=y
-USE_FREERTOS=y
-FREERTOS_HEAP_TYPE=5
 LOAD_INRAM=n
 
 # --- Integración de la Arquitectura Compartida (Arturito) ---

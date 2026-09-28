@@ -11,7 +11,7 @@ void setup() {
   size(800, 800);
   
   // IMPORTANTE: Cambia "COM3" por tu puerto real
-  String portName = "COM3"; 
+  String portName = "COM11"; 
   myPort = new Serial(this, portName, 115200);
 }
 

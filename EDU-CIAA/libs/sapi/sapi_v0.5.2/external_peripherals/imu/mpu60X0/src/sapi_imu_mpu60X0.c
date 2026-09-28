@@ -40,6 +40,12 @@
 #include "sapi_imu_mpu60X0.h"   /* <= sAPI MPU60X0 header */
 #include "sapi_i2c.h"           /* <= sAPI I2C header */
 #include "sapi_delay.h"         /* <= sAPI Delay header */
+#ifdef MPU60X0_DEBUG
+#include "sapi.h"
+#define MPU60X0_TRACE(...) printf(__VA_ARGS__)
+#else
+#define MPU60X0_TRACE(...) ((void)0)
+#endif
 
 /*==================[macros and definitions]=================================*/
 
@@ -89,12 +95,17 @@ static int8_t mpu60X0WriteRegister( uint8_t subAddress, uint8_t data )
 	uint8_t transmitDataBuffer[2];
 	transmitDataBuffer[0] = subAddress;
 	transmitDataBuffer[1] = data;
-	i2cWrite(I2C0, control.address, transmitDataBuffer, 2, TRUE);
+	MPU60X0_TRACE("MPU: write reg 0x%02X=0x%02X start\r\n", subAddress, data);
+	bool_t writeOk = i2cWrite(I2C0, control.address, transmitDataBuffer, 2, TRUE);
+	MPU60X0_TRACE("MPU: write reg 0x%02X returned %d\r\n", subAddress, writeOk);
 
 	delay(10);
 
 	/* read back the register */
-	mpu60X0ReadRegisters(subAddress,1);
+	MPU60X0_TRACE("MPU: readback reg 0x%02X start\r\n", subAddress);
+	int8_t readStatus = mpu60X0ReadRegisters(subAddress,1);
+	MPU60X0_TRACE("MPU: readback reg 0x%02X returned %d, value 0x%02X\r\n",
+	              subAddress, readStatus, control._buffer[0]);
 	/* check the read back register against the written register */
 	if(control._buffer[0] == data) {
       return 1;
@@ -286,7 +297,9 @@ int8_t mpu60X0Init( MPU60X0_address_t address )
 
 	// using I2C for communication
 	// starting the I2C bus
-	i2cInit(I2C0, MPU60X0_I2C_RATE);
+	MPU60X0_TRACE("MPU: configuring I2C0 at %u Hz\r\n", MPU60X0_I2C_RATE);
+	bool_t i2cOk = i2cInit(I2C0, MPU60X0_I2C_RATE);
+	MPU60X0_TRACE("MPU: i2cInit returned %d\r\n", i2cOk);
 
 	// select clock source to X-gyro
 	if (mpu60X0WriteRegister(MPU60X0_PWR_MGMT_1, MPU60X0_CLOCK_SEL_PLL_X_GYRO) < 0) {

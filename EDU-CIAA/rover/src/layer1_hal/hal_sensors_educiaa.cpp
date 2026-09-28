@@ -10,7 +10,7 @@
 // vez de Wire.h.
 
 namespace {
-  MPU60X0_address_t imu_addr = MPU60X0_ADDRESS_0; // AD0 a GND
+  MPU60X0_address_t imu_addr = static_cast<MPU60X0_address_t>(IMU_I2C_ADDR);
 
   const uint8_t VL53L0X_ADDR = 0x29;
 
@@ -336,7 +336,9 @@ namespace {
 }
 
 void hal_sensors_init() {
+  printf("HAL: iniciando MPU en I2C0, direccion 0x%02X\r\n", (unsigned)imu_addr);
   int8_t status = mpu60X0Init(imu_addr);
+  printf("HAL: mpu60X0Init devolvio %d\r\n", status);
   if (status < 0) {
     printf("IMU MPU6050 no inicializado, revisar conexiones.\r\n");
     while (1);
@@ -344,6 +346,7 @@ void hal_sensors_init() {
 
   uint8_t model_id = read_u8(REG_IDENTIFICATION_MODEL_ID);
   uint8_t revision_id = read_u8(REG_IDENTIFICATION_REVISION_ID);
+  printf("HAL: VL53L0X ID model=0x%02X rev=0x%02X\r\n", model_id, revision_id);
   if (model_id != 0xEE || revision_id != 0x10) {
     printf("VL53L0X no responde como se espera (model=0x%02X, rev=0x%02X). "
            "Revisar conexiones.\r\n", model_id, revision_id);

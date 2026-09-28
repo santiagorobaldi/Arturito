@@ -36,7 +36,7 @@ endif
 # Compile options
 VERBOSE=n
 OPT=g
-USE_NANO=y
+USE_NANO=n
 USE_LTO=n
 SEMIHOST=n
 USE_FPU=y

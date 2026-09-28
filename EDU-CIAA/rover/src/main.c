@@ -7,10 +7,14 @@
 /* FUNCION PRINCIPAL, PUNTO DE ENTRADA AL PROGRAMA LUEGO DE RESET. */
 int main(void) {
   boardConfig();
+  printf("Arranque rover: boardConfig OK\r\n");
 
   hal_sensors_init();
+  printf("Arranque rover: inicializacion de sensores OK\r\n");
   mpu6050_calibrate();
+  printf("Arranque rover: calibracion MPU OK\r\n");
   distancia_init();
+  printf("Arranque rover: entrando al loop\r\n");
 
   while (TRUE) {
     mpu6050_update();
