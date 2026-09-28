@@ -14,7 +14,7 @@ namespace {
     Wire.beginTransmission(IMU_I2C_ADDR);
     Wire.write(0x47); // registro GYRO_ZOUT_H
     Wire.endTransmission(false);
-    Wire.requestFrom(IMU_I2C_ADDR, 2, true);
+    Wire.requestFrom((uint16_t)IMU_I2C_ADDR, (size_t)2, true);
     int16_t hi = Wire.read();
     int16_t lo = Wire.read();
     return (int16_t)((hi << 8) | lo);

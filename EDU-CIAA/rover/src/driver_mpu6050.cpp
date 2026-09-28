@@ -41,5 +41,5 @@ void mpu6050_update() {
 }
 
 float mpu6050_get_theta_rad() {
-  return theta_rad;
+  return -theta_rad;
 }
