@@ -1,0 +1,286 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!45!black,
+  urlcolor=blue!45!black,
+  pdftitle={Contexto tecnico del proyecto Arturito},
+  pdfauthor={Equipo del proyecto}
+}
+
+\urlstyle{tt}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\newcommand{\ruta}[1]{\path{#1}}
+\newcommand{\estado}[1]{\textbf{Estado verificado:} #1}
+
+\title{Contexto tecnico del proyecto \textit{Arturito}\\
+       Rover autonomo con mapeo 2D}
+\author{Documento de contexto para el equipo y asistentes de IA}
+\date{3 de octubre de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Este documento describe el objetivo, la estructura, las plataformas, las capas de software, los sensores, los algoritmos y el estado conocido del proyecto Arturito. Su proposito es servir como contexto inicial para personas y asistentes de IA que trabajen en el workspace. Describe el codigo observado en la fecha indicada y separa explicitamente las funcionalidades existentes de las ideas y pruebas pendientes. Los archivos fuente del repositorio siguen siendo la autoridad cuando este documento y el codigo difieran.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Resumen ejecutivo}
+
+Arturito es un proyecto academico para desarrollar un rover autonomo que pueda orientarse y construir un mapa bidimensional de su entorno. El workspace usa dos plataformas:
+
+\begin{itemize}
+  \item \textbf{EDU-CIAA}: plataforma prevista para el trabajo y la demostracion en clase.
+  \item \textbf{ESP32}: plataforma disponible para hacer prototipos y pruebas en casa.
+\end{itemize}
+
+
+La logica de drivers y configuracion se ubica en una carpeta compartida para que ambas plataformas puedan reutilizarla. Cada una conserva su propia capa de abstraccion de hardware (HAL) y su mecanismo de compilacion.
+
+\estado{hay lectura del giroscopio Z, calibracion de offset, estimacion de angulo por integracion y lectura de distancia ToF en las aplicaciones actuales. No se observa aun una implementacion de navegacion, control de motores, odometria ni un algoritmo completo de SLAM/mapeo. Las carpetas compartidas de las capas de robotica y aplicacion estan vacias.}
+
+\section{Workspace y repositorios}
+
+La raiz del workspace es \ruta{C:/Arturito}. El archivo \ruta{Arturito.code-workspace} registra tres carpetas principales y configura los comandos de compilacion de C/C++ para la base de PlatformIO de ESP32.
+
+\begin{lstlisting}
+C:/Arturito/
+  Arturito.code-workspace
+  esp32/       Firmware de prototipo para ESP32
+  edu-ciaa/    Firmware de clase para EDU-CIAA
+  shared/      Configuracion, HAL publica y drivers compartidos
+  processing/  Sketches de visualizacion y pruebas serie
+\end{lstlisting}
+
+La carpeta \ruta{processing} esta fuera de las tres carpetas registradas formalmente en \ruta{Arturito.code-workspace}, aunque vive bajo la misma raiz del repositorio (se puede integrar en un siguiente paso).
+
+\subsection{Carpeta compartida}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.58\textwidth}}
+\ruta{shared/config/config.h} & Constantes comunes: periodo nominal, direccion I2C y una definicion de placa.\\
+\ruta{shared/layer1_hal/hal_sensors.h} & Contrato C de las funciones comunes de sensores y tiempo.\\
+\ruta{shared/layer2_drivers/driver_mpu6050.c/.h} & Calibracion, actualizacion e integracion de la MPU6050.\\
+\ruta{shared/layer2_drivers/driver_distancia.c/.h} & Validacion de distancia medida por el ToF.\\
+\ruta{shared/layer3_app/} & Existe, pero esta vacia actualmente.\\
+\end{longtable}
+
+Los nombres de las carpetas expresan una arquitectura por capas: la capa 1 adapta el hardware, la capa 2 ofrece drivers, la capa 3 la aplicacion. Por ahora solo las capas 1 y 2 tienen implementacion identificada.
+
+\section{Plataformas}
+
+\subsection{ESP32: prototipo de casa}
+
+La configuracion actual esta en \ruta{esp32/platformio.ini}. Define un entorno PlatformIO:
+
+\begin{itemize}
+  \item Entorno: \ruta{esp32dev}.
+  \item Plataforma: \ruta{espressif32}.
+  \item Placa: \ruta{esp32dev} (ESP32 Dev Module).
+  \item Framework: Arduino.
+  \item Dependencia declarada: \ruta{Adafruit_VL53L0X} version compatible con \ruta{^1.2.4}.
+  \item Incluye las cabeceras de \ruta{shared} y compila los drivers C comunes desde esa carpeta.
+\end{itemize}
+
+El punto de entrada es \ruta{esp32/src/main.cpp}. Crea dos tareas FreeRTOS:
+
+\begin{itemize}
+  \item \texttt{task\_sensores}: inicializa HAL y drivers, calibra la MPU y, cada periodo, actualiza el angulo y obtiene distancia.
+  \item \texttt{task\_publicar}: copia el estado bajo un mutex y lo transmite por Serial.
+\end{itemize}
+
+El estado compartido es una estructura con \texttt{theta\_rad} y \texttt{distancia\_cm}. La inicializacion crea el mutex antes de lanzar las tareas. El \texttt{loop()} de Arduino queda vacio porque las tareas FreeRTOS realizan el trabajo.
+
+La HAL esta en \ruta{esp32/src/layer1_hal/hal_sensors_esp32.cpp}. Usa \ruta{Wire} para I2C, despierta la MPU escribiendo el registro de energia y lee el registro de salida del giroscopio Z. El sensor ToF se maneja con \ruta{Adafruit_VL53L0X}.
+
+\subsection{EDU-CIAA: plataforma de clase}
+
+El Makefile esta en \ruta{edu-ciaa/Makefile}. \ruta{edu-ciaa/program.mk} selecciona por defecto el programa \ruta{rover}; \ruta{edu-ciaa/board.mk} selecciona \ruta{edu_ciaa_nxp}. La configuracion especifica de rover esta en \ruta{edu-ciaa/rover/config.mk}.
+
+El build usa \ruta{arm-none-eabi-}, LPCOpen y SAPI. La configuracion de rover incluye \ruta{MPU60X0_DEBUG}, habilita FPU, desactiva newlib nano y agrega a la compilacion los drivers compartidos y la HAL especifica de EDU-CIAA.
+
+El punto de entrada \ruta{edu-ciaa/rover/src/main.c} es un loop bare-metal sencillo: ejecuta \texttt{boardConfig()}, inicializa HAL y drivers, calibra la MPU y luego actualiza ambos sensores cada \texttt{SAMPLE\_PERIOD\_MS}. Aunque el repositorio contiene FreeRTOS como dependencia, este punto de entrada actual no crea tareas FreeRTOS.
+
+La HAL EDU-CIAA esta en \ruta{edu-ciaa/rover/src/layer1_hal/hal_sensors_educiaa.cpp}. Usa SAPI/LPC para el MPU y una implementacion de bajo nivel para el VL53L0X. La lectura de distancia se realiza en modo de medicion individual. Si la identificacion del ToF no coincide o su inicializacion falla, la HAL marca la distancia como no disponible, pero no detiene la lectura de la MPU.
+
+\subsection{Diferencias entre HAL}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedright\arraybackslash}p{0.34\textwidth}}
+ & ESP32 & EDU-CIAA\\
+\hline
+MPU & Acceso I2C con \ruta{Wire}; registro Z leido directamente. & SAPI/LPC y API \ruta{mpu60X0Init}, \ruta{mpu60X0Read}, \ruta{mpu60X0GetGyroZ\_rads}.\\
+ToF & Libreria Adafruit; si \ruta{lox.begin()} falla, imprime error y entra en un loop infinito. & Implementacion propia por registros; valida identificacion y puede dejar distancia invalida sin detener la MPU.\\
+Tiempo & \ruta{millis()} y \ruta{delay()}. & \ruta{tickRead()} y \ruta{delay()} de SAPI.\\
+Entrada/salida serie & \ruta{Serial} de Arduino a 115200 baud. & \ruta{printf()} por la consola de SAPI.\\
+\end{longtable}
+
+Esta diferencia de inicializacion es central para la prueba solicitada: con el codigo actual de ESP32, \texttt{hal\_sensors\_init()} intenta inicializar el ToF y se bloquea si no lo encuentra. Para probar solo la IMU hay que separar o parametrizar la inicializacion de sensores, o crear una HAL de prueba que inicialice unicamente la MPU.
+
+\section{Configuracion compartida y mediciones}
+
+\ruta{shared/config/config.h} define actualmente:
+
+\begin{itemize}
+  \item \texttt{BOARD\_EDUCIAA} de forma incondicional.
+  \item \texttt{SAMPLE\_PERIOD\_MS = 30}, periodo nominal de 30 ms (aproximadamente 33 muestras por segundo; algunos comentarios lo describen como unos 30 Hz).
+  \item \texttt{IMU\_I2C\_ADDR = 0x68}, direccion habitual configurada para la MPU6050.
+\end{itemize}
+
+La configuracion PlatformIO agrega ademas \texttt{BOARD\_ESP32}. Por lo tanto, en una compilacion ESP32 ambas macros pueden quedar definidas. La cabecera compartida deberia revisarse para que la seleccion de plataforma sea condicional o se defina solamente desde cada build.
+
+\subsection{MPU6050 y estimacion de orientacion}
+
+El driver compartido tiene estado estatico para el offset del giroscopio, el angulo integrado, el instante anterior y la velocidad angular anterior. \texttt{mpu6050\_init()} no configura registros: la inicializacion real queda delegada a \texttt{hal\_sensors\_init()}.
+
+La calibracion espera 2 segundos y toma 1000 lecturas separadas por 2 ms. El promedio se usa como offset de velocidad angular. Para cada actualizacion, el driver resta ese offset, mide \(\Delta t\) usando el reloj de HAL y aplica una zona muerta de 1 grado por segundo:
+
+\[
+\omega_{z,\mathrm{corr}} = \omega_{z,\mathrm{medida}} - \omega_{z,\mathrm{offset}},
+\qquad
+|\omega_{z,\mathrm{corr}}| \leq 1^\circ/\mathrm{s}
+\;\Longrightarrow\;
+\omega_{z,\mathrm{corr}} = 0.
+\]
+
+El angulo se actualiza con integracion trapezoidal:
+
+\[
+\theta_{k+1} = \theta_k +
+\frac{\omega_{z,k}+\omega_{z,k-1}}{2}\,\Delta t.
+\]
+
+La funcion \texttt{mpu6050\_get\_theta\_rad()} devuelve \(-\theta\), por una convencion de signo adoptada por el proyecto.
+
+En ESP32, la HAL lee dos bytes a partir del registro \texttt{0x47}, los combina como un entero con signo y los convierte usando la sensibilidad asumida de 131 cuentas por grado/segundo; luego transforma grados/segundo a radianes/segundo. La HAL no comprueba explicitamente que ambos bytes esten disponibles antes de leerlos.
+
+\textbf{Limitacion importante:} este angulo proviene de integrar un giroscopio. El offset y la zona muerta pueden reducir deriva por sesgo y pequenas fluctuaciones, pero no eliminan toda deriva acumulada. El codigo observado no implementa un pasa-bajos, fusion con acelerometro, filtro complementario ni filtro de Kalman. Tampoco expone actualmente getters publicos del valor crudo o de la velocidad procesada. Proximamente se debe pensar sobre estos topicos.
+
+\subsection{Sensor de distancia}
+
+El driver \ruta{shared/layer2_drivers/driver_distancia.c} delega la lectura en HAL y considera valida una medida entre 5 cm y 150 cm inclusive. Si queda fuera del intervalo devuelve \texttt{-1.0f}. En ESP32, la HAL tambien devuelve \texttt{-1.0f} cuando el estado del VL53L0X indica error.
+
+\section{Flujo de datos de las aplicaciones}
+
+\subsection{ESP32}
+
+\begin{enumerate}
+  \item Arduino inicia Serial a 115200 baud y crea el mutex.
+  \item Se crean las tareas de sensores y publicacion.
+  \item La tarea de sensores llama a \texttt{hal\_sensors\_init()}, calibra MPU y prepara el driver de distancia.
+  \item En cada ciclo obtiene el angulo integrado y la distancia, y publica el estado compartido bajo mutex.
+  \item La otra tarea envia \texttt{theta\_rad,distancia\_cm} y espera un periodo nominal de 30 ms.
+\end{enumerate}
+
+Si falta el VL53L0X, la inicializacion ESP32 actual imprime un error y no llega a publicar el angulo. Esto explica por que la prueba de IMU aislada requiere trabajo en la HAL o una variante de firmware.
+
+\subsection{EDU-CIAA}
+
+El \texttt{main()} llama a \texttt{boardConfig()}, inicializa sensores y drivers, calibra la MPU y entra en un loop. Cada ciclo actualiza el driver, lee angulo y distancia y envia dos valores separados por coma con terminacion CRLF. El loop espera \texttt{SAMPLE\_PERIOD\_MS}.
+
+\section{Puerto serie y Processing}
+
+Los firmwares de aplicacion observados generan dos columnas numericas, a 115200 baud:
+
+\begin{lstlisting}
+theta_rad,distancia_cm
+\end{lstlisting}
+
+En EDU-CIAA tambien se imprimen mensajes de arranque antes de los datos. Un consumidor serie debe ignorar lineas que no tengan el formato numerico esperado. La transmision puede ser usada para telemetria y visualizacion, pero no constituye por si misma un protocolo formal versionado.
+
+Hay sketches de Processing exploratorios:
+
+\begin{itemize}
+  \item \ruta{processing/flecha_y_mapa_v1/flecha_y_mapa_v1.pde} selecciona \texttt{COM3}, espera dos columnas (angulo y distancia), dibuja la orientacion y acumula puntos ToF convertidos a coordenadas polares.
+  \item \ruta{processing/flecha/flecha.pde} selecciona \texttt{COM3}, pero su parser espera tres columnas y toma la tercera como angulo.
+  \item \ruta{processing/prueba_imu/prueba_imu.pde} selecciona un puerto disponible, pero tambien espera tres columnas y lee la tercera como angulo.
+  \item \ruta{edu-ciaa/test/mpu_plot/processing/MPU6050Plotter/} existe, pero esta vacia en el estado inspeccionado.
+\end{itemize}
+
+Por lo tanto, solo el sketch de mapa coincide en cantidad de columnas con el firmware actual; los otros dos no son directamente compatibles. Ademas, \texttt{flecha\_y\_mapa\_v1} no usa odometria de traslacion ni pose XY estimada. Su dibujo de puntos es una visualizacion experimental de lecturas y orientacion, no un mapa 2D metrico ni un sistema SLAM completo.
+
+\section{Compilacion y diagnosticos}
+
+\subsection{ESP32 con PlatformIO}
+
+El unico entorno declarado actualmente es \texttt{esp32dev}. Desde \ruta{esp32}, los comandos tipicos son:
+
+\begin{lstlisting}
+pio run -e esp32dev
+pio run -e esp32dev -t upload
+\end{lstlisting}
+
+En el equipo usado para este relevamiento, \texttt{pio} no estaba en el PATH, aunque PlatformIO estaba instalado dentro del entorno de usuario de VS Code. Los comandos de tarea visibles de PlatformIO ejecutaban el entorno por defecto. Un build/upload exitoso del entorno por defecto no demuestra que se haya cargado un firmware de prueba distinto.
+
+\subsection{EDU-CIAA con Make}
+
+Desde \ruta{edu-ciaa}, el programa predeterminado es rover:
+
+\begin{lstlisting}
+make
+make download
+\end{lstlisting}
+
+El Makefile selecciona \texttt{edu\_ciaa\_nxp} y genera productos bajo \ruta{edu-ciaa/rover/out}. La descarga usa OpenOCD de acuerdo con el Makefile y la configuracion de placa.
+
+Existe un diagnostico independiente en \ruta{edu-ciaa/test/i2c\_scan/src/main.c}. Inicializa I2C0 a 100 kHz, recorre direcciones 0x08 a 0x77 y, si encuentra 0x68 o 0x69, intenta leer \texttt{WHO\_AM\_I} en \texttt{0x75}. Se selecciona con:
+
+\begin{lstlisting}
+make PROGRAM_PATH=test PROGRAM_NAME=i2c_scan
+\end{lstlisting}
+
+La carpeta \ruta{edu-ciaa/test/mpu\_plot} conserva directorios y artefactos de compilacion, incluyendo un ELF anterior, pero en el estado inspeccionado no contiene el fuente \texttt{main.c} ni el sketch de Processing correspondiente. No debe tomarse ese artefacto como prueba de que la prueba siga siendo compilable o este cargada.
+
+\section{Estado del desarrollo}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.28\textwidth} >{\raggedright\arraybackslash}p{0.62\textwidth}}
+\textbf{Componente} & \textbf{Estado basado en los archivos actuales}\\
+\hline
+Organizacion del workspace & Carpetas ESP32, EDU-CIAA y shared reunidas en un workspace.\\
+MPU6050 & Lectura de giroscopio Z, calibracion de offset, zona muerta e integracion para estimar angulo.\\
+VL53L0X & Lectura de distancia implementada para ambas plataformas, con implementaciones HAL diferentes.\\
+Firmware ESP32 & Punto de entrada con tareas FreeRTOS para lectura y publicacion de angulo/distancia.\\
+Firmware EDU-CIAA & Loop principal bare-metal con el mismo tipo de salida serie de dos columnas.\\
+Visualizacion & Sketches de Processing para flecha y prototipo de mapa; protocolos serie inconsistentes entre ellos.\\
+Prueba IMU sin ToF para ESP32 & Pendiente. La HAL actual bloquea si falta el ToF; no hay entorno PlatformIO dedicado en el archivo actual.\\
+Comparacion crudo/procesado MPU & No implementada actualmente en el driver publico; no hay getters para esas dos señales ni grafico funcional verificado.\\
+Control de movimiento & No se encontraron drivers de motor ni controladores en las capas compartidas inspeccionadas.\\
+Mapeo autonomo 2D & Objetivo del proyecto; no hay estimacion de posicion XY ni algoritmo de mapeo completo en el codigo observado.\\
+\end{longtable}
+
+\section{Pendientes tecnicos recomendados}
+
+\begin{enumerate}
+    \item Olvidarse por un momento que existe la edu-ciaa y desarrollar bien por capas y todas las funcionalidades en esop2.
+    \item Separar en 2 modulos distintos y bien separados el hal de esp32 para cada sensor.
+  \item Separar inicializacion de MPU e inicializacion del VL53L0X para permitir una prueba de IMU ESP32 sin sensor ToF.
+  \item Crear carpeta o modulos de test, donde no se corra el programa pincipal sino test individualzados segun la necesidad solicitada. Un proximo test para documentacion es comparar la señal cruda vs procesada del sensor mpu y exponer ambas graficando en processing.
+  \item Resolver la definicion incondicional de \texttt{BOARD\_EDUCIAA} en la configuracion compartida para que cada plataforma tenga una seleccion coherente.
+  \item Unificar el contrato serie consumido por los sketches y considerar separar datos de telemetria de mensajes de arranque.
+  \item Para avanzar hacia mapeo real, agregar sensores/actuadores y estimacion de movimiento (por ejemplo, encoders u otra fuente de odometria), pose XY y una estrategia de construccion del mapa.
+\end{enumerate}
+
+\end{document}

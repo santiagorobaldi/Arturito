@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "EDU-CIAA",
+            "includePath": [
+                "${workspaceFolder}/../shared/config",
+                "${workspaceFolder}/../shared/layer1_hal",
+                "${workspaceFolder}/../shared/layer2_drivers",
+                "${workspaceFolder}/libs/**/inc"
+            ],
+            "defines": [
+                "BOARD=edu_ciaa_nxp",
+                "USE_SAPI",
+                "MPU60X0_DEBUG"
+            ],
+            "compilerPath": "arm-none-eabi-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "windows-gcc-arm"
+        }
+    ],
+    "version": 4
+}

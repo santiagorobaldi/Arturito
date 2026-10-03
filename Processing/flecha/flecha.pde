@@ -48,11 +48,11 @@ void serialEvent(Serial myPort) {
     String inString = myPort.readStringUntil('\n');
     if (inString != null) {
       inString = trim(inString); 
+      if (inString.length() == 0 || inString.startsWith("#")) return;
       String[] data = split(inString, ',');
       
-      // Verificamos que lleguen exactamente las 3 variables "x,y,theta"
-      if (data.length == 3) {
-        theta = float(data[2]); 
+      if (data.length == 2) {
+        theta = float(data[0]);
       }
     }
   } catch (Exception e) {

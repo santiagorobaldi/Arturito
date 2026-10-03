@@ -1,0 +1,411 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue!45!black,
+  pdftitle={Arturito --- Informe de avance},
+  pdfauthor={Equipo Arturito}
+}
+
+\urlstyle{tt}
+\setlist{itemsep=2pt,topsep=4pt}
+
+\newcommand{\ruta}[1]{\path{#1}}
+\newcommand{\decision}[1]{\textbf{Decisi\'on:} #1}
+\newcommand{\desvio}[1]{\textbf{Desv\'io respecto de MAIN:} #1}
+
+\title{Arturito --- Informe de avance\\
+       \large Documento vivo de ingenier\'ia (alcance, estado, plan)}
+\author{Equipo Arturito \\
+        Joaqu\'in Guzm\'an \and Tom\'as Gamarra \and Robaldi Santiago \and Goncalves Federico}
+\date{3 de octubre de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Este archivo es el \textbf{documento de ingenier\'ia vivo} del rover Arturito.
+Integra el objetivo acad\'emico de \ruta{ARTURITO MAIN.tex}, el estado real del
+workspace y las decisiones de firmware acordadas para poder implementar sin
+contradecirse. Cuando este documento y el c\'odigo difieran, hay que
+\textbf{alinear el c\'odigo} (o actualizar este archivo en el mismo cambio).
+El informe de c\'atedra \ruta{ARTURITO MAIN.tex} queda \textbf{congelado}: los
+desv\'ios se registran aqu\'i, no se reescribe MAIN. El dise\~no de firmware
+en capas se actualiza en un paso posterior; aqu\'i se anota en qu\'e no
+coincide. \ruta{CONTEXTO\_PROYECTO\_ROVER.tex} queda \textbf{absorbido} por
+este informe y deja de ser fuente de verdad.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{C\'omo usar este documento}
+%==============================================================================
+
+\begin{itemize}
+  \item \textbf{Antes} de una funci\'on nueva o un cambio de arquitectura:
+        leer la secci\'on de decisiones congeladas y el plan.
+  \item \textbf{Despu\'es} de implementarla: actualizar \emph{Estado},
+        \emph{Registro de avances} y, si cambia un contrato, \emph{Decisiones}.
+  \item No documentar experimentos personales que no definan al robot del grupo.
+  \item Autoridad: \textbf{este archivo + el c\'odigo}. MAIN es entrega de
+        c\'atedra (congelado). El \texttt{.tex} de dise\~no de firmware es
+        meta a revisar, no contrato actual.
+\end{itemize}
+
+%==============================================================================
+\section{Qu\'e es el proyecto (resumen de MAIN)}
+%==============================================================================
+
+Arturito es un \textbf{rover diferencial aut\'onomo mapeador} (Taller de
+Proyecto~I, UNLP). Debe explorar un interior sin marcas en el piso, construir
+una representaci\'on~2D y poder navegarla.
+
+Problemas simult\'aneos: percepci\'on, localizaci\'on y planificaci\'on.
+MAIN formula el horizonte como grilla de ocupaci\'on (y SLAM como
+optimizaci\'on secundaria), con tracci\'on diferencial, encoders, IMU,
+sensor de distancia, comunicaciones inal\'ambricas y GUI externa.
+
+Este informe no reemplaza MAIN como entrega de c\'atedra. S\'i define
+\textbf{qu\'e vamos a construir de verdad en el firmware} y en qu\'e orden.
+
+%==============================================================================
+\section{Decisiones congeladas (acuerdo de ingenier\'ia)}
+%==============================================================================
+
+Estas decisiones rigen el c\'odigo hasta que se cambien expl\'icitamente
+en una actualizaci\'on de este archivo.
+
+\subsection{Plataforma}
+
+\decision{Desarrollar y cerrar capas en \textbf{ESP32} primero.
+La EDU-CIAA se porta despu\'es reutilizando drivers y aplicaci\'on,
+cambiando solo la HAL.}
+
+MAIN no fija MCU. El dise\~no de firmware habla de FreeRTOS sobre EDU-CIAA.
+ESP32 y EDU-CIAA ejecutan el mismo runtime FreeRTOS compartido. Cada placa
+conserva su adaptador de arranque: Arduino invoca \texttt{setup()} con el
+scheduler activo; CIAA entra por \texttt{main()}, crea el bootstrap y arranca
+el scheduler.
+
+\subsection{Scan de distancia (V0 / V1)}
+
+\decision{ToF \textbf{fijo al chasis}. El robot gira sobre s\'i; el
+\'angulo de cada medida es el yaw $\theta$ de la IMU, no un mecanismo
+giratorio tipo LiDAR.}
+
+\desvio{MAIN exige un mecanismo de rotaci\'on $360^\circ$ con posici\'on
+angular propia del sensor. Eso no es el hardware ni el m\'etodo de esta etapa.}
+
+\subsection{Encoders y motores (l\'inea del grupo)}
+
+\decision{Encoders absolutos \textbf{AS5600} por rueda. Puente~H
+\textbf{DRV8833}. El integrante a cargo de ruedas/encoders es Federico.
+Santiago no define ni stub-ea esa API hasta que haya algo que medir.}
+
+\desvio{MAIN habla de encoders por pulsos/giros en un intervalo. El
+contrato de software ser\'a \'angulo absoluto AS5600, no cuenta de pulsos.}
+
+Hasta que existan AS5600, la \textbf{pose oficial del grupo} para visualizaci\'on
+V0 es
+\[
+q = [x, y, \theta]^\top = [0, 0, \theta_{\mathrm{IMU}}]^\top.
+\]
+No hay odometr\'ia de traslaci\'on oficial sin ruedas.
+
+\subsection{Mapa: dos etapas}
+
+\decision{Primero \textbf{V0}: nube / plot polar con el robot en el origen
+(gira, no traduce). Despu\'es \textbf{V1}: grilla de ocupaci\'on~2D en marco
+mundo, usando pose $(x,y,\theta)$ cuando existan AS5600. SLAM sigue siendo
+objetivo secundario de MAIN, no el entregable de firmware actual.}
+
+El grupo todav\'ia distingue mal ``plot de Processing'', ``grilla'' y ``SLAM''.
+Este p\'arrafo es la definici\'on operativa para no mezclarlos.
+
+\subsection{Capas de software (contrato actual)}
+
+\decision{Tres capas. La capa~2 pide n\'umeros a funciones de capa~1 y
+\textbf{no sabe} si debajo hay ESP32 o CIAA.}
+
+Corte acordado (\textbf{HAL de perif\'ericos}, no HAL de buses):
+
+\begin{itemize}
+  \item \textbf{Capa 1 (HAL), una implementaci\'on por placa:} inicializar
+        el perif\'erico y entregar lecturas ya en unidades de trabajo
+        (p.\ ej.\ $\omega_z$ en rad/s, distancia en metros, m\'as adelante
+        PWM/GPIO de motores). No calibra, no integra pose, no arma el mapa.
+  \item \textbf{Capa 2 (drivers, en \ruta{shared}):} f\'isica y protocolo
+        del chip a nivel de aplicaci\'on de sensor/actuador: offset y zona
+        muerta de MPU, integraci\'on de $\theta$, validaci\'on de rango ToF;
+        m\'as adelante DRV8833 y AS5600. Convierte a magnitudes usables por
+        la app. No incluye \texttt{Arduino.h} ni SAPI.
+  \item \textbf{Capa 3 (aplicaci\'on):} cinem\'atica / pose, grilla, navegaci\'on.
+        Contiene el runtime FreeRTOS com\'un (adquisici\'on, drivers y
+        publicaci\'on). La pose XY y la grilla siguen pendientes de encoders.
+\end{itemize}
+
+Esto \textbf{no} es el contrato de ejemplos \texttt{hal\_i2c\_read\_bytes()}
+del dise\~no de firmware. Ese .tex se alinear\'a despu\'es.
+
+\subsection{IMU en la l\'inea del grupo}
+
+\decision{Validar y usar \textbf{giroscopio Z} $\rightarrow$ $\theta$.
+MAIN pide aceleraci\'on en 3 ejes; no es requisito de esta etapa de grupo.}
+
+\subsection{Visualizaci\'on y radio}
+
+\decision{V0: Processing por \textbf{UART/USB}. Pronto (avance siguiente,
+no este): telemetr\'ia de pose/mapa por Wi-Fi o Bluetooth del ESP32.}
+
+\desvio{MAIN pone el enlace inal\'ambrico como objetivo primario de
+comunicaciones. En ingenier\'ia, el primario actual es serie; el radio es
+el pr\'oximo salto de comunicaciones.}
+
+\subsection{FreeRTOS compartido}
+
+\decision{Ambas placas ejecutan las mismas tres tareas desde
+\ruta{shared/layer3\_app}: \textbf{adquirir} (HAL),
+\textbf{actualizar drivers} ($\theta$ y distancia) y
+\textbf{publicar} (telemetr\'ia).}
+
+El scheduler ya est\'a activo cuando corre el bootstrap com\'un. ESP32 lo
+inicia el framework Arduino; CIAA crea el bootstrap antes de llamar a
+\texttt{vTaskStartScheduler()}. El tama\~no de stack se expresa en bytes en
+la aplicaci\'on y se convierte a palabras para el FreeRTOS est\'andar de CIAA.
+
+\subsection{Protocolo serie V0}
+
+\decision{115200 baud. L\'ineas de arranque o log con prefijo \texttt{\#}
+(Processing las ignora). Datos:}
+\begin{lstlisting}
+theta_rad,distancia_m
+\end{lstlisting}
+Distancia inv\'alida: \texttt{-1}. Una muestra por l\'inea, sin tercera columna.
+
+Los sketches que esperan tres columnas o \texttt{distancia\_cm} se consideran
+desactualizados: se adaptan al firmware, no al rev\'es.
+
+\subsection{Organizaci\'on de archivos (estructura actual)}
+
+HAL partida por perif\'erico para aislar fallas (p.\ ej.\ IMU sin ToF).
+\texttt{BOARD\_*} solo desde el build, no \texttt{\#define BOARD\_EDUCIAA}
+incondicional en \ruta{shared/config/config.h}.
+
+\'Arbol actual del workspace:
+
+\begin{lstlisting}
+docs/                  % informes y documentos de arquitectura
+shared/
+      config/
+  layer1_hal/
+    hal_time.h
+    hal_imu.h
+    hal_tof.h
+  layer2_drivers/
+    driver_mpu6050.c/.h
+    driver_distancia.c/.h
+      layer3_app/
+            app_runtime.c/.h      % tareas FreeRTOS comunes
+esp32/src/
+      main.cpp             % arranque Arduino; delega al runtime compartido
+  layer1_hal/
+    hal_time_esp32.cpp
+    hal_imu_esp32.cpp
+    hal_tof_esp32.cpp
+            hal_telemetry_esp32.cpp
+      tests/                   % diagnosticos: IMU sola / ToF solo
+edu-ciaa/rover/src/layer1_hal/
+      hal_time_educiaa.cpp
+      hal_imu_educiaa.cpp
+      hal_tof_educiaa.cpp
+      hal_telemetry_educiaa.cpp
+processing/
+\end{lstlisting}
+
+Init de IMU y ToF \textbf{separados}: si falta el VL53L0X,
+\texttt{hal\_tof\_init()} informa el fallo y la IMU sigue publicando $\theta$.
+
+%==============================================================================
+\section{Estado actual del workspace (al 2026-10-03)}
+%==============================================================================
+
+Relevado a partir del c\'odigo y de lo que era
+\ruta{CONTEXTO\_PROYECTO\_ROVER.tex}.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.32\textwidth}
+                  >{\raggedright\arraybackslash}p{0.60\textwidth}}
+\textbf{Componente} & \textbf{Estado} \\
+\hline
+Workspace & Carpetas \ruta{esp32/}, \ruta{edu-ciaa/}, \ruta{shared/},
+\ruta{processing/} y \ruta{docs/}; las cinco est\'an registradas en el
+\texttt{.code-workspace}. \\
+Capa 1 ESP32 & HAL separada en tiempo, IMU y ToF; la ausencia del ToF no
+detiene la publicaci\'on de yaw. La implementaci\'on combinada heredada fue
+retirada. \\
+Capa 1 CIAA & HAL separada en tiempo, IMU y ToF; compilada, sin prueba en
+placa. La falla del ToF no detiene la lectura de IMU. \\
+Capa 2 & MPU: offset, zona muerta $1^\circ$/s, integraci\'on trapezoidal,
+\texttt{get\_theta\_rad()} con convenci\'on de signo. Distancia: v\'alida
+0.05--1.50~m, si no $-1$. \\
+Capa 3 & \ruta{shared/layer3\_app/} contiene el runtime FreeRTOS com\'un;
+pose y mapeo V1 quedan pendientes. Se retiraron \ruta{layer3\_robotics/} y
+\ruta{layer4\_app/}. \\
+ESP32 / CIAA & Tres tareas FreeRTOS compartidas (adquirir, drivers, publicar),
+mutex y CSV V0 \texttt{theta\_rad,distancia\_m}; compiladas en ambas placas. \\
+Motores / AS5600 & No hay drivers. \\
+Mapa / nav / SLAM & No hay grilla ni pose XY. Processing
+\texttt{flecha\_y\_mapa\_v1} fue validado para el plot polar V0. \\
+\texttt{config.h} & No define placas; PlatformIO define
+\texttt{BOARD\_ESP32}. \\
+\end{longtable}
+
+Limitaci\'on conocida (documentada, no es bug a ``arreglar'' con magia):
+$\theta$ sale de integrar un gyro. Offset y zona muerta reducen deriva;
+no la eliminan. No hay fusi\'on con aceler\'ometro en la l\'inea de grupo.
+
+%==============================================================================
+\section{Incongruencias abiertas (qu\'e no cierra)}
+%==============================================================================
+
+\subsection{Respecto de MAIN (congelado: se registran, no se editan all\'i)}
+
+\begin{enumerate}
+  \item Mecanismo LiDAR $360^\circ$ vs ToF fijo + yaw del chasis.
+  \item Encoders por pulsos vs AS5600.
+  \item IMU: accel 3 ejes como requisito de odometr\'ia vs solo gyro~Z.
+  \item Comunicaciones inal\'ambricas primarias vs UART V0.
+  \item Placeholders no funcionales (\texttt{[FreqMinMapeo]}, velocidades,
+        tama\~no de mapa, etc.) nunca numerados.
+  \item ``SLAM'' en la introducci\'on vs grilla V1 como meta de software
+        y SLAM como secundario.
+\end{enumerate}
+
+\subsection{Respecto del dise\~no de firmware (.tex a actualizar despu\'es)}
+
+\begin{enumerate}
+  \item El dise\~no preliminar presenta EDU-CIAA como plataforma inicial;
+        el workspace implementa ESP32 primero y un runtime FreeRTOS com\'un.
+  \item HAL de buses (\texttt{hal\_i2c\_read\_bytes}) vs HAL de perif\'ericos
+        acordada.
+  \item Ejemplos de API de capa~3 y drivers de motor/encoder: meta, no c\'odigo.
+\end{enumerate}
+
+\subsection{Respecto del c\'odigo (ESP32 y compilaci\'on EDU-CIAA)}
+
+El firmware V0 fue cargado y validado por Santiago con Processing. ESP32 y
+EDU-CIAA comparten las tres tareas y drivers; ambos builds pasan. Resta probar
+el comportamiento de la EDU-CIAA con sensores conectados.
+
+\begin{enumerate}
+  \item Hecho: HAL ESP32 separada (tiempo / IMU / ToF); init independiente.
+  \item Hecho: entornos aislados \texttt{imu\_only} y \texttt{tof\_only}.
+      \item Hecho: tareas FreeRTOS comunes (adquirir / drivers / publicar).
+  \item Hecho: CSV V0 en metros, logs \texttt{\#} y parser Processing alineado.
+  \item Hecho: HAL EDU-CIAA separada e integrada al build.
+  \item Hecho: drivers compartidos usados por ambos builds.
+  \item Pendiente: prueba de sensores en hardware EDU-CIAA.
+  \item Hecho: workspace con tres capas compartidas; documentaci\'on en
+        \ruta{docs/}; Processing visible en el workspace.
+\end{enumerate}
+
+%==============================================================================
+\section{Plan de acci\'on}
+%==============================================================================
+
+\subsection{Paso 0 --- Ahora}
+
+Contrato actualizado; ESP32 y EDU-CIAA crean el mismo runtime FreeRTOS y sus
+builds pasan. El plot V0 fue validado en Processing. La EDU-CIAA requiere
+prueba f\'isica de sensores antes de dar por cerrado ese port.
+
+\subsection{Paso 1 --- Runtime FreeRTOS com\'un (implementado; build OK)}
+
+Orden sugerido:
+
+\begin{enumerate}
+  \item Contratos \ruta{hal\_time.h}, \ruta{hal\_imu.h}, \ruta{hal\_tof.h}
+        y splits \texttt{\_esp32.cpp}.
+  \item Init IMU independiente del ToF.
+  \item Drivers shared sin cambio de algoritmo (solo adaptaci\'on a los
+        nuevos nombres / metros).
+  \item \texttt{app\_runtime.c}: tres tareas compartidas; cada \texttt{main}
+        queda como adaptador de arranque y plataforma.
+  \item Test IMU-only (y ToF-only si hay hardware).
+  \item Un sketch Processing que consuma exactamente el CSV V0.
+\end{enumerate}
+
+\subsection{Paso 2 --- Comunicaciones (pr\'oximo avance funcional)}
+
+Repetir el mismo estado ($\theta$, distancia, m\'as adelante pose/mapa) por
+Wi-Fi o Bluetooth del ESP32. Actualizar este archivo al empezar.
+
+\subsection{Paso 3 --- Cuando Federico tenga ruedas/AS5600/DRV8833}
+
+Contrato de capa~2 de encoders y motores; pose $(x,y,\theta)$; mapa V1
+(grilla). No adelantar stubs vac\'ios en el repo de Santiago.
+
+\subsection{Fuera de este plan de grupo}
+
+Intentos de pose solo con IMU (integrar aceler\'ometro, trayectoria a mano
+como laboratorio personal) \textbf{no} forman parte de este informe.
+
+%==============================================================================
+\section{Registro de avances}
+%==============================================================================
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.18\textwidth}
+                  >{\raggedright\arraybackslash}p{0.22\textwidth}
+                  >{\raggedright\arraybackslash}p{0.52\textwidth}}
+\textbf{Fecha} & \textbf{Qu\'e} & \textbf{Notas} \\
+\hline
+2026-10-03 & Creaci\'on de este informe & Congela decisiones de plataforma,
+scan, capas, AS5600/DRV8833, V0/V1, protocolo, 3 tareas. MAIN congelado.
+CONTEXTO absorbido. C\'odigo ESP32 pendiente de alineaci\'on al momento de crear
+este registro. \\
+2026-10-03 & Alineaci\'on firmware ESP32 V0 & HAL partida, init independiente,
+tres tareas, unidades en metros, tests aislados y Processing validado.
+Build PlatformIO exitoso en \texttt{esp32dev}, \texttt{imu\_only} y
+\texttt{tof\_only}; carga con exit code 0. \\
+2026-10-03 & Organizaci\'on del workspace & Documentos en \ruta{docs/};
+\ruta{shared/} con config y tres capas; filtros PlatformIO/CIAA alineados. \\
+2026-10-03 & Port inicial EDU-CIAA & HAL separada de tiempo, IMU y ToF;
+drivers compartidos y CSV V0. Etapa previa a activar FreeRTOS en CIAA. \\
+2026-10-03 & Runtime FreeRTOS com\'un & Tareas adquirir / drivers / publicar
+movidas a \ruta{shared/layer3\_app}; ambos adaptadores crean el runtime.
+Build PlatformIO y build limpio EDU-CIAA enlazan; falta prueba en placa. \\
+\end{longtable}
+
+Plantilla para filas nuevas: fecha, m\'odulo tocado, si cambi\'o un contrato
+(s\'i/no), c\'omo probarlo.
+
+%==============================================================================
+\section{Checklist al cerrar un cambio}
+%==============================================================================
+
+\begin{itemize}
+  \item ¿Sigue valiendo la tabla de decisiones? Si no, editar este .tex
+        \textbf{en el mismo} cambio.
+  \item ¿MAIN queda contradicho? Agregar o ajustar un \emph{desv\'io}, no
+        editar MAIN.
+  \item ¿Processing / serie rotos? Actualizar el parser o el firmware,
+        un solo contrato V0.
+  \item ¿Se puede probar IMU sin ToF? Si se toc\'o HAL, la respuesta debe
+        seguir siendo s\'i.
+\end{itemize}
+
+\end{document}

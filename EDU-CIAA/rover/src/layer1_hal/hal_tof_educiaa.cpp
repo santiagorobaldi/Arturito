@@ -1,17 +1,10 @@
-#include "config.h"
-#include "hal_sensors.h"
+#include "hal_tof.h"
 #include "sapi.h"
 #include <math.h>
 
-// Port del driver de Adafruit/Pololu para VL53L0X (single-shot ranging,
-// sin modo continuo). Traducido registro por registro desde el driver
-// de referencia (github.com/pololu/vl53l0x-arduino, tal como lo porta
-// Adafruit para CircuitPython) usando i2cWrite/i2cWriteRead de sAPI en
-// vez de Wire.h.
+// Port del driver de Adafruit/Pololu para VL53L0X (single-shot ranging).
 
 namespace {
-  MPU60X0_address_t imu_addr = static_cast<MPU60X0_address_t>(IMU_I2C_ADDR);
-
   const uint8_t VL53L0X_ADDR = 0x29;
 
   const uint8_t REG_SYSRANGE_START = 0x00;
@@ -335,51 +328,33 @@ namespace {
   }
 }
 
-void hal_sensors_init() {
-  printf("HAL: iniciando MPU en I2C0, direccion 0x%02X\r\n", (unsigned)imu_addr);
-  int8_t status = mpu60X0Init(imu_addr);
-  printf("HAL: mpu60X0Init devolvio %d\r\n", status);
-  if (status < 0) {
-    printf("IMU MPU6050 no inicializado, revisar conexiones.\r\n");
-    while (1);
-  }
-
+bool hal_tof_init(void) {
   uint8_t model_id = read_u8(REG_IDENTIFICATION_MODEL_ID);
   uint8_t revision_id = read_u8(REG_IDENTIFICATION_REVISION_ID);
-  printf("HAL: VL53L0X ID model=0x%02X rev=0x%02X\r\n", model_id, revision_id);
+  printf("# HAL: VL53L0X ID model=0x%02X rev=0x%02X\r\n", model_id, revision_id);
   if (model_id != 0xEE || revision_id != 0x10) {
-    printf("VL53L0X no responde como se espera (model=0x%02X, rev=0x%02X). "
+    printf("# VL53L0X no responde como se espera (model=0x%02X, rev=0x%02X). "
            "Revisar conexiones.\r\n", model_id, revision_id);
     vl53l0x_ok = false;
-    return;
+    return false;
   }
 
   vl53l0x_ok = vl53l0x_init();
   if (!vl53l0x_ok) {
-    printf("VL53L0X: fallo la inicializacion (timeout en calibracion).\r\n");
-  } else {
-    printf("VL53L0X inicializado correctamente.\r\n");
+    printf("# VL53L0X: fallo la inicializacion (timeout en calibracion).\r\n");
+    return false;
   }
+  printf("# VL53L0X inicializado correctamente.\r\n");
+  return true;
 }
 
-float hal_get_distance_cm() {
-  if (!vl53l0x_ok) return -1;
-  if (!vl53l0x_do_range_measurement()) return -1;
+float hal_tof_get_distance_m(void) {
+  if (!vl53l0x_ok) {
+    return -1.0f;
+  }
+  if (!vl53l0x_do_range_measurement()) {
+    return -1.0f;
+  }
   uint16_t mm = vl53l0x_read_range_mm();
-  return mm / 10.0f;
-}
-
-
-float hal_get_gyro_z_rads() {
-    mpu60X0Read();
-    return mpu60X0GetGyroZ_rads();
-}
-
-// --- Implementación del tiempo para EDU-CIAA ---
-void hal_delay(uint32_t ms) {
-    delay(ms); // delay de sAPI
-}
-
-uint32_t hal_millis() {
-    return tickRead(); // Obtiene los milisegundos desde el arranque usando sAPI
+  return mm / 1000.0f;
 }

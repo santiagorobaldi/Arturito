@@ -5,14 +5,16 @@
 extern "C" {
 #endif
 
-// Capa 2: transforma lecturas crudas de registros en un ángulo utilizable.
-void mpu6050_init();
-void mpu6050_calibrate();
-void mpu6050_update();
-float mpu6050_get_theta_rad();
+void mpu6050_init(void);
+void mpu6050_calibrate(void);
+/* Lee HAL e integra. Para super-loop (p. ej. EDU-CIAA). */
+void mpu6050_update(void);
+/* Integra una muestra ya leida (tarea adquirir en ESP32). */
+void mpu6050_update_gyro(float gz_rads_raw);
+float mpu6050_get_theta_rad(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DRIVER_MPU6050_H
+#endif /* DRIVER_MPU6050_H */

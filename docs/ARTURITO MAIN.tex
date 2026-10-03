@@ -1,0 +1,381 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}     % Para cuadros de texto y colores
+\usepackage{tcolorbox} % Para cuadros de texto llamativos
+\usepackage{microtype}  % Mejora la justificación tipográfica
+\usepackage{caption}    % Personalización de pies de foto/figura
+\usepackage{fancyhdr}   % Control de encabezados y pies de página
+\usepackage{hyperref}   % Siempre se recomienda cargarlo al final del preámbulo
+\usepackage{amsmath}    % Para \text en modo matemático
+\usepackage{parskip}
+
+% Configuración de márgenes
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm,
+    headheight=15pt % <--- Agrega esta línea para eliminar el warning
+}
+
+% Definición de un rojo académico/elegante
+\definecolor{rojoObjetivo}{RGB}{180, 40, 40}
+
+% Configuración de formato para pies de figuras
+\captionsetup{font=small, labelfont=bf}
+
+% Configuración de encabezados y pies de página
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small \textit{Arturito - Rover autónomo}}
+\lhead{\small \textit{Taller de Proyecto I - UNLP}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+\begin{document}
+% Desactivar la división de palabras (hiphenación)
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+% Permitir mayor flexibilidad en los espacios interpalabra para mantener el texto justificado
+\tolerance=1000
+\emergencystretch=3em
+
+% ==============================================================================
+% PORTADA / CARÁTULA PERSONALIZADA
+% ==============================================================================
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+
+    \vspace*{1.5cm}
+
+    % TÍTULO DEL INFORME
+   {\huge \bfseries Arturito\\[0.3em] Rover autónomo diferencial mapeador \par}
+
+    \vfill % Empuja el contenido hacia la parte inferior
+
+    % AUTORES (Organizados en matriz 2x2)
+    {\Large \bfseries Autores \par}
+    \vspace{0.6cm}
+    \begin{tabular}{c c}
+        \textbf{Joaquín Guzmán} & \textbf{Tomás Gamarra} \\
+        \small Legajo: 03751/4 & \small Legajo: 03852/8 \\[1.5em]
+        \textbf{Robaldi Santiago} & \textbf{Goncalves Federico} \\
+        \small Legajo: 03769/4 & \small Legajo: 03866/5
+    \end{tabular}
+
+    \vspace{1.5cm}
+
+    % DATOS DE LA UNIVERSIDAD, DEPARTAMENTO Y FECHA
+    \hrule height 0.5pt % Línea divisoria sutil
+    \vspace{0.4cm}
+
+    {\large \textbf{Universidad Nacional de La Plata}} \par
+    \vspace{0.15cm}
+    {Facultad de Ingeniería -- Departamento de Electrotecnia} \par
+    \vspace{0.15cm}
+    {\small Asignatura: Taller de Proyecto I} \par
+    \vspace{0.3cm}
+    {\small \today}
+
+\end{titlepage}
+
+% ==============================================================================
+% ÍNDICE GENERAL
+% ==============================================================================
+\pagenumbering{arabic}
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% SECCIÓN 1: INTRODUCCIÓN
+% ==============================================================================
+\section{Introducción}
+El problema que da origen a este proyecto es la necesidad de explorar, mapear y navegar dentro de áreas desconocidas por parte de robots. En entornos dinámicos como fábricas y hogares, los métodos tradicionales de guiado -como un robot seguidor de línea- requieren modificar el entorno agregando marcas físicas. Cuando estas modificaciones del entorno no son posibles, surge el problema de un robot que se adapte a su entorno, y no al revés.
+
+Una posible solución es un robot controlado de manera manual por un teleoperador. Pero esto pronto encuentra sus limitaciones al tenerse en cuenta que se necesita de la constante atención de dicho teleoperador, un enlace inalámbrico ininterrumpido y no escala bien si se quiere mapear el espacio a explorar. Surge entonces la idea de un vehículo capaz de operar de manera autónoma, capaz de explorar, mapear y navegar un espacio desconocido por su cuenta. Pero para poder hacer esto posible, han de resolverse los siguientes problemas matemático-físicos en simultáneo: Percepción: ¿Qué elementos u obstáculos hay a mi alrededor?, Localización: ¿Dónde me encuentro dentro de ese espacio? y Planificación: ¿Cómo me muevo dentro de ese espacio?.
+
+El paradigma de la industria: SLAM (Simultaneous Localization and Mapping). Bajo este paradigma se busca discretizar el espacio explorado a una grilla de ocupación donde se representan zonas libres, ocupadas e inexploradas. Esta grilla es generada con el uso de sensores de distancia con barrido angular. Para mitigar las imprecisiones se hace uso de sensores odométricos e inerciales.
+
+
+
+La motivación de este proyecto surgió con la intención de poder implementar algún tipo de robot que tenga la capacidad de sensar información del entorno y, en base a ella, tomar decisiones en forma dinámica para cumplir con un objetivo específico. Originalmente se consideró realizar un robot seguidor de línea. Sin embargo, el hecho de que el robot esté limitado a seguir un recorrido marcado por una pista predefinida generó una desmotivación en cuanto al objetivo final a resolver. En base a esta primera idea, se disparó la posibilidad de hacer un robot que pueda desplazarse de manera autónoma esquivando cualquier obstáculo que se presente en el recorrido. Finalmente el alcance se amplió para que el propio robot pueda realizar un mapeo del entorno, escaneando los diferentes límites y obstáculos, para que una vez mapeado pueda navegarlo.
+
+Por lo tanto, el presente proyecto consiste en realizar la implementación de un robot móvil diferencial autónomo con capacidad de mapear áreas y representarlas en algún formato 2D para su visualización en algún dispositivo, así como también para su posible recorrido evitando obstáculos.
+
+\newpage
+
+% ==============================================================================
+% SECCIÓN 2: OBJETIVOS
+% ==============================================================================
+\section{Objetivos}
+
+\subsection{General}
+Diseñar e implementar un robot móvil autónomo con tracción diferencial capaz de explorar un entorno mediante sensores de distancia, mapearlo en 2D y transmitir la información en tiempo real.
+
+
+\subsection{Primarios}
+\begin{itemize}
+   \item \textbf{Plataforma y Actuación (Hardware):} Implementar la estructura mecánica del vehículo de tracción diferencial, la etapa de potencia (drivers) y los sensores odométricos para el registro del giro de las ruedas.
+    \item \textbf{Sensado y Percepción:} Integrar un subsistema de medición de distancia para la detección de obstáculos y la caracterización del entorno.
+    \item \textbf{Procesamiento Central y Control (Software):} Desarrollar el firmware para la integración cinemática, el control de velocidad en lazo abierto, la estimación de pose, la generación de la grilla de ocupación y el algoritmo de navegación autónoma.
+    \item \textbf{Comunicaciones:} Establecer un enlace inalámbrico para la transmisión de datos de estado y del mapa generado hacia el dispositivo externo.
+    \item \textbf{Visualización de la grilla de ocupación:} Desarrollar una interfaz gráfica (GUI) para la representación del mapa de ocupación en un dispositivo externo.
+\end{itemize}
+
+\subsection{Secundarios}
+\begin{itemize}
+    \item \textbf{Planificación de Rutas:} Permitir desde un dispositivo remoto definir una ruta a seguir por el robot sobre el mapa de ocupación generado.
+    \item \textbf{Control Modular:} Implementar la lógica de arbitraje de comandos para conmutar entre la navegación autónoma y el modo de teleoperación manual.
+    \item \textbf{Optimización del Control de Velocidad}: Desarrollar un algoritmo de control de velocidad con realimentación a lazo cerrado (PID).
+    \item \textbf{Optimización de Algoritmo para la generación de la Grilla  de Ocupación}: Implementar algoritmo de tipo SLAM para la reconstrucción del entorno en una grilla de ocupación
+\end{itemize}
+
+\newpage
+\subsection{Diagrama en Bloques Funcionales}
+A continuación, en la Figura \ref{fig:esquema_general}, se plantea una división del sistema en bloques que, cumpliendo distintas funcionalidades, colaboran en conjunto para lograr el objetivo de este proyecto.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{EsquemaGeneral.png}
+    \caption{Esquema General del Sistema.}
+    \label{fig:esquema_general}
+\end{figure}
+
+% Recuadro destacado para la nota de los bloques en rojo
+\noindent\fcolorbox{red!40}{red!5}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+        \textbf{Nota:} Los bloques resaltados en \textcolor{red}{\textbf{rojo}} dentro del diagrama corresponden a funcionalidades clasificadas como \textbf{objetivos secundarios} del proyecto.
+    }%
+}
+\vspace{0.4cm}
+
+\begin{itemize}
+    \item \textbf{Bloque de Sensado:} Se encarga de transmitir los datos primarios recolectados por sensores de distancia y sensores necesarios para la odometría al \textbf{Bloque de Procesamiento Central}.
+    \item \textbf{Bloque de Comunicaciones:} Parte del sistema encargada de establecer un enlace con un dispositivo externo, para la transmisión del mapa generado en tiempo real y posición en el mismo.
+
+
+    \item \textbf{Bloque de Tracción y Actuación:} Recibe por parte del \textbf{Bloque de Procesamiento Central} comandos para regular la velocidad deseada de las ruedas, conviertiendo estas señales en tensión y corriente directas de la batería a los motores de dichas ruedas.
+    \item \textbf{Bloque de Procesamiento Central:} Parte funcional del sistema encargada de: mapeo y estimación de posición, navegación y cinemática.
+
+    \begin{itemize}
+        \item \textbf{Bloque de Cinemática:} Conoce la geometría del chasis (diámetro de ruedas, separación de ejes). Procesa los datos de sensores y da estimación de pose odométrica (deltas de desplazamientos en coordenadas y rotación del chasis/plataforma). Esta estimación primaria es consumida por el \textbf{Bloque de Mapeo y Estimación de Posición}.
+        \item \textbf{Bloque de Mapeo y Estimación de Posición:} Recibe la posición estimada por Odometría del \textbf{Bloque de Cinemática} para junto con los datos del sensor de distancia generar un mapa de ocupación del espacio 2D en el que el robot se mueve y dar una estimación final de su posición en el mismo. Tanto esta estimación final de la posición como el mapa son consumidos por el \textbf{Bloque de Navegación Autónoma}.
+        \item \textbf{Bloque de Navegación Autónoma:} Recibe el mapa y posición del robot en el mismo generados por el \textbf{Bloque de Mapeo y Estimación de Posición} y decide a dónde ha de moverse el robot. Estos parámetros de desplazamiento son enviados al \textbf{Bloque de Cinemática} para generar el desplazamiento correspondiente.
+        \item \textit{\textbf{Bloque Selector de Modo:} Según el modo de navegación elegido desde el dispositivo externo, el robot navegará de manera autónoma o teleoperada.}
+        \item \textit{\textbf{Bloque de Teleoperación:} Recibe desde el dispositivo externo las instrucciones de movimiento del robot.}
+    \end{itemize}
+
+    \item \textbf{Dispositivo Externo:} Del \textbf{Bloque de Comunicaciones} recibe, procesa y muestra el mapa de ocupación junto con parámetros de estado del robot. Además permite entrada de comandos tales como: inicio y parada. \textit{Objetivo secundario: Transmite comandos de selección de modos y, en caso de estar en modo de teleoperación, envía comandos de control de movimiento al robot.}
+\end{itemize}
+
+
+% ==============================================================================
+% SECCIÓN 3: REQUERIMIENTOS
+% ==============================================================================
+\section{Requerimientos}
+
+\subsection{Funcionales}
+
+\subsubsection{Bloque de Sensado}
+\noindent\textbf{Sensado de Distancia}
+\begin{itemize}
+    \item \textbf{Hardware:}
+    \begin{itemize}
+        \item El sistema de sensado de distancia debe contar con un mecanismo de rotación que permita un barrido angular de 360°.
+        \item El mecanismo giratorio debe permitir determinar la posición angular del sensor de distancia para cada medida.
+    \end{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe asociar en tiempo real cada lectura de distancia $r$ con su respectivo ángulo de posición $\theta$ en el instante de muestreo.
+        \item El software debe identificar medidas fuera del rango de validez $[R_{\text{min}}, R_{\text{max}}]$ o lecturas erróneas, sustituyéndolas por valores no válidos o no alcanzables.
+        \item El software debe convertir las mediciones recibidas a unidades del Sistema Internacional (metros para la distancia y radianes para ángulo).
+        \item El módulo debe agrupar el conjunto de mediciones $(r, \theta)$ correspondientes a un barrido completo en un único paquete de datos.
+        \item El software debe transmitir el paquete de barrido procesado hacia el Bloque de Mapeo y Estimación de Posición.
+        \item El software debe asignarle una estampa de tiempo a cada paquete al finalizar el barrido.
+    \end{itemize}
+\end{itemize}
+
+\noindent\textbf{Sensado de Odometría (Velocidad de giro de ruedas y datos de IMU)}
+\begin{itemize}
+    \item \textbf{Hardware:}
+    \begin{itemize}
+        \item El sistema de sensado de odometría debe poder medir aceleración lineal en 3 ejes a través de una IMU.
+        \item El sistema de sensado de odometría debe poder medir la cantidad de giros/pulsos en un intervalo de tiempo determinado que cada rueda realiza por separado mediante encoders.
+    \end{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe transformar las mediciones hechas por los sensores a unidades estándar del Sistema Internacional.
+        \item El software debe asignar una estampa de tiempo a cada paquete de lectura (IMU y encoders).
+        \item El software debe transmitir el paquete de lecturas hacia el Bloque de Cinemática.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Bloque de Comunicaciones}
+\begin{itemize}
+    \item \textbf{Hardware:}
+    \begin{itemize}
+        \item El sistema debe contar con un módulo de transceptor inalámbrico para establecer la comunicación con el dispositivo externo mediante un protocolo estándar (ej. Wi-Fi / Bluetooth).
+    \end{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe poder recibir los datos del Bloque de Mapeo y Estimación de Posición (matriz de ocupación y pose del robot).
+        \item El software debe procesar comandos externos provenientes del dispositivo externo (START, STOP).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Bloque de Tracción y Actuación}
+\begin{itemize}
+    \item \textbf{Hardware:}
+    \begin{itemize}
+        \item El sistema deberá contar con dos motores DC independientes para generar un movimiento diferencial.
+        \item El sistema deberá contar con una rueda loca (caster wheel) auxiliar para dar estabilidad mecánica al chasis sin limitar la maniobrabilidad.
+        \item El sistema deberá contar con un driver de potencia encargado de modular la energía provista por el subsistema de alimentación hacia los motores DC.
+    \end{itemize}
+
+\end{itemize}
+
+\subsubsection{Bloque de Procesamiento Central}
+\noindent\textbf{Bloque de Cinemática}
+\begin{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe procesar los paquetes de datos provenientes del Bloque de Sensado (encoders e IMU) para resolver el modelo cinemático diferencial e integrar la pose odométrica.
+        \item El software debe transmitir la pose odométrica calculada hacia el Bloque de Mapeo y Estimación de Posición.
+        \item El software debe resolver las ecuaciones de movimiento para convertir las consignas en velocidades objetivo individuales para la rueda izquierda y derecha.
+        \item El software debe ejecutar el algoritmo de control en lazo abierto para ajustar la velocidad de cada rueda en base a las señales de Modulación por Ancho de Pulsos (PWM) y las señales lógicas de sentido de giro destinadas al Bloque de Tracción y Actuación.
+    \end{itemize}
+\end{itemize}
+
+\noindent\textbf{Bloque de Mapeo y Estimación de Posición}
+\begin{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe inicializar y gestionar una grilla de ocupación 2D discreta de dimensiones y resolución espacial predefinidas ($N \times M$).
+        \item El software debe transformar las coordenadas polares de cada barrido $(r, \theta)$ a coordenadas cartesianas globales $(x, y)$ considerando la pose del robot.
+        \item El software debe implementar un algoritmo de trazado de rayos para actualizar el estado de la grilla de ocupación, identificando las celdas atravesadas como espacio libre y la celda de impacto como obstáculo.
+        \item El software debe calcular la probabilidad de ocupación de cada celda utilizando un modelo probabilístico incrementando la certeza ante múltiples mediciones consistentes.
+        \item El software debe transmitir la grilla de ocupación actualizada y la pose del robot al Bloque de Navegación Autónoma y al Bloque de Comunicaciones.
+    \end{itemize}
+\end{itemize}
+
+\noindent\textbf{Bloque de Navegación Autónoma}
+\begin{itemize}
+    \item \textbf{Software:}
+    \begin{itemize}
+        \item El software debe evaluar la matriz de ocupación recibida del Bloque de Mapeo y Estimación de Posición para identificar zonas no exploradas o caminos libres de obstáculos.
+        \item El software debe seleccionar el siguiente punto de destino o la dirección de avance libre dentro del mapa.
+        \item El software debe generar las consignas de velocidad lineal y angular requeridas para desplazar el robot hacia el destino seleccionado sin colisionar y enviarlas al Bloque de Cinemática.
+    \end{itemize}
+\end{itemize}
+
+\subsection{No Funcionales}
+
+\subsubsection{Rendimiento y Tiempos de Respuesta}
+\begin{itemize}
+    \item El Bloque de Mapeo y Estimación de Posición debe procesar y actualizar la matriz de ocupación a una tasa de al menos \textit{[FreqMinMapeo]}.
+    \item El Bloque de Comunicaciones debe enviar el estado del robot y el mapa al Dispositivo Externo a una tasa mínima de \textit{[FreqMinComunicaciones]}.
+    \item El software debe muestrear los contadores de las ruedas y las variables de la IMU a un intervalo de tiempo fijo $[T_s]$.
+\end{itemize}
+
+\subsubsection{Precisión y Calidad del Mapa}
+\begin{itemize}
+    \item La grilla del mapa de ocupación debe tener una resolución mínima de \textit{[ResolMinMapaOcup]}.
+    \item El sistema debe ser capaz de representar un entorno cerrado de una dimensión mínima de \textit{[DimMinMapaOcup]} y una dimensión máxima de \textit{[DimMaxMapaOcup]}.
+    \item El sistema debe detectar un objeto con una distancia mínima de \textit{[DistMinObj]} y una distancia máxima de \textit{[DistMaxObj]}.
+    \item El hardware de sensado de distancia debe poder medir distancia a obstáculos en un rango $[R_{\text{min}}]$ a $[R_{\text{max}}]$ con una determinada precisión.
+\end{itemize}
+
+\subsubsection{Seguridad y Robustez}
+\begin{itemize}
+    \item Ante una pérdida de enlace inalámbrico con el dispositivo externo superior a \textit{[MaxSegSinConex]}, el Bloque de Navegación debe detener totalmente la marcha de la plataforma.
+    \item El software debe gestionar la reconexión automática del enlace de comunicación en caso de pérdida temporal de señal.
+\end{itemize}
+
+\subsubsection{Autonomía y Energía}
+\begin{itemize}
+    \item El sistema de alimentación debe proveer energía para que el sistema sea capaz de operar por al menos \textit{[TiempoMinOperacion]}.
+\end{itemize}
+
+\subsubsection{Restricciones Físicas}
+\begin{itemize}
+    \item El robot debe desplazarse a una velocidad lineal regulable entre \textit{[VelocidadMin]} y \textit{[VelocidadMax]}.
+    \item El robot debe operar sobre pisos planos en interiores.
+    \item El robot debe operar en un entorno donde los obstáculos tengan un mínimo de altura \textit{[AlturaMinObstaculos]}.
+\end{itemize}
+% ==============================================================================
+% SECCIÓN 4: Cronograma Preliminar
+% ==============================================================================
+\section{Cronograma Preliminar}
+% Agregar en el preámbulo si no los tenés:
+% \usepackage{tcolorbox}
+% \usepackage{hyperref}
+
+\begin{tcolorbox}[colframe=green!60!black, colback=green!5!white, arc=2mm, title=\textbf{Cronograma (Google Sheets)}]
+  En el siguiente enlace podrá acceder al cronograma preliminar detallado:
+  \vspace{0.2cm}
+
+  \textbf{Enlace:} \href{https://docs.google.com/spreadsheets/d/1GAEeQZzlFaMgwrWLOeSPeK0nOuYQg2peXEuDazYDfk4/edit?usp=sharing}{Ver Planilla de Cronograma en Google Sheets}
+\end{tcolorbox}
+
+% ==============================================================================
+% SECCIÓN 5: División de Tareas del Grupo
+% ==============================================================================
+\section{División de Tareas del Grupo}
+
+\begin{tcolorbox}[colframe=green!60!black, colback=green!5!white, arc=2mm, title=\textbf{División de tareas (Google Sheets)}]
+  En el siguiente enlace podrá acceder a una plantilla con los modulos y requerimientos a realizar por integrante:
+  \vspace{0.2cm}
+
+  \textbf{Enlace:} \href{https://docs.google.com/spreadsheets/d/1GAEeQZzlFaMgwrWLOeSPeK0nOuYQg2peXEuDazYDfk4/edit?usp=sharing}{Ver Planilla de División de tareas en Google Sheets}
+\end{tcolorbox}
+
+% ==============================================================================
+% SECCIÓN 5: Bibliografía
+% ==============================================================================
+\section{Bibliografía}
+
+\begin{thebibliography}{99}
+
+\bibitem{siegwart}
+R. Siegwart, I. R. Nourbakhsh y D. Scaramuzza,
+\textit{Introduction to Autonomous Mobile Robots}, 2.a ed.
+Cambridge, MA, USA: MIT Press, 2011, cap. 3, pp. 89--108.
+URL: \url{https://www.ucg.ac.me/skladiste/blog_13268/objava_56689/fajlovi/Introduction%20to%20Autonomous%20Mobile%20Robots%20book.pdf}.
+
+\bibitem{thrun}
+S. Thrun, W. Burgard y D. Fox,
+\textit{Probabilistic Robotics}.
+Cambridge, MA, USA: MIT Press, 2005, cap. 5, 8, 9, 10.
+URL: \url{https://docs.ufpr.br/~danielsantos/ProbabilisticRobotics.pdf}.
+
+\bibitem{lidar}
+Homemade LIDAR sensor with Arduino \& Processing,
+URL: \url{https://www.youtube.com/watch?v=fQ2iB7qkrUg}.
+
+\bibitem{slam}
+How to Make an Autonomous Mapping Robot Using SLAM,
+URL: \url{https://www.youtube.com/watch?v=xqjVTE7QvOg}.
+
+\bibitem{autonomo}
+Autonomous Navigation playlist by MATLAB,
+URL: \url{https://www.youtube.com/watch?v=Fw8JQ5Q-ZwU&list=PLn8PRpmsu08rLRGrnF-S6TyGrmcA2X7kg}.
+
+
+
+\end{thebibliography}
+
+\end{document}

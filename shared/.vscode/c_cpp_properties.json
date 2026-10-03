@@ -6,10 +6,13 @@
                 "${workspaceFolder}/config",
                 "${workspaceFolder}/layer1_hal",
                 "${workspaceFolder}/layer2_drivers",
-                "${workspaceFolder}/layer3_robotics",
-                "${workspaceFolder}/layer4_app"
+                "${workspaceFolder}/layer3_app",
+                "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/dio_qspi/include",
+                "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/**"
             ],
-            "defines": [],
+            "defines": [
+                "BOARD_ESP32"
+            ],
             "compilerPath": "${env:USERPROFILE}/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc.exe",
             "cStandard": "c99",
             "cppStandard": "c++11",

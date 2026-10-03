@@ -1,11 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// En este proyecto (dentro de firmware_v3) la placa siempre es EDU-CIAA;
-// no hace falta el define condicional que usamos en el proyecto de ESP32.
-#define BOARD_EDUCIAA
+/* BOARD_ESP32 / BOARD_EDUCIAA las define el build, no este header. */
 
-#define SAMPLE_PERIOD_MS  30   // ~30Hz, igual que en la versión de ESP32
-#define IMU_I2C_ADDR      0x68 // Dirección I2C del MPU6050
+#define SAMPLE_PERIOD_MS  30
+#define IMU_I2C_ADDR      0x68
 
-#endif // CONFIG_H
+#define DIST_MIN_M  0.05f
+#define DIST_MAX_M  1.50f
+
+#endif /* CONFIG_H */

@@ -1,19 +1,25 @@
 {
     "folders": [
         {
-            "name": "🤖 ESP32 (Prototipo)",
+            "name": "ESP32 - Firmware activo",
             "path": "esp32"
         },
         {
-            "name": "🎓 EDU-CIAA (Final)",
+            "name": "EDU-CIAA - Port futuro",
             "path": "edu-ciaa"
         },
         {
-            "name": "🧠 Lógica Compartida",
+            "name": "Shared - Firmware portable",
             "path": "shared"
+        },
+        {
+            "name": "Processing - Visualización V0",
+            "path": "processing"
+        },
+        {
+            "name": "Documentación",
+            "path": "docs"
         }
     ],
-    "settings": {
-        "C_Cpp.default.compileCommands": "esp32/.pio/build/esp32dev/compile_commands.json"
-    }
+    "settings": {}
 }

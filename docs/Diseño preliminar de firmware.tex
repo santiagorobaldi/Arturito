@@ -1,0 +1,154 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{parskip}
+
+% Configuración de márgenes
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm, headheight=15pt}
+
+% Configuración de formato para pies de figuras
+\captionsetup{font=small, labelfont=bf}
+
+% Configuración de encabezados y pies de página
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small \textit{Arturito - Arquitectura de Firmware}}
+\lhead{\small \textit{Taller de Proyecto I - UNLP}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+\begin{document}
+
+% Desactivar división de palabras agresiva
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=1000
+\emergencystretch=3em
+
+% ==============================================================================
+% PORTADA / CARÁTULA
+% ==============================================================================
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1.5cm}
+
+    {\huge \bfseries Arturito\\[0.3em] Diseño de Arquitectura de Firmware \par}
+    \vspace{0.5cm}
+    {\Large \textit{Descomposición en Capas} \par}
+
+    \vfill
+
+    {\Large \bfseries Autores \par}
+    \vspace{0.6cm}
+    \begin{tabular}{c c}
+        \textbf{Joaquín Guzmán} & \textbf{Tomás Gamarra} \\
+        \small Legajo: 03751/4 & \small Legajo: 03852/8 \\[1.5em]
+        \textbf{Robaldi Santiago} & \textbf{Goncalves Federico} \\
+        \small Legajo: 03769/4 & \small Legajo: 03866/5
+    \end{tabular}
+
+    \vspace{1.5cm}
+    \hrule height 0.5pt
+    \vspace{0.4cm}
+
+    {\large \textbf{Universidad Nacional de La Plata}} \par
+    \vspace{0.15cm}
+    {Facultad de Ingeniería -- Departamento de Electrotecnia} \par
+    \vspace{0.15cm}
+    {\small Asignatura: Taller de Proyecto I} \par
+    \vspace{0.3cm}
+    {\small \today}
+\end{titlepage}
+
+\newpage
+
+% ==============================================================================
+% SECCIÓN 1: INTRODUCCIÓN Y JUSTIFICACIÓN ARQUITECTÓNICA
+% ==============================================================================
+\section{Introducción}
+
+El propósito fundamental de este documento es especificar la arquitectura de software e ingeniería de firmware para el rover autónomo \textit{'Arturito'}.
+
+El diseño del firmware para un sistema embebido robótico representa un desafío crítico: se deben ejecutar de manera concurrente tareas de control determinista en tiempo real junto con algoritmos pesados de procesamiento espacial y servicios no deterministas de comunicación inalámbrica.
+
+Para evitar los cuellos de botella característicos de las arquitecturas tradicionales basadas en bucles secuenciales infinitos (\textit{Super-Loops}), se ha seleccionado una \textbf{Arquitectura Jerárquica en Capas} gobernada por el kernel de tiempo real \textbf{FreeRTOS} sobre la plataforma EDU-CIAA.
+
+\subsection{Justificación de la Arquitectura}
+
+\begin{itemize}
+    \item \textbf{Aislamiento de Responsabilidades:} Ningún algoritmo relacionado con la logica de la aplicacion debe acceder directamente a registros del microcontrolador ni manipular periféricos físicos. Cada una de las capas implementan modulos especificos de software para que las demas capas puedan acceder a la informacion que necesitan mediante las interfaces provistas.
+    \item \textbf{Portabilidad del Firmware:} La lógica algorítmica de la aplicacion es completamente independiente del hardware en el que se implemente. Ante un cambio de plataforma de procesamiento, únicamente debe adaptarse la capa correspondiente, comunmente llamada Capa de Abstracción de Hardware (HAL).
+    \item \textbf{Verificación y Pruebas Unitarias (\textit{Unit Testing}):} Permite simular los drivers mediante objetos falsos (\textit{mocks}) en una PC sin depender de la presencia física de la placa o los sensores.
+\end{itemize}
+
+---
+
+% ==============================================================================
+% SECCIÓN 2: DESCOMPOSICIÓN EN CAPAS DE SOFTWARE
+% ==============================================================================
+\newpage
+\section{Descomposición en Capas de Software}
+
+El software integrado del sistema se divide formalmente en tres capas ordenadas por su nivel de abstracción.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{capas.png}
+    \caption{Estructura jerárquica de la arquitectura en capas para el firmware de Arturito.}
+    \label{fig:capas_software}
+\end{figure}
+
+\subsection{Capa 1: Abstracción de Hardware (HAL)}
+Es la capa mas cercana al hardware. Mantiene contacto directo con los registros del procesador seleccionado para la compilacion. Permite que la implementacion sea portable entre diferentes arquitecturas, inicialmente con soporte para el procesador NXP LPC4337 (EDU-CIAA) y para ESP32.
+\begin{itemize}
+    \item \textbf{Responsabilidad:} Inicializar relojes de sistema, temporizadores de captura, puertos I2C, UART, PWM e interrupciones de hardware.
+   \item \textbf{Ejemplos de interfaz expuesta:}\\
+    \texttt{hal\_gpio\_write()},
+    \texttt{hal\_i2c\_read\_bytes()},
+    \texttt{hal\_pwm\_set\_duty()}, etc.
+\end{itemize}
+
+\subsection{Capa 2: Drivers de Dispositivo}
+Actúa como traductor entre el protocolo físico expuesto por la Capa HAL y las magnitudes físicas de los perifericos externos.
+\begin{itemize}
+    \item \textbf{Responsabilidad:} Conocer la física y protocolo específico de cada periférico (Driver Puente H DRV8833, Encoders absolutos AS5600, Sensor TOF VL53L0X y MPU-6050). Convierte cuentas crudas de hardware a magnitudes estándar del SI (metros, radianes, rad/s, porcentaje de potencia).
+    \item \textbf{Ejemplos de interfaz expuesta:}\\
+\texttt{driver\_drv8833\_set\_power()},
+\texttt{driver\_as5600\_get\_angles()},
+\texttt{driver\_mpu6050\_get\_gyro\_z()}, etc.
+\end{itemize}
+
+\subsection{Capa 3: Aplicación}
+Contiene toda la logica de negocio del proyecto.
+\begin{itemize}
+    \item \textbf{Responsabilidad:} Resolver el modelo de cinemática diferencial directa e integrar la Pose Odométrica $q = [x, y, \theta]^T$ combinando encoders e IMU. Gestionar la matriz de la Grilla de Ocupación 2D. Algoritmos para la Navegacion Autonoma del robot.
+    \item \textbf{Ejemplos de interfaz expuesta:}\\
+\texttt{odometry\_get\_pose()},
+\texttt{mapping\_update\_map()},
+\texttt{navigation\_get\_path()}, etc.
+\end{itemize}
+
+
+
+
+
+\end{document}

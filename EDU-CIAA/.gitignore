@@ -60,3 +60,4 @@ out/
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+!.vscode/c_cpp_properties.json

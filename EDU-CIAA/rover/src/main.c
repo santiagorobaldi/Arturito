@@ -1,31 +1,22 @@
 #include "sapi.h"
-#include "hal_sensors.h"
-#include "driver_mpu6050.h"
-#include "driver_distancia.h"
-#include "config.h"
+#include "app_runtime.h"
+#include "hal_telemetry.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* FUNCION PRINCIPAL, PUNTO DE ENTRADA AL PROGRAMA LUEGO DE RESET. */
 int main(void) {
   boardConfig();
-  printf("Arranque rover: boardConfig OK\r\n");
+  if (!app_runtime_start()) {
+    hal_telemetry_write("# ERROR: no se pudo crear la tarea de inicio.");
+    while (TRUE) {
+    }
+  }
 
-  hal_sensors_init();
-  printf("Arranque rover: inicializacion de sensores OK\r\n");
-  mpu6050_calibrate();
-  printf("Arranque rover: calibracion MPU OK\r\n");
-  distancia_init();
-  printf("Arranque rover: entrando al loop\r\n");
-
+  vTaskStartScheduler();
+  hal_telemetry_write("# ERROR: FreeRTOS no pudo iniciar el scheduler.");
   while (TRUE) {
-    mpu6050_update();
-
-    float theta_rad = mpu6050_get_theta_rad();
-    float distancia_cm = distancia_get_cm();
-
-    // Mismo formato "theta,distancia" que usa el visualizador de Processing.
-    printf("%f,%f\r\n", theta_rad, distancia_cm);
-
-    delay(SAMPLE_PERIOD_MS);
   }
 
   return 0;
