@@ -287,7 +287,17 @@
       "version": 5
     },
     "net_colors": null,
-    "netclass_assignments": null,
+    "netclass_assignments": {
+      "/Vmot+": [
+        "+7,4V"
+      ],
+      "Net-(BT3-+)": [
+        "+3,7V"
+      ],
+      "unconnected-(U6-GND-Pad3)": [
+        "GND"
+      ]
+    },
     "netclass_patterns": []
   },
   "pcbnew": {
@@ -431,7 +441,7 @@
         "uuid": "ed61f3a1-1b5f-4550-a57c-63e7bb03ce24"
       }
     ],
-    "used_designators": "M1-2,U1-6,#PWR1,BT1-3",
+    "used_designators": "M1-2,U1-8,#PWR1,BT1-3",
     "variants": []
   },
   "sheets": [
