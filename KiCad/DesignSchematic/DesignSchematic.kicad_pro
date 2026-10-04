@@ -294,6 +294,18 @@
       "Net-(BT3-+)": [
         "+3,7V"
       ],
+      "unconnected-(BT3---Pad2)": [
+        "GND"
+      ],
+      "unconnected-(U4-IN--Pad2)": [
+        "GND"
+      ],
+      "unconnected-(U4-OUT+-Pad3)": [
+        "6,5V"
+      ],
+      "unconnected-(U4-OUT--Pad4)": [
+        "GND"
+      ],
       "unconnected-(U6-GND-Pad3)": [
         "GND"
       ]
