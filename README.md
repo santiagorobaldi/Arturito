@@ -1,45 +1,56 @@
 # Arturito
 
-Workspace del rover diferencial. El alcance vigente y las decisiones de ingenieria estan en [docs/informe_avance.tex](docs/informe_avance.tex).
+Arturito es un proyecto desarrollado para la materia "Taller de Proyecto I" de la Facultad de Ingeniería de la Universidad Nacional de La Plata (UNLP). Surge de la idea de desarrollar un robot capaz de explorar un entorno desconocido y decidir cómo desplazarse a partir de lo que percibe, sin depender de un recorrido marcado en el piso ni de la intervención continua de un operador.
 
-## Estructura
+El proyecto propone un rover de tracción diferencial que combine mediciones de distancia, información inercial y giro de las ruedas para estimar su posición y construir un mapa de ocupación 2D del entorno el cual pueda visualizarse en un dispositivo externo, asi como tambien que sea capaz de navegar el entorno de manera autonoma para la generacion completa del mapa. 
 
-- `docs/`: documentacion del proyecto. `ARTURITO MAIN.tex` se conserva como entrega congelada; el informe de avance es la referencia viva.
-- `shared/config/`: constantes comunes de compilacion y sensores.
-- `shared/layer1_hal/`: contratos C de la HAL, independientes de la placa.
-- `shared/layer2_drivers/`: drivers compartidos, sin dependencias de Arduino o SAPI.
-- `shared/layer3_app/`: runtime FreeRTOS compartido para adquirir, actualizar drivers y publicar; pose/mapa siguen pendientes.
-- `esp32/src/layer1_hal/`: implementaciones ESP32 de tiempo, IMU y ToF.
-- `esp32/src/tests/`: programas de diagnostico aislado para IMU y ToF.
-- `processing/`: visualizacion polar V0 por serie.
-- `edu-ciaa/`: HAL y adaptador de arranque EDU-CIAA. Usa el runtime y drivers compartidos; compila, falta validar sensores en la placa.
+## Arquitectura de software
 
-ESP32 y EDU-CIAA comparten las tres tareas FreeRTOS. Arduino ya inicia su scheduler antes de `setup()`; `main()` de CIAA crea el bootstrap común y luego inicia el scheduler. La inicializacion/calibracion ocurre dentro del bootstrap, con el scheduler activo.
+El firmware se organiza en tres capas: **Application → Device Drivers → HAL**. La aplicación reúne la lógica del robot; los drivers ofrecen el tratamiento de sensores y actuadores; y la HAL concentra el acceso al hardware mediante implementaciones específicas para cada plataforma. Esta separación permite reutilizar la lógica compartida y probar los módulos de manera independiente.
 
-## ESP32
+El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que ESP32 se utiliza para validar sensores y firmware compartido.
 
-Desde `esp32/`, el entorno predeterminado `esp32dev` es el firmware completo:
+El documento [software-architecture.md](docs/software-architecture.md) desarrolla las responsabilidades de cada capa, la justificación de esta organización y los contratos de la implementación actual.
 
-```sh
-pio run
-pio run -t upload
-```
+## Hardware principal
 
-Los perfiles de diagnostico se seleccionan de forma explicita:
+- MPU6050 para medición inercial.
+- VL53L0X para distancia por tiempo de vuelo.
+- AS5600 como encoder absoluto de cada rueda.
+- DRV8833 para la etapa de potencia de los motores.
 
-```sh
-pio run -e imu_only
-pio run -e tof_only
-pio run -e imu_only -t upload
-pio run -e tof_only -t upload
-```
+Esta lista describe la selección del proyecto; el avance de integración está en [development-status.md](docs/development-status.md).
 
-Para volver a cargar el firmware completo, usar `pio run -t upload` sin `-e`.
+## Organización del repositorio
 
-El firmware EDU-CIAA se compila desde la raiz con `make -C edu-ciaa`. Este comando solo compila; no carga la placa.
+| Carpeta | Contenido |
+| --- | --- |
+| `shared/config/` | Configuración general. |
+| `shared/layer1_hal/` | Contratos de HAL. |
+| `shared/layer2_drivers/` | Drivers para la utilización de sensores. |
+| `shared/layer3_app/` | Lógica compartida de la aplicación y coordinación de las tareas de lectura, procesamiento y envío de datos con FreeRTOS (Runtime). |
+| `EDU-CIAA/` | Configuración de compilación, bibliotecas, inicialización de la aplicación y acceso al hardware de EDU-CIAA. |
+| `ESP32/` | Proyecto PlatformIO con Arduino, inicialización de la aplicación y acceso al hardware de ESP32. |
+| `Processing/` | Visualización de orientación y lecturas de distancia. |
+| `docs/` | Documentación técnica, decisiones e informes académicos. |
 
-## Protocolo V0
+`Arturito.code-workspace` reúne estas carpetas para trabajar en el proyecto. En sistemas sensibles a mayúsculas deben respetarse los nombres reales indicados arriba.
 
-A 115200 baud: lineas de log prefijadas con `#` y muestras CSV `theta_rad,distancia_m`. Processing consume ese contrato.
+## Cómo empezar
 
-Los sketches usan `COM3` por defecto. En otra PC, cambiar `portName` al puerto serie asignado al ESP32.
+Leé primero la [descripción del sistema](docs/system-overview.md) y luego la [arquitectura de software](docs/software-architecture.md). Para preparar las herramientas, compilar y ejecutar los programas de prueba, seguí [build-and-run.md](docs/build-and-run.md).
+
+## Documentación
+
+- [Sistema](docs/system-overview.md): bloques funcionales y flujo de información.
+- [Software](docs/software-architecture.md): responsabilidades, interfaces y concurrencia.
+- [Hardware](docs/hardware.md): componentes, conexiones conocidas y datos por completar.
+- [Requisitos](docs/requirements.md): trazabilidad y criterios de verificación.
+- [Build y ejecución](docs/build-and-run.md): procedimientos y protocolo serie.
+- [Estado de desarrollo](docs/development-status.md): implementación, antecedentes de validación y discrepancias.
+- [Decisiones de arquitectura](docs/decisions/README.md): acuerdos y sus consecuencias.
+
+
+## Autores
+
+Joaquín Guzmán, Tomás Gamarra, Santiago Robaldi y Federico Goncalves.
