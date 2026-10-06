@@ -8,7 +8,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "1.0"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -287,29 +287,7 @@
       "version": 5
     },
     "net_colors": null,
-    "netclass_assignments": {
-      "/Vmot+": [
-        "+7,4V"
-      ],
-      "Net-(BT3-+)": [
-        "+3,7V"
-      ],
-      "unconnected-(BT3---Pad2)": [
-        "GND"
-      ],
-      "unconnected-(U4-IN--Pad2)": [
-        "GND"
-      ],
-      "unconnected-(U4-OUT+-Pad3)": [
-        "6,5V"
-      ],
-      "unconnected-(U4-OUT--Pad4)": [
-        "GND"
-      ],
-      "unconnected-(U6-GND-Pad3)": [
-        "GND"
-      ]
-    },
+    "netclass_assignments": null,
     "netclass_patterns": []
   },
   "pcbnew": {
@@ -453,7 +431,7 @@
         "uuid": "ed61f3a1-1b5f-4550-a57c-63e7bb03ce24"
       }
     ],
-    "used_designators": "M1-2,U1-8,#PWR1,BT1-3",
+    "used_designators": "M1-2,U1-7,#PWR1,BT1-3,R1-4",
     "variants": []
   },
   "sheets": [
