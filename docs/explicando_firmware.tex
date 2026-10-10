@@ -1,610 +1,169 @@
-\documentclass[11pt,a4paper]{article}
+% Sección incluida desde ARTURITO MAIN.tex con \input{explicando_firmware.tex}.
+% Este archivo contiene un fragmento del informe, no un documento independiente.
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[spanish]{babel}
-\usepackage[a4paper,margin=2.3cm]{geometry}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{enumitem}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{hyperref}
-\usepackage{parskip}
+% =============================================================================
+\section{Diseño del firmware, simulación y depuración}
+\label{sec:diseno-firmware}
+% =============================================================================
 
-\hypersetup{
-  colorlinks=true,
-  linkcolor=black,
-  urlcolor=blue!45!black,
-  pdftitle={Arturito --- Explicacion del firmware},
-  pdfauthor={Equipo Arturito}
-}
+\subsection{Arquitectura propuesta y criterios de diseño}
 
-\urlstyle{tt}
-\setlist{itemsep=2pt,topsep=4pt}
-\lstset{
-  basicstyle=\ttfamily\small,
-  columns=fullflexible,
-  keepspaces=true,
-  breaklines=true,
-  frame=single,
-  rulecolor=\color{black!25}
-}
+El firmware se diseñará para integrar la percepción, la estimación de la pose,
+la construcción del mapa y el control del rover diferencial. La arquitectura
+será portable entre plataformas: el desarrollo y la validación funcional se
+realizarán primero sobre ESP32; luego se portará a EDU-CIAA reutilizando la
+aplicación y los drivers compartidos, y reemplazando la capa de adaptación al
+hardware.
 
-\newcommand{\ruta}[1]{\path{#1}}
-\newcommand{\capa}[1]{\textbf{Capa #1}}
-
-\title{Arturito --- Explicacion del firmware\\
-       \large Guia conceptual del workspace, los modulos y el flujo de datos}
-\author{Equipo Arturito}
-\date{3 de octubre de 2026}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-Este documento explica como esta organizado y como funciona el firmware del
-rover Arturito. Esta escrito para alguien que empieza desde cero: presenta el
-workspace, las tres capas de software, las diferencias entre ESP32 y EDU-CIAA,
-el runtime FreeRTOS compartido, el recorrido de una muestra desde los sensores
-hasta Processing y las formas de compilar cada variante.
-
-La explicacion describe el codigo actual. ESP32 ya fue probado con Processing.
-La version EDU-CIAA compila y enlaza, pero todavia necesita una prueba fisica de
-sensores en la placa. El diseno academico original se conserva por separado;
-las decisiones vigentes se registran en \ruta{informe_avance.tex}.
-\end{abstract}
-
-\tableofcontents
-\newpage
-
-%==============================================================================
-\section{Como leer esta guia}
-%==============================================================================
-
-El firmware puede entenderse como una cadena de responsabilidades:
+Se adopta una organización en tres capas para separar las operaciones propias
+de cada placa de los algoritmos del robot. Esta separación permite probar los
+módulos por partes, mantener una única implementación de la lógica del rover y
+evitar que las decisiones de una placa condicionen el código común. La
+arquitectura de ejecución se organizará en tareas periódicas controladas por
+tiempo y planificadas por FreeRTOS. El scheduler será apropiativo y asignará el
+procesador según las prioridades; las tareas se bloquearán durante sus
+intervalos de espera. Por lo tanto, el modelo es de tareas periódicas con
+planificación apropiativa, no un superloop cooperativo. Se utilizará FreeRTOS
+en ambas plataformas.
 
 \begin{center}
-Sensor fisico $\rightarrow$ HAL de la placa $\rightarrow$ driver compartido
-$\rightarrow$ tareas de aplicacion $\rightarrow$ HAL de telemetria
-$\rightarrow$ USB/UART $\rightarrow$ Processing
+\fbox{\parbox{0.96\linewidth}{\centering
+Sensores y actuadores $\leftrightarrow$ Capa 1: HAL de la placa
+$\leftrightarrow$ Capa 2: drivers de sensores y motores
+$\leftrightarrow$ Capa 3: adquisición, pose, mapa y navegación
+$\leftrightarrow$ comunicaciones $\leftrightarrow$ interfaz de PC}}
 \end{center}
 
-Cada flecha representa una interfaz. El modulo de la izquierda ofrece una
-funcion; el de la derecha la llama sin necesitar conocer sus detalles internos.
-La meta es que los algoritmos que no dependen del hardware se escriban una sola
-vez y que cada placa implemente unicamente los accesos fisicos que necesita.
+El modelo elegido prioriza interfaces estables entre capas, unidades físicas
+comunes y un runtime compartido. El período de muestreo y las prioridades se
+ajustarán mediante mediciones de carga y latencia cuando se integren los
+encoders, la construcción del mapa y el control de motores.
 
-Las palabras ``compartido'' y ``comun'' significan que el codigo se usa al
-compilar para ambas placas. No significan que los perifericos internos de ESP32
-y EDU-CIAA sean iguales. El MPU6050, el VL53L0X, las unidades y el protocolo de
-la aplicacion son los mismos; las bibliotecas de bajo nivel y el arranque no.
-
-%==============================================================================
-\section{Que hace el firmware hoy}
-%==============================================================================
-
-La version actual realiza un ciclo de percepcion V0:
+\subsection{Pseudocódigo del funcionamiento previsto}
 
 \begin{enumerate}
-  \item Inicializa la IMU MPU6050 y el sensor de distancia VL53L0X.
-  \item Lee la velocidad angular del eje Z de la IMU y una distancia del ToF.
-  \item Corrige e integra la velocidad angular para estimar el angulo $\theta$.
-  \item Acepta distancias entre 0.05 m y 1.50 m; el resto se representa como
-        $-1$ (medida invalida o sensor no disponible).
-  \item Publica una linea CSV con $\theta$ en radianes y distancia en metros.
-  \item Processing representa la orientacion y acumula puntos del ToF mientras
-        el robot gira en el lugar.
+  \item Configurar la placa, el scheduler, el canal de telemetría y el estado
+        inicial seguro de los actuadores.
+  \item Inicializar la IMU MPU6050, el sensor ToF VL53L0X, los encoders AS5600
+        y el puente H DRV8833. Informar qué periféricos no están disponibles;
+        no habilitar el movimiento si falta una condición necesaria para el
+        control seguro.
+  \item Calibrar los sensores que lo requieran y poner en cero la pose inicial
+        $(x,y,\theta)$. Preparar la representación del mapa correspondiente:
+        acumulación polar para V0 o grilla de ocupación para V1.
+  \item Iniciar las tareas periódicas de FreeRTOS para adquisición,
+        procesamiento de la aplicación y publicación/recepción de datos.
+  \item En cada ciclo de adquisición, leer gyro Z, distancia ToF y ángulos de
+        ambas ruedas; asociar las muestras con el instante de lectura y
+        entregarlas a la aplicación.
+  \item Procesar las muestras: corregir el gyro, estimar el desplazamiento de
+        cada rueda, actualizar la pose del rover y validar la distancia.
+  \item Actualizar el mapa con el rayo medido por el ToF y la pose vigente.
+        En V0 se acumularán mediciones en un plot polar suponiendo que el rover
+        gira en el origen; en V1 se actualizará una grilla de ocupación 2D en
+        coordenadas mundo usando $(x,y,\theta)$.
+  \item Según el modo seleccionado, obtener la consigna desde navegación
+        autónoma o desde teleoperación, convertirla en velocidades de rueda y
+        comandar el DRV8833 mediante la HAL. Ante una condición de parada o una
+        pérdida de comunicación que supere el límite definido, detener los
+        motores.
+  \item Publicar pose, estado y datos del mapa para la interfaz externa;
+        repetir el ciclo mientras el sistema esté activo.
 \end{enumerate}
 
-No hay todavia odometria XY, encoders, motores, navegacion ni grilla de
-ocupacion. El angulo proviene de integrar el giroscopio, por lo que deriva con
-el tiempo. Esa limitacion es conocida y no equivale a un sistema SLAM.
+La navegación autónoma, el control de motores, la integración de AS5600 y la
+grilla V1 forman parte del desarrollo previsto; no se presentan como
+funcionalidades ya verificadas. SLAM permanece como objetivo secundario: la
+primera grilla se construirá con la pose estimada por odometría.
 
-%==============================================================================
-\section{Mapa del workspace}
-%==============================================================================
-
-La raiz del repositorio es \ruta{C:/Arturito}. El archivo
-\ruta{Arturito.code-workspace} abre cinco carpetas en VS Code:
-
-\begin{lstlisting}
-Arturito/
-  Arturito.code-workspace
-  README.md
-  docs/
-    ARTURITO MAIN.tex
-    CONTEXTO_PROYECTO_ROVER.tex
-    Diseño preliminar de firmware.tex
-    informe_avance.tex
-    explicando_firmware.tex
-  shared/
-            config/config.h
-    layer1_hal/
-                  hal_imu.h
-                  hal_time.h
-                  hal_tof.h
-                  hal_telemetry.h
-    layer2_drivers/
-                  driver_mpu6050.c/.h
-                  driver_distancia.c/.h
-    layer3_app/
-                  app_runtime.c/.h
-  esp32/
-    platformio.ini
-    src/
-      main.cpp
-      layer1_hal/
-                        hal_imu_esp32.cpp
-                        hal_time_esp32.cpp
-                        hal_tof_esp32.cpp
-                        hal_telemetry_esp32.cpp
-      tests/
-                        imu_only.cpp
-                        tof_only.cpp
-  edu-ciaa/
-            Makefile, board.mk y program.mk
-    rover/
-      config.mk
-      inc/
-                        FreeRTOSConfig.h
-      src/
-        main.c
-        layer1_hal/
-                              hal_imu_educiaa.cpp
-                              hal_time_educiaa.cpp
-                              hal_tof_educiaa.cpp
-                              hal_telemetry_educiaa.cpp
-  processing/
-    flecha/
-    flecha_y_mapa_v1/
-\end{lstlisting}
+\subsection{Módulos organizados en capas}
 
 \begin{description}
-  \item[\ruta{docs/}] Documentos del equipo. \ruta{informe_avance.tex} es la
-        referencia viva de decisiones y estado; MAIN se conserva como entrega
-        academica congelada.
-  \item[\ruta{shared/}] Contratos HAL, drivers y logica de aplicacion que no
-        deben depender de Arduino ni de sAPI.
-  \item[\ruta{esp32/}] Firmware PlatformIO para ESP32, sus HAL de placa y
-        programas de diagnostico independientes.
-  \item[\ruta{edu-ciaa/}] Proyecto Make/LPCOpen/sAPI para EDU-CIAA. Adapta la
-        misma aplicacion y drivers a su arquitectura.
-  \item[\ruta{processing/}] Sketches que reciben el CSV por puerto serie y lo
-        visualizan.
+  \item[Capa 1 --- HAL de periféricos.] Tendrá una interfaz común y una
+        implementación por placa. Inicializará los periféricos y entregará
+        magnitudes en unidades acordadas: velocidad angular en rad/s,
+        distancia en metros, ángulos de rueda y señales de mando para motores.
+        Incluirá HAL para tiempo, MPU6050, VL53L0X, AS5600, GPIO/PWM del DRV8833
+        y telemetría. No realizará integración de pose, mapeo ni navegación.
+  \item[Capa 2 --- drivers compartidos.] Interpretará las señales físicas de
+        cada dispositivo y entregará datos listos para la aplicación. Incluirá
+        la calibración y corrección del giroscopio, validación de distancia,
+        lectura y conversión de ángulos AS5600, y generación de señales de
+        control para el DRV8833. Sus interfaces no dependerán de Arduino ni de
+        SAPI.
+  \item[Capa 3 --- aplicación.] Coordinará las tareas FreeRTOS y contendrá la
+        lógica propia del rover: adquisición y sincronización de muestras,
+        cinemática diferencial y estimación de pose, actualización de la grilla
+        de ocupación, selección de consignas según el modo y distribución de
+        datos a la navegación y las comunicaciones. Los algoritmos de mapa y
+        navegación no se ubicarán en la HAL ni en los drivers de dispositivos.
 \end{description}
 
-Las carpetas \ruta{layer3\_robotics/} y \ruta{layer4\_app/} pertenecian a una
-organizacion anterior y fueron retiradas. La arquitectura acordada tiene tres
-capas; su carpeta de aplicacion es \ruta{shared/layer3\_app/}.
+El runtime común organizará el trabajo en tareas de adquisición, procesamiento
+de drivers/aplicación y publicación de telemetría. La división interna de la
+tarea de procesamiento podrá refinarse al medir los tiempos de ejecución; el
+contrato entre capas se mantendrá igual para las dos placas.
 
-%==============================================================================
-\section{Las tres capas}
-%==============================================================================
-
-\subsection{Capa 1: HAL de perifericos}
-
-HAL significa \emph{Hardware Abstraction Layer}, o capa de abstraccion de
-hardware. Convierte operaciones de una placa concreta en funciones estables
-que el resto del programa puede usar.
-
-Los contratos publicos viven en \ruta{shared/layer1\_hal/}. Cada placa tiene
-una implementacion con el mismo nombre de funcion:
+\subsection{Bibliotecas y herramientas externas previstas}
 
 \begin{itemize}
-  \item \texttt{hal\_imu\_init()} inicializa la IMU y devuelve si pudo hacerlo.
-  \item \texttt{hal\_imu\_get\_gyro\_z\_rads()} devuelve la velocidad angular
-        Z en radianes por segundo.
-  \item \texttt{hal\_tof\_init()} inicializa el sensor ToF.
-  \item \texttt{hal\_tof\_get\_distance\_m()} devuelve metros, o $-1$ si la
-        medida no esta disponible.
-  \item \texttt{hal\_millis()} y \texttt{hal\_delay()} ofrecen tiempo y espera
-        sin que los drivers llamen directamente a la API de una placa.
-  \item \texttt{hal\_telemetry\_write()} envia una linea de texto por el canal
-        serie de la placa.
+  \item \textbf{ESP32:} framework Arduino y su integración con FreeRTOS;
+        \texttt{Wire} para I2C; biblioteca Adafruit \texttt{VL53L0X} para el
+        sensor ToF. Para el transporte inalámbrico se utilizará la capacidad
+        disponible en ESP32 una vez elegido el protocolo de enlace.
+  \item \textbf{EDU-CIAA:} LPCOpen y SAPI para la placa y sus periféricos, más
+        el kernel FreeRTOS configurado en el proyecto. La HAL de ToF implementa
+        el acceso I2C por registros y no utiliza la biblioteca Adafruit.
+  \item \textbf{Código del proyecto:} contratos HAL, drivers de MPU6050,
+        VL53L0X, AS5600 y DRV8833, y módulos de pose, mapa y navegación. Los
+        drivers de AS5600 y DRV8833 se incorporarán al contar con el hardware y
+        sus interfaces acordadas.
+  \item \textbf{PC:} Processing y su biblioteca Serial se utilizan en V0 para
+        visualizar las muestras recibidas. La interfaz objetivo mostrará la
+        pose del rover y el mapa actualizado.
 \end{itemize}
 
-La HAL no calcula el angulo del robot, no filtra la distancia y no arma el
-mapa. Su responsabilidad es inicializar y leer el hardware, devolviendo
-magnitudes con unidades acordadas.
-
-\subsection{Capa 2: drivers}
-
-Los drivers estan en \ruta{shared/layer2\_drivers/}. Conocen el significado
-fisico de las muestras, pero usan solamente los contratos HAL.
-
-\begin{itemize}
-  \item \texttt{driver\_mpu6050.c} calibra el offset del giroscopio, aplica una
-        zona muerta y convierte las muestras en un angulo integrado.
-  \item \texttt{driver\_distancia.c} valida que una distancia este dentro del
-        rango de trabajo del proyecto.
-\end{itemize}
-
-Al estar escritos contra las interfaces compartidas, estos drivers se compilan
-sin duplicarlos para ESP32 y EDU-CIAA. La HAL correspondiente queda enlazada
-por el build de cada placa.
-
-\subsection{Capa 3: aplicacion compartida}
-
-\ruta{shared/layer3\_app/app\_runtime.c} implementa el runtime FreeRTOS comun:
-la inicializacion del sistema y las tareas de adquisicion, actualizacion de
-drivers y publicacion. No accede a registros I2C ni llama directamente a
-Arduino o sAPI.
-
-La capa 3 todavia no implementa cinematica diferencial, pose XY, grilla ni
-navegacion. Esas funciones dependen de encoders y decisiones de V1.
-
-%==============================================================================
-\section{Contratos compartidos}
-%==============================================================================
-
-\subsection{Configuracion comun}
-
-\ruta{shared/config/config.h} define valores que deben coincidir en ambos
-builds:
-
-\begin{itemize}
-  \item \texttt{SAMPLE\_PERIOD\_MS = 30}: periodo nominal de las tareas ciclicas.
-  \item \texttt{IMU\_I2C\_ADDR = 0x68}: direccion I2C del MPU6050.
-  \item \texttt{DIST\_MIN\_M = 0.05} y \texttt{DIST\_MAX\_M = 1.50}: limites
-        aceptados para distancia.
-\end{itemize}
-
-El build define la placa con \texttt{BOARD\_ESP32} o
-\texttt{BOARD\_EDUCIAA}. El header comun no elige hardware por su cuenta.
-
-\subsection{Por que los headers tienen \texttt{extern "C"}}
-
-Los contratos HAL y drivers estan escritos para poder llamarse desde C y C++.
-Los headers rodean sus declaraciones con \texttt{extern "C"} cuando los incluye
-C++, evitando que el compilador cambie los nombres de las funciones (\emph{name
-mangling}). Asi, el codigo C compartido puede enlazarse con las implementaciones
-HAL escritas en C++.
-
-\subsection{Header agrupador}
-
-\ruta{shared/layer1\_hal/hal\_sensors.h} incluye los headers separados de tiempo,
-IMU y ToF. Es un header agrupador de compatibilidad; las funciones nuevas
-incluyen directamente el contrato especifico que necesitan.
-
-%==============================================================================
-\section{Que hace cada modulo}
-%==============================================================================
-
-\subsection{Runtime: \texttt{app\_runtime.c}}
-
-\begin{description}
-  \item[\texttt{app\_runtime\_start()}] Inicializa el estado en valores seguros
-        y crea la tarea bootstrap. Devuelve si FreeRTOS pudo crearla; no ejecuta
-        la inicializacion de sensores directamente.
-  \item[\texttt{task\_start\_application()}] Publica un encabezado de protocolo,
-        inicializa IMU y ToF por separado, calibra el MPU6050, crea mutexes y
-        luego crea las tres tareas ciclicas. Si la IMU falla, se detiene el
-        runtime de sensores; si falla el ToF, se continua con distancia $-1$.
-  \item[\texttt{task\_acquire()}] Lee gyro Z y distancia cruda por HAL y guarda
-        una instantanea protegida por mutex. Espera el periodo nominal.
-  \item[\texttt{task\_update\_drivers()}] Copia la ultima muestra cruda, integra
-        gyro para obtener $\theta$, valida la distancia y guarda el estado de
-        aplicacion bajo un segundo mutex.
-  \item[\texttt{task\_publish()}] Copia el estado, forma
-        \texttt{theta,distancia} con cuatro decimales y lo envia mediante la HAL
-        de telemetria. Los retardos son nominales; no constituyen sincronizacion
-        exacta de fase.
-  \item[\texttt{stack\_depth\_from\_bytes()}] Recibe tamanos conceptuales en
-        bytes. En ESP32 conserva ese valor, porque su port de FreeRTOS usa bytes;
-        en CIAA lo convierte a palabras \texttt{StackType\_t}, como requiere el
-        port estandar ARM.
-  \item[\texttt{delete\_task\_if\_created()}] Libera tareas ya creadas si la
-        creacion de una tarea posterior falla.
-\end{description}
-
-Los mutexes protegen las copias compartidas: el lector no observa una estructura
-mientras otra tarea la esta reemplazando. No protegen los buses I2C como un
-recurso compartido general; la aplicacion actual asigna las lecturas al flujo
-de adquisicion.
-
-\subsection{Driver MPU6050}
-
-\begin{description}
-  \item[\texttt{mpu6050\_init()}] Actualmente no hace trabajo: la
-        inicializacion fisica ya la hizo \texttt{hal\_imu\_init()}.
-  \item[\texttt{mpu6050\_calibrate()}] Espera que el robot quede quieto,
-        promedia 1000 lecturas separadas por 2 ms para estimar el offset, y
-        reinicia el estado de integracion.
-  \item[\texttt{mpu6050\_update\_gyro(gz)}] Resta el offset, elimina velocidades
-        dentro de $\pm1^\circ$/s, calcula un promedio trapezoidal entre muestras
-        y acumula el angulo con el tiempo transcurrido.
-  \item[\texttt{mpu6050\_update()}] Conveniencia para un super-loop o test:
-        lee la HAL y delega en \texttt{mpu6050\_update\_gyro()}.
-  \item[\texttt{mpu6050\_get\_theta\_rad()}] Devuelve el angulo integrado en
-        radianes. La integracion de gyro deriva; no es una pose absoluta.
-\end{description}
-
-\subsection{Driver de distancia}
-
-\begin{description}
-  \item[\texttt{distancia\_init()}] Actualmente no hace trabajo; la HAL
-        inicializa el sensor fisico.
-  \item[\texttt{distancia\_validate\_m(d)}] Conserva $d$ si esta entre los
-        limites inclusivos; devuelve $-1$ si esta fuera de rango.
-  \item[\texttt{distancia\_get\_m()}] Lee la HAL ToF y valida el resultado en
-        una sola llamada.
-\end{description}
-
-\subsection{Arranques de cada plataforma}
-
-\begin{description}
-  \item[ESP32, \texttt{setup()}] Arduino inicia el runtime FreeRTOS antes de
-        llamar a \texttt{setup()}. El punto de entrada configura el baud rate y
-        solicita \texttt{app\_runtime\_start()}. \texttt{loop()} queda vacio
-        porque las tareas ejecutan la aplicacion.
-  \item[EDU-CIAA, \texttt{main()}] Ejecuta \texttt{boardConfig()}, crea la tarea
-        bootstrap con \texttt{app\_runtime\_start()} y llama a
-        \texttt{vTaskStartScheduler()}. La inicializacion y calibracion ocurren
-        despues, desde la tarea bootstrap. Si el scheduler retorna, informa un
-        error porque normalmente no deberia retornar.
-\end{description}
-
-%==============================================================================
-\section{FreeRTOS en las dos placas}
-%==============================================================================
-
-Las dos placas ejecutan la misma aplicacion FreeRTOS. Las cuatro tareas tienen
-responsabilidades separadas:
-
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.27\textwidth}
-                  >{\raggedright\arraybackslash}p{0.63\textwidth}}
-\textbf{Tarea} & \textbf{Responsabilidad} \\
-\hline
-\texttt{app\_start} & Inicializacion de sensores, calibracion y creacion de
-mutexes/tareas. Se elimina cuando termina el arranque. \\
-\texttt{adquirir} & Lee IMU y ToF por HAL y publica una muestra cruda compartida. \\
-\texttt{drivers} & Procesa las muestras crudas: offset, zona muerta, integracion
-de $\theta$ y validacion de distancia. \\
-\texttt{publicar} & Serializa el estado como CSV y delega la escritura a la HAL
-de telemetria. \\
-\end{longtable}
-
-Las tareas ciclicas usan periodos nominales de 30 ms. Las prioridades son
-arranque 4, adquisicion 3, drivers 2 y publicacion 1. CIAA admite hasta siete
-niveles en su configuracion actual. Los valores de stack se expresan en bytes en
-el runtime y se convierten para el ABI de FreeRTOS de CIAA.
-
-La tarea de adquisicion realiza lecturas I2C secuenciales. La aplicacion no
-promete que todas las etapas tengan latencia identica en ambas placas: el ToF
-EDU-CIAA usa medicion single-shot y puede ocupar mas tiempo que una lectura
-instantanea. FreeRTOS permite que otras tareas progresen, pero no vuelve
-instantaneo al periferico.
-
-\subsection{Scheduler y arranque}
-
-\begin{itemize}
-  \item En ESP32, Arduino/ESP-IDF arranca FreeRTOS. Crear tareas desde
-        \texttt{setup()} no inicia un segundo scheduler.
-  \item En EDU-CIAA, \texttt{main()} prepara el hardware, crea el bootstrap y
-        llama a \texttt{vTaskStartScheduler()}.
-  \item El bootstrap corre con el scheduler activo en ambas placas. Esto es
-        necesario porque la calibracion usa \texttt{hal\_delay()}.
-  \item CIAA compila el kernel FreeRTOS del repositorio, activa asignacion
-        dinamica y utiliza \texttt{heap\_4}. En el estado actual, el heap se
-        configura en 24 KiB, las prioridades disponibles son 7 y el tick es de
-        1 kHz. La configuracion debe respetar la memoria disponible de LPC4337.
-\end{itemize}
-
-Los entry points son distintos porque Arduino y el proyecto LPCOpen/sAPI tienen
-ciclos de inicio diferentes. Lo que se comparte es el runtime de aplicacion,
-las responsabilidades de las tareas y los contratos; no se fuerza a ambas
-plataformas a tener el mismo \texttt{main()} de sistema.
-
-%==============================================================================
-\section{HAL de ESP32}
-%==============================================================================
-
-\subsection{IMU: \texttt{hal\_imu\_esp32.cpp}}
-
-Usa \texttt{Wire} para I2C. \texttt{hal\_imu\_init()} activa el MPU6050,
-consulta su registro de identidad y falla si no recibe una respuesta valida.
-\texttt{hal\_imu\_get\_gyro\_z\_rads()} lee los registros de gyro Z, aplica
-la sensibilidad de $131$ cuentas por grado/segundo para el rango configurado y
-convierte a radianes por segundo.
-
-\subsection{Tiempo: \texttt{hal\_time\_esp32.cpp}}
-
-Adapta \texttt{hal\_delay()} a \texttt{delay()} de Arduino y
-\texttt{hal\_millis()} a \texttt{millis()}. El driver MPU usa estas funciones
-para calibrar y calcular el intervalo $dt$.
-
-\subsection{ToF: \texttt{hal\_tof\_esp32.cpp}}
-
-Usa la biblioteca Adafruit \texttt{VL53L0X}. \texttt{hal\_tof\_init()} guarda
-si la biblioteca encontro e inicializo el sensor. La lectura devuelve metros;
-si el dispositivo no inicio o el estado de rango reporta error, devuelve $-1$.
-
-\subsection{Telemetria: \texttt{hal\_telemetry\_esp32.cpp}}
-
-Escribe cada linea con \texttt{Serial.println()}. No genera el contenido del
-CSV: recibe texto ya formado desde la aplicacion.
-
-%==============================================================================
-\section{HAL de EDU-CIAA}
-%==============================================================================
-
-\subsection{IMU y tiempo}
-
-\texttt{hal\_imu\_educiaa.cpp} utiliza las funciones MPU60X0 de sAPI para
-inicializar, actualizar y leer gyro Z. \texttt{hal\_time\_educiaa.cpp} adapta
-\texttt{hal\_delay()} a la espera sAPI y \texttt{hal\_millis()} a
-\texttt{tickRead()}. Con el tick configurado a 1 kHz, el conteo representa
-milisegundos.
-
-\subsection{ToF EDU-CIAA}
-
-\texttt{hal\_tof\_educiaa.cpp} implementa el acceso al VL53L0X mediante I2C de
-sAPI. A diferencia de ESP32, no usa la biblioteca Adafruit: reproduce la
-secuencia de registros del driver de referencia para la medicion single-shot.
-
-Los auxiliares internos leen/escriben registros de 8 y 16 bits, traducen
-unidades de timeout, consultan la secuencia de medicion y ejecutan la
-configuracion SPAD/tuning/calibracion de referencia. La inicializacion comprueba
-identificacion de modelo/revision y limita esperas mediante timeout. La lectura
-inicia una medicion, espera su terminacion, lee milimetros y devuelve metros.
-Ante fallo de identificacion, calibracion o timeout, marca el ToF no disponible
-para que la aplicacion publique $-1$ y la IMU continue.
-
-Esta implementacion compila y enlaza para EDU-CIAA. Sin sensor y placa conectados
-no se puede asegurar que la secuencia I2C funcione en el montaje real.
-
-\subsection{Telemetria: \texttt{hal\_telemetry\_educiaa.cpp}}
-
-Implementa el mismo contrato \texttt{hal\_telemetry\_write()} con
-\texttt{printf()} de sAPI y terminador CRLF. Asi el runtime compartido no sabe
-si debajo escribe Arduino Serial o la consola serie de CIAA.
-
-%==============================================================================
-\section{Builds y perfiles}
-%==============================================================================
-
-\subsection{ESP32 / PlatformIO}
-
-\ruta{esp32/platformio.ini} establece \texttt{esp32dev} como entorno por
-defecto:
-
-\begin{lstlisting}
-cd esp32
-pio run
-pio run -t upload
-\end{lstlisting}
-
-Los perfiles \texttt{imu\_only} y \texttt{tof\_only} son diagnosticos
-independientes; se seleccionan explicitamente con
-\texttt{pio run -e imu\_only} o \texttt{pio run -e tof\_only}. Un comando de
-upload con un perfil reemplaza el programa anterior en la placa: no se mezclan
-los tres binarios.
-
-\subsection{EDU-CIAA / Make}
-
-\ruta{edu-ciaa/rover/config.mk} selecciona HAL EDU-CIAA, drivers compartidos y
-FreeRTOS. La opcion \texttt{USE\_FREERTOS=y} incorpora el kernel; el tipo de
-heap selecciona \texttt{heap\_4}. \ruta{edu-ciaa/rover/inc/FreeRTOSConfig.h}
-define prioridades, frecuencia de tick, heap y opciones de chequeo.
-
-\begin{lstlisting}
-make -C edu-ciaa clean all
-\end{lstlisting}
-
-Este comando compila y enlaza; no carga firmware. El target \texttt{clean}
-elimina productos de compilacion de \ruta{edu-ciaa/rover/out/}. No borra los
-fuentes.
-
-\subsection{Diagnosticos}
-
-\begin{description}
-  \item[\texttt{imu\_only}] Compila IMU + tiempo + driver MPU. Publica
-        \texttt{theta\_rad,-1} sin depender del ToF ni del runtime completo.
-  \item[\texttt{tof\_only}] Compila ToF + driver de distancia. Publica
-        \texttt{0,distancia\_m} para comprobar el sensor de forma aislada.
-\end{description}
-
-Estos programas validan perifericos concretos, no prueban la planificacion de
-las tres tareas del producto.
-
-%==============================================================================
-\section{Protocolo serie y Processing}
-%==============================================================================
-
-La aplicacion publica a 115200 baudios. Las lineas informativas comienzan con
-\texttt{\#}; los sketch las ignoran. Cada muestra de datos tiene exactamente
-dos columnas:
-
-\begin{lstlisting}
-theta_rad,distancia_m
-\end{lstlisting}
-
-$\theta$ esta en radianes; distancia esta en metros. El valor $-1$ indica que
-no hay una medida ToF valida. No hay timestamp, posicion XY ni una tercera
-columna.
-
-\ruta{processing/flecha/flecha.pde} muestra la orientacion usando theta.
-\ruta{processing/flecha\_y\_mapa\_v1/flecha\_y\_mapa\_v1.pde} lee las dos
-columnas, descarta logs y datos no numericos, acepta distancias de 0.05 a 1.50 m
-y las escala para dibujar una nube polar de hasta 400 puntos. Asume que el rover
-gira en torno al origen; no es una grilla ni un mapa en coordenadas mundo.
-
-Los sketches usan \texttt{COM3} como puerto por defecto. Cada PC debe usar el
-puerto que realmente asigna al ESP32. Un puerto serie solo puede estar abierto
-por una aplicacion a la vez; cerrar el monitor serie de PlatformIO antes de
-abrir Processing.
-
-%==============================================================================
-\section{Recorrido de una muestra}
-%==============================================================================
-
-\begin{enumerate}
-  \item El framework de la placa entra en su arranque: Arduino llama a
-        \texttt{setup()}, o CIAA ejecuta \texttt{main()}.
-  \item El adaptador de placa configura consola/placa y llama a
-        \texttt{app\_runtime\_start()}.
-  \item CIAA arranca el scheduler. El bootstrap comun inicializa IMU y ToF,
-        calibra el MPU y crea los dos mutexes.
-  \item Se crea \texttt{adquirir}. Lee $\omega_z$ y distancia por contratos HAL
-        y actualiza \texttt{raw\_sample}.
-  \item \texttt{drivers} toma una copia protegida, actualiza $\theta$ con la
-        muestra IMU y valida distancia. Guarda \texttt{app\_sample}.
-  \item \texttt{publicar} copia ese estado, forma el CSV y llama a
-        \texttt{hal\_telemetry\_write()}.
-  \item La implementacion serie de la placa escribe la linea; Processing la
-        interpreta y dibuja la orientacion/medicion.
-\end{enumerate}
-
-Si falla la IMU, el bootstrap informa error y no crea las tareas de datos. Si
-falla solo el ToF, la tarea de adquisicion sigue leyendo la IMU y el driver de
-distancia transforma las medidas no disponibles en $-1$.
-
-%==============================================================================
-\section{Estado de validacion y limites}
-%==============================================================================
-
-\begin{itemize}
-  \item Los entornos PlatformIO \texttt{esp32dev}, \texttt{imu\_only} y
-        \texttt{tof\_only} compilan.
-  \item El firmware ESP32 fue cargado y el plot V0 habia sido validado con
-        Processing antes de compartir el runtime FreeRTOS.
-  \item El build limpio EDU-CIAA con FreeRTOS compila y enlaza. No se cargo ni
-        se probo con sensores en la placa EDU-CIAA.
-      \item La carga del runtime compartido en ESP32 requiere confirmar telemetria
-        en serie despues de la ultima modificacion; no se considera prueba de
-        ejecucion solo porque haya compilado.
-\end{itemize}
-
-Limites funcionales actuales:
-
-\begin{itemize}
-  \item El angulo deriva porque se integra un giroscopio; no hay fusion con
-        acelerometro ni correccion absoluta.
-  \item Sin AS5600 no se calcula desplazamiento XY. El robot se supone en el
-        origen para el plot polar V0.
-  \item No hay motores, navegacion, grilla V1 ni SLAM implementados.
-  \item La inicializacion ToF y los tiempos de medicion de las dos HAL son
-        diferentes y requieren validacion fisica en cada placa.
-\end{itemize}
-
-%==============================================================================
-\section{Glosario}
-%==============================================================================
-
-\begin{description}
-  \item[HAL] Capa que traduce una API estable a operaciones de hardware de una
-        placa concreta.
-  \item[Driver] Codigo que transforma muestras HAL en magnitudes utiles para
-        la aplicacion, aplicando calibracion, filtrado o validacion.
-  \item[FreeRTOS] Sistema operativo en tiempo real que planifica las tareas.
-  \item[Scheduler] Planificador que decide que tarea ejecuta el procesador.
-  \item[Tarea] Funcion que FreeRTOS ejecuta como flujo independiente, normalmente
-        dentro de un bucle.
-  \item[Mutex] Cerradura que coordina acceso a datos compartidos entre tareas.
-  \item[ToF] Sensor de distancia por tiempo de vuelo; aqui, VL53L0X.
-  \item[CSV] Datos separados por comas; el protocolo V0 tiene dos columnas.
-  \item[Stack] Memoria temporal de cada tarea para llamadas y variables locales.
-\end{description}
-
-\end{document}
+\subsection{Software de PC e interfaz de usuario prevista}
+
+El alcance confirmado para el programa de PC es visualizar la pose del rover y
+el mapa actualizado. El enlace serie USB/UART se utiliza en V0; para transmitir
+pose y mapa sin cable se prevé incorporar Wi-Fi o Bluetooth en una etapa
+posterior. La elección entre ambos protocolos queda pendiente. Los
+requerimientos generales también mencionan órdenes START/STOP y, como objetivos
+secundarios, teleoperación y planificación de rutas; su incorporación como
+controles de esta interfaz queda por definir.
+
+\begin{center}
+\fbox{\parbox{0.91\linewidth}{\centering
+Inicio $\rightarrow$ conexión con el rover $\rightarrow$ espera de datos
+$\rightarrow$ visualización continua de pose y mapa $\rightarrow$ pérdida de
+enlace: indicar desconexión / conexión restablecida: reanudar visualización}}
+\end{center}
+
+Si se pierde el enlace durante la operación, el firmware deberá aplicar la
+parada segura y la interfaz indicará la desconexión. El flujo representa la
+interfaz prevista; las pantallas de Processing disponibles actualmente solo
+reciben y dibujan telemetría.
+
+\subsection{Ensayos realizados y estado de validación}
+
+Los ensayos se realizaron con el firmware V0 y hardware conectado, usando
+programas de prueba y Processing; no se dispone de una simulación integral del
+rover. Se separaron perfiles de prueba para compilar la lectura de IMU y la del
+ToF de manera independiente. También se implementó \texttt{imu\_compare}, que
+transmite gyro Z crudo, ángulo crudo integrado y ángulo procesado para comparar
+la integración sin corrección con la que aplica calibración y zona muerta.
+
+El firmware V0 de ESP32 fue cargado y validado con Processing: se comprobó la
+recepción de las muestras serie y la visualización de orientación y distancia.
+El contrato de aplicación V0 transmite a 115200 baudios dos columnas,
+\texttt{theta\_rad,distancia\_m}; una distancia inválida se representa con
+$-1$. El build actual con FreeRTOS compartido compila, pero su telemetría debe
+confirmarse después de la última modificación. El firmware EDU-CIAA compila y
+enlaza, aunque falta probarlo con sensores conectados a la placa.
+
+Los archivos disponibles no contienen capturas de pantalla ni resultados
+numéricos de precisión o error. Para documentar visualmente los ensayos se debe
+incorporar una captura de Processing durante la prueba V0 y, cuando se realice,
+otra del gráfico de comparación de la IMU. Estas evidencias no se reemplazan
+por imágenes ilustrativas.

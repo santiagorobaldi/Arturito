@@ -1,0 +1,716 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[table]{xcolor} % Colores (incluye colortbl para celdas/filas)
+\usepackage{tcolorbox}     % Cuadros de texto llamativos
+\tcbuselibrary{breakable}
+\usepackage{microtype}     % Mejora la justificación tipográfica
+\usepackage{caption}       % Personalización de pies de foto/figura
+\usepackage{subcaption}    % Figuras con subfiguras
+\usepackage{fancyhdr}      % Control de encabezados y pies de página
+\usepackage{amsmath}       % Para \text en modo matemático
+\usepackage{parskip}
+\usepackage{booktabs}      % Tablas
+\usepackage{array}
+\usepackage{siunitx}       % Unidades
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{hyperref}      % Siempre se recomienda cargarlo al final del preámbulo
+
+\sisetup{output-decimal-marker={,}}
+\DeclareSIUnit\rpm{RPM}
+\DeclareSIUnit\Wh{Wh}
+\DeclareSIUnit\mAh{mAh}
+\DeclareSIUnit\Ah{Ah}
+
+% Configuración de márgenes
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm,
+    headheight=15pt
+}
+
+% Definición de un rojo académico/elegante
+\definecolor{rojoObjetivo}{RGB}{180, 40, 40}
+
+% ------------------------------------------------------------------------------
+% Marcadores de revisión
+% ------------------------------------------------------------------------------
+% Rojo: dato que falta y debe ser completado por el grupo
+\newcommand{\pendiente}[1]{\textcolor{red}{\textbf{[PENDIENTE: #1]}}}
+\newcommand{\pq}{\textcolor{red}{\textbf{[?]}}}
+
+% Amarillo: contenido incorporado que debe ser visado (revisado y confirmado)
+\newtcolorbox{visar}{colback=yellow!35, colframe=yellow!60!black, boxrule=0.4pt,
+    arc=1mm, left=5pt, right=5pt, top=3pt, bottom=3pt, boxsep=1pt, breakable}
+
+% Celdas y filas de tabla a visar
+\newcommand{\vc}{\cellcolor{yellow!50}}
+\newcommand{\vr}{\rowcolor{yellow!50}}
+
+% Columna con texto alineado a la izquierda y ancho fijo
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Configuración de formato para pies de figuras
+\captionsetup{font=small, labelfont=bf}
+
+% Configuración de encabezados y pies de página
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small \textit{Arturito - Rover autónomo}}
+\lhead{\small \textit{Taller de Proyecto I - UNLP}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+\begin{document}
+% Desactivar la división de palabras (hifenación)
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+% Permitir mayor flexibilidad en los espacios interpalabra
+\tolerance=1000
+\emergencystretch=3em
+
+% ==============================================================================
+% PORTADA / CARÁTULA PERSONALIZADA
+% ==============================================================================
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+
+    \vspace*{1.5cm}
+
+    {\huge \bfseries Arturito\\[0.3em] Rover autónomo diferencial mapeador \par}
+    \vspace{0.8cm}
+    {\Large Informe de Avance -- Trabajo Práctico N$^\circ$ 2\\[0.3em]
+    Diseño de hardware y software \par}
+
+    \vfill
+
+    {\Large \bfseries Autores \par}
+    \vspace{0.6cm}
+    \begin{tabular}{c c}
+        \textbf{Joaquín Guzmán} & \textbf{Tomás Gamarra} \\
+        \small Legajo: 03751/4 & \small Legajo: 03852/8 \\[1.5em]
+        \textbf{Robaldi Santiago} & \textbf{Goncalves Federico} \\
+        \small Legajo: 03769/4 & \small Legajo: 03866/5
+    \end{tabular}
+
+    \vspace{1.5cm}
+
+    \hrule height 0.5pt
+    \vspace{0.4cm}
+
+    {\large \textbf{Universidad Nacional de La Plata}} \par
+    \vspace{0.15cm}
+    {Facultad de Ingeniería -- Departamento de Electrotecnia} \par
+    \vspace{0.15cm}
+    {\small Asignatura: Taller de Proyecto I (E306) -- 2.º cuatrimestre 2026} \par
+    \vspace{0.3cm}
+    {\small \today}
+
+\end{titlepage}
+
+% ==============================================================================
+% ÍNDICE GENERAL
+% ==============================================================================
+\pagenumbering{arabic}
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% SECCIÓN 1: INTRODUCCIÓN
+% ==============================================================================
+\section{Introducción}
+
+\begin{visar}
+\textbf{Referencias de revisión (borrador interno, eliminar antes de la entrega).}
+Los textos y celdas con fondo \colorbox{yellow!70}{amarillo} corresponden a información incorporada que \textbf{debe ser visada} por el grupo antes de la entrega. El texto en \textcolor{red}{\textbf{rojo}} indica datos que aún faltan.
+\end{visar}
+
+El presente informe documenta el avance del proyecto \textbf{Arturito}, un robot móvil diferencial autónomo con capacidad de explorar un entorno desconocido, mapearlo en una grilla de ocupación 2D y transmitir la información a un dispositivo externo, tal como se planteó en el trabajo práctico anterior. En esta etapa se aborda el diseño del hardware y del software necesarios para implementar la solución, junto con los ensayos preliminares que permiten verificar la viabilidad de la propuesta.
+
+\subsection{Resumen de objetivos y bloques funcionales}
+El objetivo general del proyecto es diseñar e implementar un robot móvil autónomo con tracción diferencial, capaz de explorar un entorno mediante sensores de distancia, mapearlo en 2D y transmitir la información en tiempo real. El sistema se divide en los bloques funcionales indicados en la Figura~\ref{fig:esquema_general}: Sensado, Comunicaciones, Tracción y Actuación, Procesamiento Central (cinemática, mapeo y estimación de posición, navegación autónoma) y Dispositivo Externo.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{EsquemaGeneral.png}
+    \caption{Esquema general del sistema.}
+    \label{fig:esquema_general}
+\end{figure}
+
+\noindent\fcolorbox{red!40}{red!5}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+        \textbf{Nota:} Los bloques resaltados en \textcolor{red}{\textbf{rojo}} dentro del diagrama corresponden a funcionalidades clasificadas como \textbf{objetivos secundarios} del proyecto.
+    }%
+}
+\vspace{0.4cm}
+
+\newpage
+
+% ==============================================================================
+% SECCIÓN 2: PARTE 1 - DISEÑO DE HARDWARE
+% ==============================================================================
+\section{Parte 1: Diseño de hardware}
+
+\subsection{Descripción general y selección de componentes}
+La Tabla~\ref{tab:componentes} resume los componentes principales del sistema. La justificación detallada de los módulos de sensado, de tracción y de alimentación se presenta en las secciones siguientes.
+
+\begin{table}[H]
+\centering
+\caption{Resumen de componentes principales.}
+\label{tab:componentes}
+\footnotesize
+\begin{tabular}{L{3.1cm}L{4.1cm}L{3.0cm}L{2.2cm}}
+\toprule
+Componente & Código / valor & Formato físico & Bloque \\
+\midrule
+Motorreductor DC & GA12-N20 (Handson Technology), \SI{6}{V}--\SI{12}{V}, 150:1 & Motor con caja metálica & Tracción \\
+\vr Puente H doble & DRV8833 (Texas Instruments) & Módulo, pines 2,54~mm & Tracción \\
+\vr Elevador o reductor de tensión & Módulo MT3608 (elevador) o módulo reductor (\emph{buck}) a \SI{5}{V}, según la opción de alimentación & Módulo & Alimentación \\
+\vr Celda Li-ion & 18650, \SI{3,7}{V} & Cilíndrica & Alimentación \\
+Portapilas & Para 2 celdas 18650 en serie (x2) & Portapilas & Alimentación \\
+\vr Microcontrolador de prototipado & Arduino Nano & Módulo, pines 2,54~mm & Prototipo \\
+\vr Módulo WiFi & ESP32 DevKit v1 & Módulo, pines 2,54~mm & Comunicaciones \\
+\vr IMU & MPU6050 & Módulo & Sensado \\
+Sensor de distancia ToF & Módulo VL53L0X (4 pines: VIN, GND, SCL, SDA) & Módulo breakout & Sensado \\
+Sensor magnético de ángulo & Módulo AS5600 (TinyTronics AS5600MOD, SKU 004634), x2 & Módulo de \SI{23}{mm}$\times$\SI{23}{mm} & Sensado \\
+EDU-CIAA-NXP & LPC4337 & Placa & Procesamiento \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\pendiente{Revisar el código de parte y el formato físico de cada componente (módulos comerciales a adquirir).}
+
+% ------------------------------------------------------------------------------
+\subsection{Bloque de Sensado: módulos seleccionados}
+% ------------------------------------------------------------------------------
+\subsubsection{Sensor de distancia: módulo VL53L0X}
+La medición de distancia se realiza con un sensor de tiempo de vuelo (ToF) VL53L0X, en un módulo \emph{breakout} de cuatro pines (\texttt{VIN}, \texttt{GND}, \texttt{SCL}, \texttt{SDA}) \cite{vl53mod}. El sensor permanece fijo sobre el chasis.
+
+\begin{visar}
+El VL53L0X mide distancias de hasta \SI{2}{m} mediante un emisor láser VCSEL de \SI{940}{nm}, con un haz angosto y una medida independiente de las características del objeto, lo que lo hace adecuado para la detección precisa de obstáculos y permite resolver los límites del entorno con buena definición angular. El módulo incorpora un regulador de \SI{2,8}{V}, resistencias de \emph{pull-up} y capacitores, y puede alimentarse con una tensión de \SI{2,6}{V} a \SI{5,5}{V}; su consumo informado es de \SI{10}{mA}. Se comunica por I\textsuperscript{2}C. Los proveedores informan un rango de medición de \SI{30}{mm} a \SI{2000}{mm}.
+\end{visar}
+
+\subsubsection{Sensor de ángulo de rueda: módulo AS5600}
+Para estimar el giro de cada rueda se utilizan dos módulos AS5600 \cite{as5600mod}, uno por rueda.
+
+\begin{visar}
+El AS5600 es un sensor magnético de posición angular absoluta de 12 bits (4096 posiciones por vuelta) con salidas I\textsuperscript{2}C, PWM y analógica. El módulo seleccionado funciona por defecto a \SI{3,3}{V} (tanto la alimentación como las señales; puede operar a \SI{5}{V} retirando la resistencia R1), mide \SI{23}{mm}$\times$\SI{23}{mm}, tiene un orificio de montaje de \SI{3,7}{mm} y pines de paso \SI{2,54}{mm}, e incluye un imán de magnetización diametral, que debe fijarse al eje (por ejemplo, con adhesivo). El sensor debe montarse sobre el imán a una distancia máxima de aproximadamente \SI{2}{mm}.
+\end{visar}
+
+% ------------------------------------------------------------------------------
+\subsection{Bloque de Tracción y Actuación: prototipado del subsistema de movimiento}
+% ------------------------------------------------------------------------------
+Según los requerimientos definidos en el trabajo anterior, el Bloque de Tracción y Actuación debe contar con dos motores DC independientes para generar un movimiento diferencial, una rueda loca auxiliar y un driver de potencia que module la energía provista por el subsistema de alimentación hacia los motores. En esta sección se describe el prototipo desarrollado para validar dicho bloque.
+
+\subsubsection{Componentes utilizados y justificación}
+El subsistema de movimiento se basa en dos motorreductores de corriente continua N20, controlados mediante un doble puente H DRV8833 y gobernados por un microcontrolador Arduino Nano. Como fuente de energía del prototipo se empleó una celda de ion de litio 18650 de \SI{3,7}{V} nominales.
+
+\begin{itemize}[nosep]
+  \item \textbf{Motores GA12-N20:}
+  \begin{visar}
+  Se eligieron por las siguientes razones, extraídas de su hoja de datos: (i)~tensión nominal de \SI{6}{V} a \SI{12}{V}, que permite alimentarlos desde dos celdas 18650 en serie (\SI{7,4}{V}) a través del puente H; (ii)~baja velocidad (\SI{100}{RPM} a \SI{6}{V}) con alto torque gracias a la reducción de 150:1 con engranajes metálicos, adecuada para una plataforma que debe desplazarse lentamente y girar sobre su eje de manera controlada para el escaneo del entorno; (iii)~bajo consumo (corriente nominal de \SI{0,07}{A} por motor); (iv)~tamaño y masa reducidos (\SI{15}{mm}$\times$\SI{12}{mm}$\times$\SI{10}{mm}, \SI{10}{g}) y eje de \SI{3}{mm} sobre el que se monta la rueda directamente; (v)~corriente de bloqueo de \SI{1}{A}, inferior a la que admite cada puente del DRV8833.
+  \end{visar}
+  La tensión nominal del motor es de \SI{6}{V} a \SI{12}{V}. En el prototipo se lo alimentó con aproximadamente \SI{4}{V}. En el proyecto final, el puente H entregará \SI{7,4}{V} (dos celdas en serie), pero los motores funcionarán con un ciclo de trabajo de aproximadamente el 50\,\%, de modo que la tensión media aplicada ($\approx$\SI{3,7}{V}) coincide aproximadamente con los \SI{4}{V} utilizados en las pruebas. Sus características completas se resumen en la Tabla~\ref{tab:motor}.
+
+  \item \textbf{Puente H DRV8833:}
+  \begin{visar}
+  Es un puente H doble basado en transistores MOSFET de bajo consumo. De su hoja de datos se destacan: (i)~rango de tensión de alimentación de \SI{2,7}{V} a \SI{10,8}{V}, que cubre tanto una celda Li-ion (\SI{3,7}{V}) como una configuración 2S (\SI{7,4}{V}); (ii)~corriente máxima de \SI{1,2}{A} continuos y \SI{2,0}{A} de pico por canal, que supera la corriente de bloqueo de dos motores N20; (iii)~protección térmica y contra baja tensión (UVLO); (iv)~entradas compatibles con lógica de \SI{3,3}{V} y \SI{5}{V}.
+  \end{visar}
+  \pendiente{verificar la corriente por puente en la hoja de datos de Texas Instruments (el valor indicado en el borrador difiere de lo que recordamos: 1,5 A RMS por puente) y unificar el dato.}
+
+  \item \textbf{Arduino Nano:} microcontrolador utilizado como plataforma de prototipado para generar las señales de modulación por ancho de pulso (PWM) hacia el puente H.
+  \item \textbf{Celda 18650 (\SI{3,7}{V}):} fuente de alimentación de los motores.
+\end{itemize}
+
+\subsubsection{Características del motor GA12-N20}
+\begin{table}[H]
+\centering
+\caption{Características del motor GA12-N20 según la hoja de datos del fabricante (Handson Technology).}
+\label{tab:motor}
+\small
+\begin{tabular}{L{6cm}L{5.5cm}}
+\toprule
+Parámetro & Valor \\
+\midrule
+Tensión nominal & \SI{6}{V}--\SI{12}{V} \\
+Velocidad en vacío & \SI{50}{\rpm} a \SI{3}{V}; \SI{100}{\rpm} a \SI{6}{V}; \SI{200}{\rpm} a \SI{12}{V} \\
+Velocidad con carga & \SI{80}{\rpm} \\
+Torque nominal & \SI{2}{\kilo\gram\centi\meter} \\
+Torque de bloqueo & \SI{16}{\kilo\gram\centi\meter} \\
+Corriente nominal & \SI{0,07}{A} \\
+Corriente de bloqueo & \SI{1}{A} \\
+Relación de reducción & 1:10 según la hoja de datos (150:1 según el grupo; ver nota) \\
+Engranajes & Metálicos \\
+Dimensiones de la caja reductora & \SI{15}{mm}$\times$\SI{12}{mm}$\times$\SI{10}{mm} \\
+Longitud total & \SI{34}{mm} \\
+Eje de salida & \SI{3}{mm} de diámetro $\times$ \SI{10}{mm} de largo \\
+Masa & \SI{10}{g} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+La hoja de datos indica una variación lineal de la velocidad con la tensión (\SI{50}{RPM} por cada \SI{3}{V} aproximadamente). Con \SI{7,4}{V} y ciclo de trabajo máximo se estima una velocidad de $\approx$\SI{123}{RPM}; con ciclo de trabajo de $\approx$50\,\% (tensión media de \SI{3,7}{V}) resulta $\approx$\SI{62}{RPM}, similar a las $\approx$\SI{68}{RPM} esperables en el prototipo a \SI{4,08}{V}. Con ruedas de \SI{43}{mm} de diámetro (a confirmar), la velocidad lineal es
+\begin{equation*}
+v = \omega\, r = \frac{62 \cdot 2\pi}{60}\,\si{\radian\per\second} \times \SI{0,0215}{m} \approx \SI{0,14}{\meter\per\second}
+\end{equation*}
+al 50\,\% de ciclo de trabajo, y de $\approx$\SI{0,28}{\meter\per\second} al máximo, lo que deja margen de regulación por PWM. La corriente nominal de \SI{0,07}{A} por motor es coherente con los $\approx$\SI{15}{mA} por motor medidos en vacío en el prototipo, ya que la corriente nominal corresponde a la condición de torque nominal.
+\end{visar}
+
+\begin{visar}
+\textbf{Observaciones sobre la hoja de datos.} (i)~La relación de reducción de 1:10 es incompatible con \SI{100}{RPM} a \SI{6}{V}: un motor N20 gira típicamente a miles de RPM sin reducción. El grupo considera que la relación real es 150:1, lo cual es coherente con otros proveedores (por ejemplo, Altronics), que listan las mismas velocidades (\SI{100}{RPM} a \SI{6}{V}, \SI{200}{RPM} a \SI{12}{V}) para versiones 150:1. (ii)~El torque de bloqueo de \SI{16}{\kilo\gram\centi\meter} es muy superior al informado para motores de velocidad similar (alrededor de \SI{3}{\kilo\gram\centi\meter}). (iii)~No se especifica a qué tensión corresponden la corriente nominal y la de bloqueo.
+\end{visar}
+\pendiente{confirmar con el proveedor o mediante ensayo la relación de reducción (150:1) y el torque reales; confirmar a qué tensión se refiere la corriente de bloqueo de \SI{1}{A}.}
+
+\subsubsection{Objetivos del prototipado}
+El objetivo principal fue generar, desde el Arduino Nano, señales PWM hacia el puente H, de modo que éste aplique a cada motor la tensión requerida. Adicionalmente, se buscó adquirir conocimiento práctico sobre el comportamiento de los motores N20 (fuerza, velocidad) y sobre el funcionamiento del DRV8833, con el fin de resolver con antelación los inconvenientes que pudieran surgir durante el ensamblaje del proyecto final.
+
+\subsubsection{Configuración inicial de alimentación}
+En una primera instancia, tanto el microcontrolador como los motores se alimentaron desde la misma celda de \SI{3,7}{V}, a través de un regulador elevador (\emph{step-up}) ajustado a \SI{6}{V}. Esta tensión se aplicó al pin \texttt{VIN} del Arduino Nano y al pin \texttt{VCC} del DRV8833. La Figura~\ref{fig:proto1} muestra este primer prototipo.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Arturito_Prot_1a.png}
+        \caption{}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Arturito_Prot_1b.png}
+        \caption{}
+    \end{subfigure}
+    \caption{Prototipo 1 del hardware de movimiento: una única celda de \SI{3,7}{V} con elevador de tensión a \SI{6}{V} alimenta tanto al Arduino Nano como al puente H DRV8833.}
+    \label{fig:proto1}
+\end{figure}
+
+\subsubsection{Algoritmo de prueba}
+Todas las pruebas se realizaron con un mismo algoritmo, consistente en un lazo infinito que ejecuta la secuencia indicada en la Tabla~\ref{tab:secuencia}, con una espera de \SI{2}{s} entre cada acción. El ciclo de trabajo (\emph{duty cycle}) se definió como variable global, con el fin de evaluar el efecto del PWM sobre el comportamiento de los motores.
+
+\begin{table}[H]
+\centering
+\caption{Secuencia de movimientos del algoritmo de prueba.}
+\label{tab:secuencia}
+\begin{tabular}{clc}
+\toprule
+Etapa & Acción & Duración [s] \\
+\midrule
+1 & Espera & 2 \\
+2 & Avanzar & 3 \\
+3 & Espera & 2 \\
+4 & Retroceder & 3 \\
+5 & Espera & 2 \\
+6 & Girar (primer sentido) & 3 \\
+7 & Espera & 2 \\
+8 & Girar (sentido contrario) & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+El intervalo de \SI{2}{s} entre acciones funciona como espacio de conmutación entre estados, lo que permite observar los transitorios de corriente y la estabilidad de la lógica. Para cada motor, el avance se logra con \texttt{IN1}~=~alto (PWM) e \texttt{IN2}~=~bajo, y el retroceso con \texttt{IN1}~=~bajo e \texttt{IN2}~=~alto (PWM).
+\end{visar}
+\pendiente{indicar qué sentido de giro del robot (horario/antihorario) corresponde a las etapas 6 y 8. La convención anterior define el sentido de cada motor, no el giro del robot, que se obtiene con un motor avanzando y el otro retrocediendo.}
+
+\subsubsection{Problemas encontrados y resolución}
+
+\paragraph{Pin de reposo (\texttt{nSLEEP}) del DRV8833.}
+La primera prueba no resultó satisfactoria debido a que el DRV8833 dispone de un pin de reposo que debe mantenerse en nivel alto para que el controlador entregue tensión a los motores; de lo contrario, el dispositivo permanece en estado de bajo consumo (\emph{sleep}). Dado que en esta etapa no se requería dicho modo, se utilizó el puente de soldadura (\emph{jumper}) que provee el módulo para mantener este pin permanentemente en nivel alto. Una vez realizada esta corrección, el sistema funcionó correctamente.
+
+\paragraph{Influencia de la tensión de alimentación.}
+Se evaluó si el incremento de la tensión mediante el \emph{step-up} mejoraba la velocidad y el torque de los motores. A partir del análisis de la hoja de datos y de las características de la fuente disponible, se concluyó que, para este proyecto, la prioridad es el torque y no la velocidad.
+
+\paragraph{Alimentación del Arduino Nano a través del pin \texttt{VIN}.}
+Durante las pruebas se alimentó el Arduino Nano con \SI{5}{V} estables por el pin \texttt{VIN}. Dado que este pin se encuentra conectado a un regulador de tensión interno, la tensión efectiva de operación del microcontrolador resultó inferior a \SI{5}{V}, lo que provocó un comportamiento irregular y la imposibilidad de enviar correctamente las señales al puente H. Según la hoja de datos del Arduino Nano, la alimentación por \texttt{VIN} debe encontrarse entre \SI{6,5}{V} y \SI{12}{V}.
+
+Este resultado constituye una consideración relevante para el ensamblaje final: al alimentar la EDU-CIAA y el ESP32, deberá verificarse para cada pin de alimentación si existe un regulador intermedio, y definirse en consecuencia la tensión a suministrar.
+
+\subsubsection{Configuración final de alimentación del prototipo}
+Con base en lo anterior, se optó por separar la alimentación de la parte lógica y la de potencia (motores):
+
+\begin{itemize}[nosep]
+  \item \textbf{Lógica:} el Arduino Nano se alimentó por el pin \texttt{VIN} con una pila de \SI{9}{V}. La tensión en la alimentación del microcontrolador resultó de aproximadamente \SI{7}{V}, atribuible presumiblemente a la resistencia interna de la pila. Esta tensión permite que los pines de salida alcancen cómodamente el nivel alto de \SI{5}{V}.
+  \item \textbf{Potencia:} la celda de litio, cargada a \SI{4,12}{V}, alimentó el DRV8833 con \SI{4,1}{V}, de modo que cada motor recibió \SI{4,08}{V} al máximo ciclo de trabajo.
+\end{itemize}
+
+\begin{visar}
+La medición de \SI{7,1}{V} se realizó entre el pin \texttt{VIN} y \texttt{GND} del Arduino Nano, es decir, en la entrada del regulador lineal interno (AMS1117-5.0), antes de la regulación. La caída desde \SI{9}{V} se debe a la resistencia interna de la pila bajo carga (\emph{voltage sag}). A pesar de ello, la salida regulada (pin \texttt{5V}) entregó \SI{5,0}{V}, dado que \SI{7,1}{V} supera el umbral mínimo de entrada de \SI{6,5}{V}.
+\end{visar}
+\pendiente{confirmar que estas mediciones fueron realizadas por el grupo, y verificar el modelo de regulador de la placa Nano utilizada (según la versión, puede ser LM1117 o AMS1117).}
+
+Con esta configuración el prototipo funcionó de manera estable y eficiente. La Figura~\ref{fig:proto2} muestra este segundo prototipo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Arturito_Prot_2a.png}
+    \caption{Prototipo 2 del hardware de movimiento: el Arduino Nano se alimenta con una pila de \SI{9}{V} y el ramal de potencia (DRV8833 y motores) con una celda de \SI{3,7}{V} cargada a \SI{4}{V}.}
+    \label{fig:proto2}
+\end{figure}
+
+\subsubsection{Ensayos de consumo}
+Se midieron la tensión y la corriente consumida por el prototipo con el objetivo de estimar el consumo del sistema final. La Tabla~\ref{tab:consumo} resume la corriente demandada por los motores desde la celda de litio en tres condiciones de carga.
+
+\begin{table}[H]
+\centering
+\caption{Consumo de corriente de ambos motores en simultáneo (alimentación \SI{4,1}{V}).}
+\label{tab:consumo}
+\begin{tabular}{lc}
+\toprule
+Condición de carga & Corriente [mA] \\
+\midrule
+En vacío (sin carga) & 30 \\
+Ligeramente frenados & 60 \\
+Ruedas frenadas, sin llegar a inmovilizarse (máximo) & 200 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+Los valores de la Tabla~\ref{tab:consumo} corresponden a los \textbf{dos motores en conjunto} (en vacío, aproximadamente \SI{15}{mA} por motor). El Arduino Nano, alimentado con la pila de \SI{9}{V}, consumió entre \SI{19}{mA} y \SI{25}{mA} en funcionamiento.
+\end{visar}
+\pendiente{confirmar que las corrientes están medidas para ambos motores y que el consumo del Nano fue medido (o tomado de hoja de datos).}
+
+Dado que en el proyecto final los motores recibirán \SI{7,4}{V} del puente H pero funcionarán con un ciclo de trabajo de aproximadamente el 50\,\%, la tensión media aplicada ($\approx$\SI{3,7}{V}) coincide aproximadamente con los \SI{4}{V} con los que se realizaron las pruebas. Por lo tanto, los consumos de la Tabla~\ref{tab:consumo} son representativos del funcionamiento final.
+
+\begin{visar}
+Con modulación PWM, la corriente media del motor es aproximadamente la misma que con la tensión continua equivalente. La corriente tomada de la batería, en cambio, es del orden del ciclo de trabajo por la corriente del motor ($I_{\text{bat}} \approx D \cdot I_{\text{motor}}$), ya que la potencia se conserva ($\SI{3,7}{V} \cdot I_{\text{motor}} \approx \SI{7,4}{V} \cdot I_{\text{bat}}$). Con $D \approx 0{,}5$, los \SI{30}{mA}, \SI{60}{mA} y \SI{200}{mA} de la Tabla~\ref{tab:consumo} equivalen a $\approx$\SI{15}{mA}, \SI{30}{mA} y \SI{100}{mA} tomados de las celdas.
+\end{visar}
+\pendiente{confirmar mediante medición con los motores alimentados con \SI{7,4}{V} y ciclo de trabajo del 50\,\%.}
+
+% ------------------------------------------------------------------------------
+\subsection{Alimentación del sistema y elección de la fuente}
+% ------------------------------------------------------------------------------
+\subsubsection{Descarte de la pila de 9 V}
+A partir de los resultados anteriores, y considerando las hojas de datos de la EDU-CIAA y del ESP32 con comunicación WiFi, se concluyó que la pila de \SI{9}{V} no resulta adecuada para el proyecto final, ya que presenta desgaste y caída de tensión durante la descarga.
+
+\begin{visar}
+Se utilizó una pila alcalina o de zinc-carbón de \SI{9}{V} en formato PP3 (6F22/6LR61). Su capacidad nominal es de \SI{400}{\mAh} a \SI{500}{\mAh} con corrientes muy bajas, pero debido a su alta resistencia interna, con consumos continuos superiores a \SI{50}{mA} su capacidad útil se reduce a aproximadamente \SI{250}{\mAh}--\SI{350}{\mAh}. Con un consumo conjunto de la EDU-CIAA y el ESP32 de \SI{350}{mA}--\SI{550}{mA}, la autonomía resultaría de entre $250/550 \approx 0{,}45$~h y $350/350 = 1$~h.
+\end{visar}
+
+\subsubsection{Consumos de cada bloque}
+La Tabla~\ref{tab:balance} presenta el balance de consumo estimado del sistema final. Se distinguen dos ramales de alimentación: lógica (referida a \SI{5}{V}) y potencia (motores).
+
+\begin{table}[H]
+\centering
+\caption{Balance de consumo estimado del sistema final.}
+\label{tab:balance}
+\small
+\begin{tabular}{L{4.6cm}cccc}
+\toprule
+Bloque & Ramal & Tensión [V] & $I_{\min}$ [mA] & $I_{\max}$ [mA] \\
+\midrule
+\vr EDU-CIAA-NXP (LPC4337) & Lógica & 5 & 180 & 320 \\
+\vr ESP32 DevKit v1 (WiFi activo) & Lógica & 5 & 160 & 240 \\
+\vr Módulo VL53L0X & Lógica & 3,3 & 10 & 20 \\
+\vr Módulos AS5600 (x2) & Lógica & 3,3 & 13 & 13 \\
+\vr IMU (MPU6050) & Lógica & 3,3 & 5 & 5 \\
+\midrule
+\vr \textbf{Total ramal de lógica (referido a \SI{5}{V})} & & & \textbf{368} & \textbf{598} \\
+\midrule
+\vr Motores GA12-N20 (x2), corriente de batería & Potencia & 7,4 (PWM $\approx$50\,\%) & 15 & 100 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+Los consumos de la EDU-CIAA (\SI{180}{mA}--\SI{320}{mA}, con periféricos y FTDI activos) y del ESP32 (\SI{160}{mA}--\SI{240}{mA}, con ráfagas de transmisión WiFi) son valores de referencia; su suma da \SI{340}{mA}--\SI{560}{mA}. Para el módulo VL53L0X se adoptó un consumo de \SI{10}{mA}--\SI{20}{mA} y para cada módulo AS5600 aproximadamente \SI{6,5}{mA}; el consumo de la IMU es una estimación típica. Los sensores se alimentan a \SI{3,3}{V} desde las placas; para no subestimar el consumo, su corriente se suma en el total referido a \SI{5}{V}.
+
+Los consumos de los motores se obtienen de las corrientes medidas en el prototipo (Tabla~\ref{tab:consumo}) referidas a la batería de $\SI{7,4}{V}$ con ciclo de trabajo del 50\,\%. Como cota de peor caso, con los motores completamente bloqueados la corriente de bloqueo de \SI{1}{A} de la hoja de datos, referida a \SI{3,7}{V} de tensión media, resulta de \SI{0,31}{A} por motor (si los \SI{1}{A} corresponden a \SI{12}{V}) o \SI{0,62}{A} por motor (si corresponden a \SI{6}{V}); tomada de la batería (mitad de esos valores), es de \SI{0,31}{A}--\SI{0,62}{A} para ambos motores.
+\end{visar}
+\pendiente{contrastar los consumos de las placas con su hoja de datos o con una medición propia; el ESP32 puede presentar picos superiores durante la transmisión WiFi.}
+
+\subsubsection{Arquitectura de alimentación}
+Se utilizarán dos portapilas, cada uno con espacio para dos celdas 18650 en serie (\SI{7,4}{V} nominales, hasta \SI{8,4}{V} cargadas). Uno de ellos alimenta el ramal de potencia (puente H DRV8833 y motores), dentro del rango de alimentación del DRV8833 (\SI{2,7}{V}--\SI{10,8}{V}). El otro portapilas queda disponible para el ramal de lógica (EDU-CIAA, ESP32 y sensores), cuya configuración se plantea como alternativas en la sección siguiente. Ambos ramales comparten masa.
+
+\begin{visar}
+La velocidad de los motores se regula por PWM, con un ciclo de trabajo de operación del orden del 50\,\%.
+\end{visar}
+
+\subsubsection{Alternativas de alimentación del ramal de lógica}
+\begin{visar}
+\textbf{Todas las alternativas de esta sección son propuestas y deben ser visadas por el grupo antes de la entrega.} Se comparan cuatro configuraciones del ramal de lógica; para todas se utilizaron los consumos de la Tabla~\ref{tab:balance} (\SI{368}{mA}--\SI{598}{mA} a \SI{5}{V}, es decir, \SI{1,84}{W}--\SI{2,99}{W}) y celdas de \SI{2200}{mAh} (capacidad supuesta, sin considerar la tensión de corte).
+
+\begin{itemize}[nosep]
+  \item \textbf{Opción 1: una celda con elevador.} Una celda de \SI{3,7}{V} y un módulo elevador MT3608 ajustado a \SI{5}{V}, con eficiencia supuesta $\eta = 0{,}85$. Requiere un portapilas de una sola celda, distinto de los adquiridos.
+  \item \textbf{Opción 2: dos celdas en paralelo con elevador.} Dos celdas en paralelo (\SI{3,7}{V}, \SI{4400}{mAh}) y el mismo módulo elevador. Es posible eléctricamente, y entrega más corriente con la mitad de corriente por celda, pero requiere conectar las celdas en paralelo (los portapilas adquiridos las conectan en serie) y que ambas tengan la misma tensión de carga al conectarlas.
+  \item \textbf{Opción 3: dos celdas en serie con reductor.} Un portapilas con dos celdas en serie (\SI{7,4}{V}, \SI{2200}{mAh}) y un módulo reductor (\emph{buck}) a \SI{5}{V}, con eficiencia supuesta $\eta = 0{,}90$. Es compatible con los portapilas adquiridos.
+  \item \textbf{Opción 4: dos celdas en serie directo a las placas.} Se alimentan las placas directamente con \SI{7,4}{V} por sus entradas con regulador propio. Para el cálculo se supuso regulación lineal a \SI{5}{V}, con $\eta = 5/7{,}4 \approx 0{,}68$.
+\end{itemize}
+
+La energía almacenada es $E = \SI{2,2}{Ah} \times \SI{3,7}{V} \approx \SI{8,14}{Wh}$ para una celda y $\approx \SI{16,3}{Wh}$ para dos. La potencia tomada de la batería es $P_{\text{bat}} = P_{\text{carga}}/\eta$ y la autonomía $t = E/P_{\text{bat}}$. Por ejemplo, para la opción 3:
+\begin{align*}
+P_{\text{bat,min}} &= \frac{\SI{1,84}{W}}{0{,}90} \approx \SI{2,04}{W} \;\Rightarrow\; t_{\max} = \frac{\SI{16,3}{Wh}}{\SI{2,04}{W}} \approx \SI{8,0}{h},\\
+P_{\text{bat,max}} &= \frac{\SI{2,99}{W}}{0{,}90} \approx \SI{3,32}{W} \;\Rightarrow\; t_{\min} = \frac{\SI{16,3}{Wh}}{\SI{3,32}{W}} \approx \SI{4,9}{h}.
+\end{align*}
+\end{visar}
+
+\begin{table}[H]
+\centering
+\caption{Comparación de alternativas de alimentación del ramal de lógica.}
+\label{tab:opciones}
+\small
+\begin{tabular}{L{3.7cm}ccccc}
+\toprule
+Opción & $E$ [Wh] & $\eta$ & $I_{\text{bat}}$ [A] & $t$ [h] \\
+\midrule
+\vr 1: 1 celda + elevador & 8,1 & 0,85 & 0,59--0,95 & 2,3--3,8 \\
+\vr 2: 2 celdas en paralelo + elevador & 16,3 & 0,85 & 0,59--0,95 & 4,6--7,5 \\
+\vr 3: 2 celdas en serie + reductor & 16,3 & 0,90 & 0,28--0,45 & 4,9--8,0 \\
+\vr 4: 2 celdas en serie, directo & 16,3 & $\approx$0,68 & 0,37--0,60 & 3,7--6,0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+Las opciones 2 a 4 duplican la energía disponible respecto de la opción 1, porque utilizan dos celdas. Otra variante compatible con los portapilas adquiridos es conectar en paralelo los dos portapilas (2S2P, \SI{7,4}{V} y \SI{4400}{mAh}) y compartirlos entre lógica y potencia, a costa de perder la independencia de los ramales.
+\end{visar}
+\pendiente{(i) elegir la opción de alimentación de la lógica; (ii) para la opción 4, verificar en las hojas de datos de la EDU-CIAA y del ESP32 DevKit el rango de tensión de entrada de sus pines con regulador propio y la disipación del regulador lineal (con \SI{7,4}{V} a \SI{5}{V} se disipan $\approx$\SI{2,4}{V}$\times I$); (iii) verificar que el pin de \SI{5}{V} de la EDU-CIAA admite ser usado como entrada de alimentación y si posee protección contra polaridad inversa o realimentación hacia USB; (iv) para las opciones 1 y 2, verificar que el MT3608 soporta la corriente de entrada (hasta $\approx$\SI{0,95}{A}); para la opción 3, definir el modelo del módulo reductor y su corriente máxima.}
+
+\subsubsection{Estimación de autonomía del ramal de potencia}
+\begin{visar}
+Con dos celdas en serie ($\approx$\SI{16,3}{Wh}) y una corriente de batería de \SI{100}{mA} a \SI{7,4}{V} ($\approx$\SI{0,74}{W}), la autonomía del ramal de potencia es de $\approx$\SI{22}{h}. En el peor caso, con los motores bloqueados de manera continua y una corriente de batería de \SI{0,62}{A} ($\approx$\SI{4,6}{W}), la autonomía sería de $\approx$\SI{3,5}{h}. En ambos casos el ramal de potencia no es el factor limitante frente al ramal de lógica.
+\end{visar}
+
+\subsubsection{Protección y carga de las celdas}
+Aún no se definieron la protección de las celdas ni el cargador.
+\pendiente{definir el sistema de protección (sobredescarga, sobrecorriente y, para configuraciones en serie, balance entre celdas) y el cargador de celdas, y reflejarlos en la lista de materiales. Comparar la autonomía obtenida con el requerimiento \textit{[TiempoMinOperacion]} del TP1, que aún no tiene valor, y reemplazar la capacidad supuesta de \SI{2200}{mAh} por la de la celda adquirida.}
+
+% ------------------------------------------------------------------------------
+\subsection{Interfaces eléctricas entre bloques}
+% ------------------------------------------------------------------------------
+\subsubsection{Interfaz EDU-CIAA -- DRV8833}
+El DRV8833 se controla mediante cuatro entradas lógicas (\texttt{IN1}--\texttt{IN4}), dos por cada puente H (uno por motor), compatibles con la lógica de \SI{3,3}{V} de la EDU-CIAA.
+
+\begin{table}[H]
+\centering
+\caption{Control de un motor mediante las entradas del puente H.}
+\label{tab:logica}
+\begin{tabular}{lcc}
+\toprule
+Acción & \texttt{IN1} & \texttt{IN2} \\
+\midrule
+\vr Avance & Alto (PWM) & Bajo \\
+\vr Retroceso & Bajo & Alto (PWM) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\pendiente{asignar los pines concretos de la EDU-CIAA (salidas PWM) a \texttt{IN1}--\texttt{IN4}.}
+
+\subsubsection{Bus \texorpdfstring{I\textsuperscript{2}C}{I2C} de sensores}
+El módulo VL53L0X, los dos módulos AS5600 y la IMU MPU6050 se comunican por I\textsuperscript{2}C. La Tabla~\ref{tab:i2c} resume las direcciones de cada dispositivo.
+
+\begin{table}[H]
+\centering
+\caption{Direcciones I\textsuperscript{2}C de los dispositivos de sensado.}
+\label{tab:i2c}
+\small
+\begin{tabular}{L{3.8cm}cL{5.6cm}}
+\toprule
+Dispositivo & Dirección (7 bits) & Observación \\
+\midrule
+\vr Módulo VL53L0X & 0x29 & Una única unidad; el módulo expone solo 4 pines \\
+\vr Módulo AS5600 (rueda izquierda) & 0x36 & Dirección fija \\
+\vr Módulo AS5600 (rueda derecha) & 0x36 & \textbf{Conflicto:} misma dirección \\
+\vr MPU6050 & 0x68 / 0x69 & Seleccionable con el pin \texttt{AD0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{visar}
+El AS5600 posee una dirección I\textsuperscript{2}C fija (\texttt{0x36}), por lo que dos unidades no pueden compartir el mismo bus. Las alternativas son: (i)~un multiplexor I\textsuperscript{2}C (por ejemplo, TCA9548A); (ii)~utilizar la salida PWM o analógica del módulo, que están disponibles según el proveedor, en lugar de la interfaz I\textsuperscript{2}C; (iii)~emplear la variante AS5600L, de dirección programable; (iv)~conectar cada módulo a un bus I\textsuperscript{2}C distinto.
+
+El AS5600 mide el ángulo absoluto del imán de magnetización diametral incluido con el módulo, ubicado sobre su eje, a una distancia máxima de aproximadamente \SI{2}{mm}, y entrega 12 bits (4096 posiciones) por vuelta. El dibujo mecánico del motor GA12-N20 no muestra un eje trasero accesible, por lo que el imán no podría montarse en el rotor. La alternativa es montar el imán, centrado, en el eje de salida o en la cara exterior de la rueda, con el módulo fijo al chasis enfrentado al imán. Con esta disposición el imán gira a la velocidad de la rueda (del orden de \SI{1}{vuelta/s} a \SI{62}{RPM}), lo que simplifica el conteo de vueltas.
+\end{visar}
+\pendiente{decidir la alternativa para resolver el conflicto de direcciones de los AS5600 y verificar sobre el motor físico que no existe eje trasero accesible, definiendo el montaje del imán en la rueda o en el eje de salida.}
+
+\begin{visar}
+Los módulos AS5600 operan por defecto a \SI{3,3}{V} en alimentación y señales, compatibles con la lógica de la EDU-CIAA. El módulo VL53L0X incorpora regulador, \emph{pull-ups} y adaptación de nivel, y admite \SI{2,6}{V}--\SI{5,5}{V} en su alimentación. Se prevé alimentar los tres módulos desde \SI{3,3}{V}.
+\end{visar}
+\pendiente{verificar la tensión de pull-up del módulo VL53L0X y de los módulos AS5600 para no aplicar \SI{5}{V} sobre los pines de la EDU-CIAA; definir las interfaces con el ESP32.}
+
+% ------------------------------------------------------------------------------
+\subsection{Circuito esquemático}
+% ------------------------------------------------------------------------------
+\begin{visar}
+\textbf{Criterios de modelado en KiCad.} Los módulos integrados (ESP32, DRV8833 y MT3608) se modelan como cajas negras mediante tiras de pines (\emph{pin headers}) de paso \SI{2,54}{mm}, conectando únicamente sus entradas y salidas.
+
+\textbf{Componentes discretos de filtrado.}
+\begin{itemize}[nosep]
+  \item Un capacitor electrolítico de \SI{470}{\micro F}/\SI{16}{V} en paralelo con la alimentación de potencia del DRV8833 (pin \texttt{VM} a \texttt{GND}).
+  \item Un capacitor cerámico de \SI{100}{nF} (código 104), soldado directamente en los bornes de cada motor N20, para filtrar el ruido de conmutación (EMI).
+\end{itemize}
+\end{visar}
+\pendiente{confirmar la cantidad de capacitores cerámicos (el borrador indica ``2x en los bornes de cada motor'': se interpretó como uno por motor) y el formato físico. Insertar el esquemático completo realizado en KiCad.}
+
+% ------------------------------------------------------------------------------
+\subsection{Diseño mecánico}
+% ------------------------------------------------------------------------------
+El módulo VL53L0X permanece fijo sobre el chasis y la cobertura angular de $360^\circ$ se obtiene haciendo girar el robot completo sobre su eje. En consecuencia, el ángulo de cada medición se obtiene de la odometría (módulos AS5600) y de la IMU.
+
+\begin{visar}
+A modo de referencia, se propone un chasis acrílico o impreso en 3D de dos ruedas de tracción de \SI{43}{mm} de diámetro, con una rueda loca auxiliar tipo \emph{castor} de bola de acero o teflón. Los módulos AS5600, de \SI{23}{mm}$\times$\SI{23}{mm} y con un orificio de montaje de \SI{3,7}{mm}, deben fijarse al chasis enfrentados al imán de cada rueda a no más de \SI{2}{mm}. Conviene medir el desplazamiento del sensor respecto del centro de giro del robot (punto medio entre ruedas) para corregirlo en el cálculo del mapa. Dado que el robot gira apoyado en la rueda loca, pueden producirse deslizamientos que degraden la estimación del ángulo solo con los módulos AS5600; la IMU (giróscopo) permite compensarlo.
+
+La resolución angular del barrido depende de la velocidad de giro $\omega$ y del tiempo de medición $T_s$ del sensor: $\Delta\theta = \omega\,T_s$. Con $T_s \approx \SI{33}{ms}$ y una muestra por grado, la velocidad máxima de giro es de $\approx 30\,^\circ/\mathrm{s}$ (una vuelta completa en $\approx\SI{12}{s}$).
+\end{visar}
+\pendiente{describir el chasis, las ruedas y la rueda loca efectivamente usados en el prototipo, y la posición del sensor sobre el chasis. Verificar que la IMU utilizada incluya giróscopo (el TP1 menciona solo aceleración lineal en 3 ejes) y actualizar en el TP1 el requerimiento de cobertura de $360^\circ$, que ahora se logra girando el robot.}
+
+% ------------------------------------------------------------------------------
+\subsection{Lista de materiales (BOM)}
+% ------------------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{Lista de materiales preliminar.}
+\label{tab:bom}
+\small
+\begin{tabular}{cL{5.6cm}L{1.6cm}L{3cm}}
+\toprule
+Ítem & Descripción / código de parte & Cant. & Formato \\
+\midrule
+1 & Motorreductor GA12-N20 (Handson Technology), \SI{6}{V}--\SI{12}{V}, 150:1 & 2 & Motor con caja metálica \\
+\vr 2 & Módulo driver DRV8833 & 1 & Módulo, pines 2,54~mm \\
+\vr 3 & Módulo elevador MT3608 (opciones 1 y 2 de alimentación) & 1 & Módulo \\
+\vr 4 & Módulo reductor (\emph{buck}) a \SI{5}{V} (opción 3), modelo a definir & 1 & Módulo \\
+5 & Celda Li-ion 18650, \SI{3,7}{V} (capacidad a confirmar) & 4 & Cilíndrica \\
+6 & Portapilas 18650 para 2 celdas en serie & 2 & Portapilas \\
+7 & Protección de celdas (BMS), no definida & \pq & \pq \\
+8 & Cargador de celdas, no definido & \pq & \pq \\
+\vr 9 & Capacitor electrolítico \SI{470}{\micro F}/\SI{16}{V} & 1 & \pq \\
+\vr 10 & Capacitor cerámico \SI{100}{nF} (104) & 2 & \pq \\
+\vr 11 & ESP32 DevKit v1 & 1 & Módulo \\
+\vr 12 & IMU MPU6050 & 1 & Módulo \\
+13 & Módulo sensor de distancia VL53L0X & 1 & Módulo breakout \\
+14 & Módulo AS5600 (TinyTronics AS5600MOD), con imán diametral incluido & 2 & Módulo \SI{23}{mm}$\times$\SI{23}{mm} \\
+\vr 15 & Solución al conflicto de direcciones del AS5600 (por ejemplo, multiplexor TCA9548A) & \pq & \pq \\
+16 & Chasis, ruedas y rueda loca & \pq & \pq \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\pendiente{confirmar cantidades y qué materiales ya se poseen, como la EDU-CIAA y los motores del prototipo. El módulo elevador o reductor depende de la opción de alimentación elegida.}
+
+\newpage
+
+% ==============================================================================
+% SECCIÓN 4: DISEÑO DE CIRCUITOS ESQUEMÁTICOS
+% ==============================================================================
+\section{Diseño de circuitos esquemáticos}
+\pendiente{Resúmenes solicitados en los incisos (a) a (d) de la guía: análisis del esquemático de la EDU-CIAA, glosario de términos de diseño esquemático, creación de un componente en el editor y ejemplo con las tiras de pines P1 y P2.}
+
+% ==============================================================================
+% SECCIÓN 5: CRONOGRAMA Y TAREAS
+% ==============================================================================
+\section{Cronograma y división de tareas}
+
+\begin{tcolorbox}[colframe=green!60!black, colback=green!5!white, arc=2mm, title=\textbf{Cronograma ajustado (Google Sheets)}]
+  En el siguiente enlace podrá acceder al cronograma, ajustado según el estado de avance:
+  \vspace{0.2cm}
+
+  \textbf{Enlace:} \href{https://docs.google.com/spreadsheets/d/1GAEeQZzlFaMgwrWLOeSPeK0nOuYQg2peXEuDazYDfk4/edit?usp=sharing}{Ver Planilla de Cronograma en Google Sheets}
+\end{tcolorbox}
+
+\pendiente{Verificar que la planilla esté actualizada con el estado de avance y que el enlace tenga permisos de lectura.}
+
+\subsection{Tareas realizadas por integrante}
+\begin{table}[H]
+\centering
+\caption{Horas invertidas por integrante hasta la fecha.}
+\begin{tabular}{L{4cm}L{6.5cm}c}
+\toprule
+Integrante & Tareas realizadas & Horas \\
+\midrule
+\pendiente{Integrante} & Prototipado del subsistema de movimiento \pendiente{confirmar autor} & \pendiente{} \\
+\pendiente{Integrante} & \pendiente{} & \pendiente{} \\
+\pendiente{Integrante} & \pendiente{} & \pendiente{} \\
+\pendiente{Integrante} & \pendiente{} & \pendiente{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tareas restantes}
+\pendiente{Listado de tareas pendientes.}
+
+% ==============================================================================
+% SECCIÓN 6: BIBLIOGRAFÍA
+% ==============================================================================
+\section{Bibliografía}
+
+\begin{thebibliography}{99}
+
+\bibitem{siegwart}
+R. Siegwart, I. R. Nourbakhsh y D. Scaramuzza,
+\textit{Introduction to Autonomous Mobile Robots}, 2.a ed.
+Cambridge, MA, USA: MIT Press, 2011, cap. 3, pp. 89--108.
+URL: \url{https://www.ucg.ac.me/skladiste/blog_13268/objava_56689/fajlovi/Introduction%20to%20Autonomous%20Mobile%20Robots%20book.pdf}.
+
+\bibitem{thrun}
+S. Thrun, W. Burgard y D. Fox,
+\textit{Probabilistic Robotics}.
+Cambridge, MA, USA: MIT Press, 2005, cap. 5, 8, 9, 10.
+URL: \url{https://docs.ufpr.br/~danielsantos/ProbabilisticRobotics.pdf}.
+
+\bibitem{lidar}
+Homemade LIDAR sensor with Arduino \& Processing,
+URL: \url{https://www.youtube.com/watch?v=fQ2iB7qkrUg}.
+
+\bibitem{slam}
+How to Make an Autonomous Mapping Robot Using SLAM,
+URL: \url{https://www.youtube.com/watch?v=xqjVTE7QvOg}.
+
+\bibitem{autonomo}
+Autonomous Navigation playlist by MATLAB,
+URL: \url{https://www.youtube.com/watch?v=Fw8JQ5Q-ZwU&list=PLn8PRpmsu08rLRGrnF-S6TyGrmcA2X7kg}.
+
+\bibitem{drv8833}
+Texas Instruments, \textit{DRV8833 Dual H-Bridge Motor Driver}, hoja de datos.
+
+\bibitem{nano}
+Arduino, \textit{Arduino Nano}, hoja de datos.
+
+\bibitem{vl53mod}
+Microcontrollers Lab, \textit{VL53L0X LIDAR Distance Sensor Interfacing with Arduino}, URL: \url{https://microcontrollerslab.com/vl53l0x-module-interfacing-arduino/}.
+
+\bibitem{as5600mod}
+TinyTronics, \textit{AS5600 Magnetic Angle Sensor Encoder Module (AS5600MOD)}, URL: \url{https://www.tinytronics.nl/en/sensors/magnetic-field/as5600-magnetic-angle-sensor-encoder-module}.
+
+\bibitem{ga12n20}
+Handson Technology, \textit{G12-N20 Geared Mini DC Motor}, hoja de datos, URL: \url{https://www.handsontec.com}.
+
+\bibitem{vl53l0x}
+STMicroelectronics, \textit{VL53L0X: Time-of-Flight ranging sensor}, hoja de datos.
+
+\bibitem{as5600}
+ams-OSRAM, \textit{AS5600: 12-Bit Programmable Contactless Potentiometer}, hoja de datos.
+
+\bibitem{mt3608}
+Aerosemi, \textit{MT3608 2A Step-Up Converter}, hoja de datos.
+
+\bibitem{esp32}
+Espressif Systems, \textit{ESP32 Series Datasheet}.
+
+\bibitem{ciaa}
+Proyecto CIAA, \textit{EDU-CIAA-NXP}, esquemáticos y documentación.
+
+\bibitem{kicad}
+KiCad EDA, URL: \url{https://www.kicad.org/}.
+
+\end{thebibliography}
+
+\end{document}
