@@ -4,7 +4,7 @@ Un ADR registra una decisión, su contexto, justificación y consecuencias. Esto
 
 | ADR | Decisión | Estado |
 | --- | --- | --- |
-| [0001](0001-firmware-architecture.md) | Tres capas y HAL de periféricos con backends de plataforma | Aceptada. |
+| [0001](0001-firmware-architecture.md) | Tres capas, servicios de HAL y adaptadores de bibliotecas de dispositivos | Aceptada. |
 | [0002](0002-target-platform.md) | EDU-CIAA objetivo y ESP32 para validación | Aceptada. |
 | [0003](0003-freertos-runtime.md) | FreeRTOS transversal con coordinación compartida | Aceptada. |
 | [0004](0004-sensor-selection.md) | AS5600 definitivo y VL53L0X para distancia | Aceptada. |

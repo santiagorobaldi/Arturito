@@ -1,16 +1,14 @@
 # Descripción del sistema
 
-Arturito es un rover diferencial concebido para explorar interiores, estimar su posición, construir un mapa de ocupación 2D y navegar evitando obstáculos. Su funcionamiento integra sensado, procesamiento, comunicaciones, tracción y alimentación, junto con un dispositivo externo para visualizar información e interactuar con el robot.
+Arturito integra sensado, procesamiento, comunicaciones, tracción y alimentación, junto con un dispositivo externo para visualizar información e interactuar con el robot. En la siguiente imagen puede verse el diagrama de bloques por funcionalidad que conforman al sistema.
 
-Este documento presenta los bloques funcionales y sus relaciones. La organización del firmware se desarrolla en [software-architecture.md](software-architecture.md); el avance de implementación se registran en [development-status.md](development-status.md).
 
-## Esquema general
+## Esquema general en bloques funcionales
 
 ![Esquema general de los bloques funcionales de Arturito](images/EsquemaGeneral.png)
 
 Los bloques resaltados en rojo —Selector de Modo y Teleoperación— representan funcionalidades secundarias. Las conexiones verdes muestran la distribución de alimentación; las demás conexiones representan el intercambio de información y comandos.
 
-## Bloques funcionales
 
 | Bloque | Función |
 | --- | --- |
@@ -33,10 +31,10 @@ Los bloques resaltados en rojo —Selector de Modo y Teleoperación— represent
 
 ## Flujo de información
 
-El Bloque de Sensado entrega sus mediciones al procesamiento central. Cinemática estima el movimiento del robot y proporciona la pose odométrica a Mapeo y Estimación de Posición. Este último combina la pose y las distancias para construir una representación del entorno.
+El Bloque de Sensado recolecta las mediciones necesarias para conocer el entorno y el movimiento del robot, como la distancia a los obstáculos, la información inercial para determinar su orientación y la posición angular de los encoders de cada rueda. Estas mediciones se entregan al Bloque de Procesamiento Central para su tratamiento. Dentro de este, el Bloque de Cinemática utiliza el giro de las ruedas, la información inercial y las dimensiones del chasis para estimar cuánto se desplazó y giró el robot, obteniendo una estimación de su posición y orientación.
 
-Navegación Autónoma utiliza esa representación y la posición estimada para decidir el siguiente movimiento. Cinemática transforma las consignas en acciones por rueda y el Bloque de Tracción y Actuación produce el desplazamiento. Las nuevas mediciones cierran este ciclo.
+El Bloque de Mapeo y Estimación de Posición recibe esa estimación junto con las distancias medidas y la dirección en la que se tomó cada lectura. Con estos datos ubica los obstáculos respecto del robot y construye el mapa de ocupación del entorno, donde se representan las zonas libres, ocupadas y todavía desconocidas. Como resultado, proporciona el mapa y la posición estimada del robot al Bloque de Navegación Autónoma y al Bloque de Comunicaciones.
 
-El Bloque de Comunicaciones conecta el procesamiento central con el Dispositivo Externo, donde se visualizan el mapa y el estado y se ingresan comandos. Si se incorporan las funcionalidades secundarias, Teleoperación y Selector de Modo permiten elegir entre comandos autónomos y manuales.
+El Bloque de Navegación Autónoma utiliza el mapa y la posición del robot para identificar por dónde puede desplazarse y qué zonas quedan por explorar. A partir de esa información decide el siguiente destino o la dirección de avance y envía las consignas de movimiento al Bloque de Cinemática. Este las convierte en indicaciones para el movimiento de cada rueda, que recibe el Bloque de Tracción y Actuación para accionar los motores utilizando la energía de la alimentación. El desplazamiento producido genera nuevas mediciones de los sensores y permite repetir el ciclo.
 
-Los requisitos verificables están en [Requisitos](requirements.md), y la selección de componentes y sus conexiones se describen en [Hardware](hardware.md).
+Por su parte, el Bloque de Comunicaciones transmite el mapa, la posición y el estado del robot al Dispositivo Externo para su visualización, y recibe los comandos de inicio y parada enviados por el usuario. 

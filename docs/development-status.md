@@ -69,3 +69,15 @@ Generar una grilla desde una pose odométrica no basta para afirmar que existe S
 ## Próximos pasos para el equipo
 
 Visar contratos y jerarquía documental; confirmar modelo/montaje de sensores y evidencia física de EDU-CIAA; definir criterios numéricos de aceptación; resolver timestamps y sincronización antes de mapear en movimiento; integrar AS5600 y DRV8833 con contratos medibles; desarrollar pose y grilla. El informe de avance propone radio como próximo avance funcional, pero esa prioridad no se redefine aquí.
+
+## Aclaración de responsabilidades del 7 de octubre de 2026
+
+El equipo precisa que Device Drivers conserva el funcionamiento propio
+del dispositivo y HAL abstrae el acceso de plataforma. Los adaptadores
+de periféricos permiten reutilizar bibliotecas existentes sin sustituir
+los servicios de buses como modelo general. La estimación de orientación
+del rover pertenece a Application. El informe de avance y el relevamiento
+anterior asignan integración de orientación al driver de MPU6050; esa
+asignación difiere de esta definición estructural. No se modificó código
+ni se dio por realizada una reubicación de funciones. Véase
+[ADR-0001](decisions/0001-firmware-architecture.md).

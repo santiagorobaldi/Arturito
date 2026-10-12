@@ -4,30 +4,40 @@ Arturito es un proyecto desarrollado para la materia "Taller de Proyecto I" de l
 
 El proyecto propone un rover de tracción diferencial que combine mediciones de distancia, información inercial y giro de las ruedas para estimar su posición y construir un mapa de ocupación 2D del entorno el cual pueda visualizarse en un dispositivo externo, asi como tambien que sea capaz de navegar el entorno de manera autonoma para la generacion completa del mapa. 
 
+## Hardware utilizado
+
+
+| Componente | Cantidad | Función en Arturito |
+| --- | ---: | --- | --- |
+| Placa EDU-CIAA NXP | 1 | Plataforma principal de procesamiento y control del rover | 
+| Placa NodeMCU V3 con módulo Wi-Fi| 1 | Comunicación inalámbrica con el dispositivo externo | 
+| GY-521 MPU6050 | 1 | Sensado inercial del robot | 
+| GY-53 VL53L0X | 1 | Medición de distancia al entorno mediante tiempo de vuelo (ToF) |
+| AS5600 | 2 | Medición de posición angular de cada rueda para odometría | 
+| DRV8833 | 1 | Etapa de potencia para controlar ambos motores DC | 
+| Motorreductor GA12-N20 | 2 | Generar la tracción diferencial del rover |
+| Celda Li-ion 18650 | 3 | Alimentación del sistema | 
+| MT3608 DC-DC Step-Up | 1 | Elevar y regular la tensión del ramal de lógica |
+
+Esta lista describe la selección del proyecto; el avance de integración está en [development-status.md](docs/development-status.md).
+
+
 ## Arquitectura de software
 
 El firmware se organiza en tres capas: **Application → Device Drivers → HAL**. La aplicación reúne la lógica del robot; los drivers ofrecen el tratamiento de sensores y actuadores; y la HAL concentra el acceso al hardware mediante implementaciones específicas para cada plataforma. Esta separación permite reutilizar la lógica compartida y probar los módulos de manera independiente.
 
-El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que ESP32 se utiliza para validar sensores y firmware compartido.
+El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que otras plataformas como ESP32/Arduino se utiliza para validar sensores y firmware compartido.
 
-El documento [software-architecture.md](docs/software-architecture.md) desarrolla las responsabilidades de cada capa, la justificación de esta organización y los contratos de la implementación actual.
+El documento [software-architecture.md](docs/software-architecture.md) desarrolla más a fondo las responsabilidades de cada capa y su interacción.
 
-## Hardware principal
-
-- MPU6050 para medición inercial.
-- VL53L0X para distancia por tiempo de vuelo.
-- AS5600 como encoder absoluto de cada rueda.
-- DRV8833 para la etapa de potencia de los motores.
-
-Esta lista describe la selección del proyecto; el avance de integración está en [development-status.md](docs/development-status.md).
 
 ## Organización del repositorio
 
 | Carpeta | Contenido |
 | --- | --- |
 | `shared/config/` | Configuración general. |
-| `shared/layer1_hal/` | Contratos de HAL. |
-| `shared/layer2_drivers/` | Drivers para la utilización de sensores. |
+| `shared/layer1_hal/` | Contratos de capa HAL. |
+| `shared/layer2_drivers/` | Drivers para la utilización de sensores y modulos integrados. |
 | `shared/layer3_app/` | Lógica compartida de la aplicación y coordinación de las tareas de lectura, procesamiento y envío de datos con FreeRTOS (Runtime). |
 | `EDU-CIAA/` | Configuración de compilación, bibliotecas, inicialización de la aplicación y acceso al hardware de EDU-CIAA. |
 | `ESP32/` | Proyecto PlatformIO con Arduino, inicialización de la aplicación y acceso al hardware de ESP32. |
@@ -42,14 +52,15 @@ Leé primero la [descripción del sistema](docs/system-overview.md) y luego la [
 
 ## Documentación
 
-- [Sistema](docs/system-overview.md): bloques funcionales y flujo de información.
-- [Software](docs/software-architecture.md): responsabilidades, interfaces y concurrencia.
-- [Hardware](docs/hardware.md): componentes, conexiones conocidas y datos por completar.
-- [Requisitos](docs/requirements.md): trazabilidad y criterios de verificación.
-- [Build y ejecución](docs/build-and-run.md): procedimientos y protocolo serie.
-- [Estado de desarrollo](docs/development-status.md): implementación, antecedentes de validación y discrepancias.
-- [Decisiones de arquitectura](docs/decisions/README.md): acuerdos y sus consecuencias.
+Este README ofrece una vista general del proyecto y sirve como punto de entrada a la documentación. Cada documento desarrolla un aspecto específico:
 
+- [Descripción del sistema](docs/system-overview.md): explica cómo está compuesto el robot mediante el diagrama de bloques funcionales y describe la función de cada bloque y sus relaciones.
+- [Arquitectura del firmware](docs/software-architecture.md): detalla las capas, sus interfaces y cómo se distribuyen en las carpetas del repositorio. 
+- [Hardware](docs/hardware.md): reúne los componentes y sus características relevantes, su distribución en los bloques del sistema y sus conexiones. Sirve de guía para consultar los esquemáticos del proyecto en `KiCad/` y las decisiones de diseño asociadas.
+- [Requisitos](docs/requirements.md): detalla qué debe cumplir el proyecto y cómo verificar cada requisito, vinculándolo con criterios de aceptación y pruebas de validación.
+- [Preparación, compilación y ejecución](docs/build-and-run.md): indica qué herramientas se necesitan, cómo configurar el entorno, compilar y cargar el firmware en las placas, y poner en marcha la visualización y los programas de prueba.
+- [Decisiones de diseño — ADR](docs/decisions/README.md): registra las decisiones importantes del proyecto, su contexto, justificación y consecuencias. Los demás documentos remiten aquí para explicar las elecciones de diseño.
+- [Registro de desarrollo](docs/development-status.md): conserva el relevamiento de implementación y validación y las diferencias detectadas respecto de los informes. Su continuidad como documento de seguimiento está pendiente de definir.
 
 ## Autores
 

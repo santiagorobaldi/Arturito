@@ -1,41 +1,75 @@
-# ADR-0001: Arquitectura de firmware en tres capas y HAL de periféricos
+# ADR-0001: Tres capas y abstracción del acceso a dispositivos
 
-Estado: aceptada. Registro documental: 3 de octubre de 2026.
+Estado: aceptada. Registro documental inicial: 3 de octubre de 2026.
+Aclaración del alcance: 7 de octubre de 2026.
 
 ## Contexto
 
-El rover combina tratamiento de sensores, estimación de posición, mapeo, navegación y actuación. La lógica debe poder reutilizarse entre plataformas sin depender de las bibliotecas de una placa. Los antecedentes describen una organización de cuatro capas y una HAL de buses; el acuerdo del proyecto establece tres capas con una HAL de periféricos.
+El firmware debe separar la lógica del rover, los drivers de sus
+dispositivos y el acceso dependiente de la arquitectura. Algunos
+dispositivos requieren implementar su protocolo; otros cuentan con
+bibliotecas existentes ligadas a una plataforma.
 
 ## Decisión
 
-Organizar el firmware como **Application → Device Drivers → HAL**. Cinemática, estimación, mapeo y navegación son módulos de Application. Los drivers compartidos realizan el tratamiento de dispositivos; HAL encapsula el acceso físico mediante backends específicos de plataforma.
+Organizar el firmware como **Application → Device Drivers → HAL**.
+Application contiene estimación de orientación y pose, cinemática,
+mapeo, navegación y coordinación del sistema. Device Drivers implementa
+el funcionamiento de sensores y actuadores, incluyendo su configuración,
+interpretación de lecturas y tratamiento propio de la variable física.
+HAL abstrae los buses y servicios dependientes de la plataforma.
 
-HAL ofrece servicios de periféricos con magnitudes y semántica comunes. Sus backends pueden utilizar bibliotecas de sensores, bibliotecas de placa o acceso de menor nivel. La conversión de formatos y unidades de esas bibliotecas queda en HAL; la calibración, integración y validación del dispositivo quedan en los drivers compartidos.
+Cuando un driver implementa el protocolo del dispositivo, utiliza
+operaciones de HAL como lectura y escritura por I2C. Cuando existe
+una biblioteca de dispositivo dependiente de plataforma, HAL puede
+encapsularla mediante un adaptador de periférico que utiliza el driver.
+La HAL de periféricos es una modalidad de adaptación para esos casos,
+no una sustitución general de los drivers por tratamiento de la lógica
+del rover.
 
 ## Justificación
 
-**Separación de responsabilidades.** Los algoritmos del robot trabajan con pose, mapa y consignas, mientras los drivers tratan dispositivos y HAL resuelve su acceso físico. Esta frontera limita el impacto de cambiar una biblioteca o un mecanismo de comunicación sobre los algoritmos de aplicación.
+**Separación de responsabilidades.** El driver conoce el sensor o
+actuador; HAL conoce el mecanismo de acceso de la plataforma; Application
+conoce el robot. Así se distinguen los registros del dispositivo de
+los registros del microcontrolador y se mantiene la lógica del rover
+fuera de ambas capas inferiores.
 
-**Tres niveles de abstracción.** Cinemática, estimación, mapeo y navegación comparten conceptos del dominio del robot. Separarlos en módulos dentro de Application permite delimitar sus responsabilidades sin agregar otro nivel jerárquico entre robótica y aplicación.
+**Portabilidad.** Las interfaces de HAL permiten conservar el protocolo
+de un driver al cambiar de arquitectura. Los adaptadores permiten
+mantener también esa independencia cuando se utiliza una biblioteca
+ligada a una placa o framework.
 
-**Portabilidad y verificación.** Las interfaces comunes permiten conservar el tratamiento y los algoritmos al adaptar una placa. También permiten suministrar mediciones conocidas para verificar un módulo sin depender del sensor físico y comprobar un backend contra su contrato por separado.
+**Reutilización de bibliotecas.** Encapsular una implementación existente
+evita reescribir su acceso al chip. El adaptador normaliza la interfaz
+para que esa biblioteca no imponga dependencias de plataforma al driver
+compartido o a la aplicación.
 
-**HAL de periféricos.** Esta frontera permite adaptar bibliotecas existentes de sensores al contrato del proyecto. Evita que los drivers compartidos deban conocer los registros del chip y las particularidades de cada biblioteca de acceso. Las bibliotecas pueden resolver inicialización, transacciones y lecturas; HAL normaliza el resultado que reciben las capas superiores.
-
-## Enfoques de los antecedentes
-
-La organización de cuatro capas separaba algoritmos de robótica y aplicación. El acuerdo de tres capas reúne esas funciones en Application, conservando su separación mediante módulos.
-
-Una HAL de buses ofrecería operaciones genéricas, como leer bytes por I2C, y dejaría el protocolo del sensor en el driver compartido. Esa frontera favorece compartir el protocolo del chip, pero exige desarrollarlo o adaptarlo fuera de las bibliotecas específicas de plataforma. El proyecto adopta la frontera de periféricos descrita arriba. Estos enfoques aparecen en los antecedentes; no se presenta esta comparación como un ensayo experimental de alternativas.
+**Tres capas.** Los algoritmos de robótica y la coordinación del sistema
+se organizan como módulos de Application. Sus responsabilidades pueden
+separarse sin añadir otra capa jerárquica.
 
 ## Consecuencias
 
-- Los drivers compartidos quedan independientes de Arduino, sAPI y otras bibliotecas de plataforma.
-- Los detalles de acceso a un chip pueden variar entre backends, que deben mantener unidades, signos, validez y errores equivalentes.
-- Una biblioteca de acceso al chip puede llamarse driver, pero ocupa un papel distinto al driver compartido de Arturito.
-- La coordinación puede acceder a servicios de HAL para adquirir datos o transportarlos, respetando el tratamiento y los límites de cada capa; la arquitectura no exige que toda llamada atraviese las tres capas.
-- Cambiar a una HAL de buses o modificar el número de capas requiere un ADR que reemplace esta decisión.
+- Los drivers pueden conocer los registros del dispositivo, pero el
+  acceso específico del microcontrolador queda encapsulado en HAL.
+- La conversión de lecturas y el suavizado de ruido propios del sensor
+  pueden pertenecer al driver; estimar orientación o pose del rover
+  pertenece a Application.
+- Los adaptadores de bibliotecas deben conservar el significado, las
+  unidades y la validez de la interfaz del dispositivo.
+- Los servicios de buses y los adaptadores de periféricos pueden
+  coexistir dentro de HAL, según las necesidades de cada dispositivo.
 
-## Referencias
+## Referencias y aclaración
 
-[Descripción estructural](../software-architecture.md), diseño preliminar de firmware e informe de avance. Las diferencias con los antecedentes y el cumplimiento de esta estructura se registran en [Estado de desarrollo](../development-status.md).
+La [arquitectura de software](../software-architecture.md) describe estas
+responsabilidades. El diseño preliminar presenta servicios de buses y
+el informe de avance describe el uso de una HAL de periféricos. La
+aclaración del equipo establece cómo conviven ambos enfoques.
+
+Esta aclaración corrige la redacción inicial de este ADR, que presentaba
+la HAL de periféricos como frontera general y asignaba integración de
+orientación a los drivers. Esa interpretación no representa el diseño
+definido por el equipo. Las diferencias del código y de los informes
+previos deben registrarse en [Estado de desarrollo](../development-status.md).
