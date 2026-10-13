@@ -81,3 +81,37 @@ anterior asignan integración de orientación al driver de MPU6050; esa
 asignación difiere de esta definición estructural. No se modificó código
 ni se dio por realizada una reubicación de funciones. Véase
 [ADR-0001](decisions/0001-firmware-architecture.md).
+
+## Separación MPU6050 y orientación — 12 de octubre de 2026
+
+Se separó el tratamiento de mediciones del cálculo de orientación:
+
+- `shared/layer2_drivers/driver_mpu6050.h/.c`: inicialización, adquisición de aceleración/giro X/Y/Z y calibración de offsets residuales. Muestra pública única, parámetros directos y resultado booleano.
+- `shared/layer1_hal/hal_mpu6050.h`: contrato específico de adquisición MPU6050. Reemplaza hal_imu.h y reutiliza el tipo de muestra del driver.
+- `ESP32/src/layer1_hal/hal_mpu6050_esp32.cpp`: adaptador Adafruit MPU6050 2.2.9. Mantiene los rangos ESP32 previos de ±2 g y ±250 grados/s; biblioteca declarada para esp32dev e imu_only.
+- `EDU-CIAA/rover/src/layer1_hal/hal_mpu6050_educiaa.c`: adaptador de sAPI existente, sin cambios a la biblioteca. sAPI configura ±16 g y ±2000 grados/s y calibra automáticamente al inicializar. El driver compartido calibra el error residual de sus lecturas, por decisión explícita del usuario.
+- `shared/layer3_app/odometry.h/.c`: orientación relativa de un eje, zona muerta e integración trapezoidal usando el instante de cada muestra. La primera muestra establece referencia; reset modifica orientación y restart_tracking conserva el ángulo y descarta el historial temporal.
+- `app_runtime.c`: adquiere mediante el driver; adjunta tiempo, validez y secuencia. Procesa una secuencia una sola vez. Ante lectura fallida o salto de secuencia reinicia seguimiento temporal conservando el ángulo. Se conserva el intercambio de última muestra mediante mutex; sigue sin ser una cola de todas las mediciones.
+- `ESP32/src/tests/imu_only.cpp`: utiliza driver y odometry. Conserva el formato theta,-1. El programa completo conserva theta,distancia y los mensajes de calibración.
+
+La espera inicial de 2 s, las 1000 muestras separadas por 2 ms y la zona muerta de 1 grado/s permanecen en el código que coordina la aplicación, no como dependencias de configuración del driver. La calibración ahora cubre los tres ejes de giro. Application conserva el montaje actual: giro Z del sensor usado directamente como giro Z del robot; otro montaje exige una transformación explícita.
+
+### Límites de la implementación
+
+El éxito booleano no garantiza detectar todos los fallos I2C. Adafruit getEvent 2.2.9 devuelve true sin propagar el resultado de la lectura interna. sAPI 0.5.2 utiliza una comprobación !resultado sobre una función que devuelve 1/-1. Ambas bibliotecas se mantuvieron intactas. El driver comprueba valores finitos y conserva la salida ante fallos detectados, pero un valor obsoleto finito puede pasar esa comprobación. Ensayos de desconexión y soporte de lectura con errores fiables quedan pendientes.
+
+Los módulos tienen estado único y requieren acceso serializado. El arranque calibra antes de iniciar adquisición. Después, una tarea accede a MPU6050 y otra accede a odometry; publicación utiliza la copia protegida del resultado. El tiempo adjunto se toma al terminar la lectura, no del instante físico interno de conversión del sensor. No se conocen movimientos durante intervalos perdidos.
+
+La integración corresponde a diseño de tres capas, pero el driver de distancia y sus accesos directos desde Application no se refactorizaron en este cambio. No se afirma conformidad completa del resto del firmware.
+
+### Verificación
+
+Compilaron correctamente los tres entornos ESP32: esp32dev, imu_only y tof_only. No se cargó hardware ni se verificaron precisión, tiempos o calibración físicamente.
+
+El primer build EDU-CIAA encontró una cabecera C++ que el toolchain no resolvía (bits/c++config.h) al compilar hal_tof_educiaa.cpp. Los módulos driver_mpu6050.c, odometry.c, app_runtime.c y el nuevo adaptador MPU6050 compilaron. Se comprobó después el build completo agregando temporalmente CPLUS_INCLUDE_PATH al directorio arm-none-eabi de cabeceras C++ del paquete; el rover completo compiló y enlazó correctamente con esa preparación temporal. No se modificaron Makefile, ToF ni bibliotecas para resolver el entorno.
+
+### Adaptadores EDU-CIAA en C — 12 de octubre de 2026
+
+Por preferencia del equipo, los cuatro adaptadores del rover EDU-CIAA usan C: hal_mpu6050_educiaa.c, hal_tof_educiaa.c, hal_time_educiaa.c y hal_telemetry_educiaa.c. Las declaraciones privadas del ToF y el estado MPU6050 utilizan static; se retiraron namespace y static_cast. config.mk incorpora esos archivos mediante SRC. La biblioteca sAPI y las interfaces públicas permanecen sin cambios por esta conversión.
+
+El rover compiló y enlazó correctamente utilizando el compilador C, sin CPLUS_INCLUDE_PATH adicional. El ajuste de cabeceras C++ registrado anteriormente deja de ser necesario para este programa. ESP32 conserva sus adaptadores C++ para utilizar Arduino y Adafruit. No se realizaron cargas ni pruebas físicas.

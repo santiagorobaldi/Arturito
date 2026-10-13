@@ -3,7 +3,7 @@
 #include "config.h"
 #include "driver_distancia.h"
 #include "driver_mpu6050.h"
-#include "hal_imu.h"
+#include "odometry.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
 #include "hal_tof.h"
@@ -34,6 +34,9 @@
 typedef struct {
     float gyro_z_rads;
     float distancia_m_raw;
+    uint32_t time_ms;
+    uint32_t sequence;
+    bool imu_valid;
 } RawSample;
 
 typedef struct {
@@ -41,7 +44,7 @@ typedef struct {
     float distancia_m;
 } AppSample;
 
-static RawSample raw_sample = {0.0f, -1.0f};
+static RawSample raw_sample = {0};
 static AppSample app_sample = {0.0f, -1.0f};
 static SemaphoreHandle_t raw_mutex;
 static SemaphoreHandle_t app_mutex;
@@ -56,10 +59,15 @@ static uint32_t stack_depth_from_bytes(uint32_t stack_bytes) {
 
 static void task_acquire(void *context) {
     (void)context;
+    uint32_t sequence = 0;
 
     for (;;) {
         RawSample sample;
-        sample.gyro_z_rads = hal_imu_get_gyro_z_rads();
+        mpu6050_sample_t imu;
+        sample.imu_valid = mpu6050_read(&imu);
+        sample.time_ms = hal_millis();
+        sample.sequence = ++sequence;
+        sample.gyro_z_rads = sample.imu_valid ? imu.gyro_z_rads : 0.0f;
         sample.distancia_m_raw = hal_tof_get_distance_m();
 
         xSemaphoreTake(raw_mutex, portMAX_DELAY);
@@ -72,6 +80,7 @@ static void task_acquire(void *context) {
 
 static void task_update_drivers(void *context) {
     (void)context;
+    uint32_t previous_sequence = 0;
 
     for (;;) {
         RawSample raw;
@@ -79,10 +88,20 @@ static void task_update_drivers(void *context) {
         raw = raw_sample;
         xSemaphoreGive(raw_mutex);
 
-        mpu6050_update_gyro(raw.gyro_z_rads);
+        if (raw.sequence == previous_sequence) {
+            vTaskDelay(pdMS_TO_TICKS(SAMPLE_PERIOD_MS));
+            continue;
+        }
+        if (raw.sequence - previous_sequence != 1U || !raw.imu_valid) {
+            odometry_restart_tracking();
+        }
+        previous_sequence = raw.sequence;
+        if (raw.imu_valid && !odometry_update(raw.gyro_z_rads, raw.time_ms)) {
+            odometry_restart_tracking();
+        }
 
         AppSample sample;
-        sample.theta_rad = mpu6050_get_theta_rad();
+        sample.theta_rad = odometry_get_angle();
         sample.distancia_m = distancia_validate_m(raw.distancia_m_raw);
 
         xSemaphoreTake(app_mutex, portMAX_DELAY);
@@ -122,7 +141,7 @@ static void task_start_application(void *context) {
     (void)context;
     hal_telemetry_write("# Arturito protocolo V0: theta_rad,distancia_m");
 
-    if (!hal_imu_init()) {
+    if (!mpu6050_init(IMU_I2C_ADDR)) {
         hal_telemetry_write("# ERROR: IMU MPU6050 no encontrada. Halt.");
         vTaskDelete(NULL);
     }
@@ -134,9 +153,14 @@ static void task_start_application(void *context) {
         hal_telemetry_write("# ToF OK");
     }
 
-    mpu6050_init();
     hal_telemetry_write("# Calibrando IMU (quedate quieto)...");
-    mpu6050_calibrate();
+    hal_delay(2000);
+    if (!mpu6050_calibrate_gyro(1000U, 2U) ||
+        !odometry_init(0.0f, 0.017453292519943295f)) {
+        hal_telemetry_write("# ERROR: fallo calibracion/inicio de orientacion.");
+        vTaskDelete(NULL);
+        return;
+    }
     distancia_init();
     hal_telemetry_write("# Calibracion OK. Datos CSV:");
 
@@ -188,7 +212,7 @@ static void task_start_application(void *context) {
 }
 
 bool app_runtime_start(void) {
-    raw_sample.gyro_z_rads = 0.0f;
+    raw_sample = (RawSample){0};
     raw_sample.distancia_m_raw = -1.0f;
     app_sample.theta_rad = 0.0f;
     app_sample.distancia_m = -1.0f;

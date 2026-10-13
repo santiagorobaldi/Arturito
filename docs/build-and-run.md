@@ -483,3 +483,11 @@ Los pasos se basan en el relevamiento y los archivos del proyecto examinados el 
 Para cerrar el recorrido desde cero todavía hay que incorporar el enlace de descarga de Arturito, confirmar el modelo físico ESP32 y sus controladores USB, registrar el controlador utilizado para programación EDU-CIAA y probar ambos recorridos en una instalación nueva.
 
 El cableado y la alimentación necesarios para ejecutar cada aplicación deben estar en `hardware.md`. Las versiones de dependencias deben registrarse y fijarse después de validar una combinación: actualmente algunas dependencias ESP32 se resuelven sin una versión única fijada.
+
+## Nota de dependencias de la actualización MPU6050
+
+Desde el 12/10/2026, los entornos esp32dev e imu_only declaran Adafruit MPU6050 2.2.9. PlatformIO también resuelve Adafruit BusIO y Adafruit Unified Sensor. Esa biblioteca proporciona inicialización y adquisición de aceleración y giro en unidades físicas; el adaptador del proyecto está en src/layer1_hal/hal_mpu6050_esp32.cpp. La calibración residual está en el driver compartido y la estimación angular en shared/layer3_app/odometry.c.
+
+Las implementaciones HAL MPU6050 sustituyen a los archivos hal_imu anteriores. El diagnóstico imu_only ahora también compila odometry.c; tof_only conserva sus fuentes y dependencias.
+
+Los cuatro adaptadores del rover EDU-CIAA están implementados en C y seleccionados mediante SRC en rover/config.mk. Este programa no necesita la ruta adicional de cabeceras C++ utilizada en una comprobación anterior. ESP32 conserva sus adaptadores .cpp para utilizar sus bibliotecas C++.

@@ -1,56 +1,63 @@
-#include <math.h>
-
 #include "driver_mpu6050.h"
-#include "config.h"
-#include "hal_imu.h"
+#include "hal_mpu6050.h"
 #include "hal_time.h"
 
-#ifndef PI
-#define PI 3.14159265358979323846f
-#endif
+#include <math.h>
+#include <stddef.h>
 
-static float gyroZ_offset_rads = 0.0f;
-static float theta_rad = 0.0f;
-static uint32_t tiempo_previo = 0;
-static float gz_rads_previo = 0.0f;
+static bool initialized;
+static float offset_x, offset_y, offset_z;
 
-void mpu6050_init(void) {
+static bool sample_is_finite(const mpu6050_sample_t *s) {
+    return isfinite(s->accel_x_mss) && isfinite(s->accel_y_mss) &&
+           isfinite(s->accel_z_mss) && isfinite(s->gyro_x_rads) &&
+           isfinite(s->gyro_y_rads) && isfinite(s->gyro_z_rads);
 }
 
-void mpu6050_calibrate(void) {
-    hal_delay(2000);
-    float suma = 0.0f;
-    for (int i = 0; i < 1000; i++) {
-        suma += hal_imu_get_gyro_z_rads();
-        hal_delay(2);
+bool mpu6050_init(uint8_t address) {
+    initialized = false;
+    if ((address != 0x68U && address != 0x69U) || !hal_mpu6050_init(address)) {
+        return false;
     }
-    gyroZ_offset_rads = suma / 1000.0f;
-    tiempo_previo = hal_millis();
-    gz_rads_previo = 0.0f;
-    theta_rad = 0.0f;
+    offset_x = offset_y = offset_z = 0.0f;
+    initialized = true;
+    return true;
 }
 
-void mpu6050_update_gyro(float gz_rads_raw) {
-    float gz_rads = gz_rads_raw - gyroZ_offset_rads;
-
-    uint32_t tiempo_actual = hal_millis();
-    float dt = (tiempo_actual - tiempo_previo) / 1000.0f;
-    tiempo_previo = tiempo_actual;
-
-    float deadband_rads = 1.0f * (PI / 180.0f);
-    if (fabsf(gz_rads) <= deadband_rads) {
-        gz_rads = 0.0f;
+bool mpu6050_read(mpu6050_sample_t *sample) {
+    mpu6050_sample_t next;
+    if (!initialized || sample == NULL || !hal_mpu6050_read(&next) || !sample_is_finite(&next)) {
+        return false;
     }
-
-    float velocidad_promedio = (gz_rads + gz_rads_previo) / 2.0f;
-    theta_rad += velocidad_promedio * dt;
-    gz_rads_previo = gz_rads;
+    next.gyro_x_rads -= offset_x;
+    next.gyro_y_rads -= offset_y;
+    next.gyro_z_rads -= offset_z;
+    if (!sample_is_finite(&next)) {
+        return false;
+    }
+    *sample = next;
+    return true;
 }
 
-void mpu6050_update(void) {
-    mpu6050_update_gyro(hal_imu_get_gyro_z_rads());
-}
-
-float mpu6050_get_theta_rad(void) {
-    return theta_rad;
+bool mpu6050_calibrate_gyro(uint32_t sample_count, uint32_t interval_ms) {
+    double sum_x = 0.0, sum_y = 0.0, sum_z = 0.0;
+    if (!initialized || sample_count == 0U || interval_ms == 0U) {
+        return false;
+    }
+    for (uint32_t i = 0; i < sample_count; ++i) {
+        mpu6050_sample_t sample;
+        if (!hal_mpu6050_read(&sample) || !sample_is_finite(&sample)) {
+            return false;
+        }
+        sum_x += sample.gyro_x_rads;
+        sum_y += sample.gyro_y_rads;
+        sum_z += sample.gyro_z_rads;
+        if (i + 1U < sample_count) {
+            hal_delay(interval_ms);
+        }
+    }
+    offset_x = (float)(sum_x / sample_count);
+    offset_y = (float)(sum_y / sample_count);
+    offset_z = (float)(sum_z / sample_count);
+    return true;
 }

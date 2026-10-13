@@ -26,8 +26,8 @@ INCLUDES += -I../shared/layer3_app
 SRC += $(wildcard ../shared/layer2_drivers/*.c)
 SRC += $(wildcard ../shared/layer3_app/*.c)
 
-# 3. HAL de EDU-CIAA (C++ por usar namespace)
-CXXSRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_time_educiaa.cpp
-CXXSRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_imu_educiaa.cpp
-CXXSRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_tof_educiaa.cpp
-CXXSRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_telemetry_educiaa.cpp
+# 3. Implementaciones HAL de EDU-CIAA en C
+SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_time_educiaa.c
+SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_mpu6050_educiaa.c
+SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_tof_educiaa.c
+SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_telemetry_educiaa.c

@@ -4,66 +4,65 @@
 
 // Port del driver de Adafruit/Pololu para VL53L0X (single-shot ranging).
 
-namespace {
-  const uint8_t VL53L0X_ADDR = 0x29;
+  static const uint8_t VL53L0X_ADDR = 0x29;
 
-  const uint8_t REG_SYSRANGE_START = 0x00;
-  const uint8_t REG_SYSTEM_SEQUENCE_CONFIG = 0x01;
-  const uint8_t REG_SYSTEM_INTERRUPT_CONFIG_GPIO = 0x0A;
-  const uint8_t REG_GPIO_HV_MUX_ACTIVE_HIGH = 0x84;
-  const uint8_t REG_SYSTEM_INTERRUPT_CLEAR = 0x0B;
-  const uint8_t REG_RESULT_INTERRUPT_STATUS = 0x13;
-  const uint8_t REG_RESULT_RANGE_STATUS = 0x14;
-  const uint8_t REG_MSRC_CONFIG_CONTROL = 0x60;
-  const uint8_t REG_PRE_RANGE_CONFIG_VCSEL_PERIOD = 0x50;
-  const uint8_t REG_PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI = 0x51;
-  const uint8_t REG_FINAL_RANGE_CONFIG_VCSEL_PERIOD = 0x70;
-  const uint8_t REG_FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI = 0x71;
-  const uint8_t REG_FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT = 0x44;
-  const uint8_t REG_MSRC_CONFIG_TIMEOUT_MACROP = 0x46;
-  const uint8_t REG_IDENTIFICATION_MODEL_ID = 0xC0;
-  const uint8_t REG_IDENTIFICATION_REVISION_ID = 0xC2;
-  const uint8_t REG_DYNAMIC_SPAD_NUM_REQUESTED_REF_SPAD = 0x4E;
-  const uint8_t REG_DYNAMIC_SPAD_REF_EN_START_OFFSET = 0x4F;
-  const uint8_t REG_GLOBAL_CONFIG_REF_EN_START_SELECT = 0xB6;
-  const uint8_t REG_GLOBAL_CONFIG_SPAD_ENABLES_REF_0 = 0xB0;
+  static const uint8_t REG_SYSRANGE_START = 0x00;
+  static const uint8_t REG_SYSTEM_SEQUENCE_CONFIG = 0x01;
+  static const uint8_t REG_SYSTEM_INTERRUPT_CONFIG_GPIO = 0x0A;
+  static const uint8_t REG_GPIO_HV_MUX_ACTIVE_HIGH = 0x84;
+  static const uint8_t REG_SYSTEM_INTERRUPT_CLEAR = 0x0B;
+  static const uint8_t REG_RESULT_INTERRUPT_STATUS = 0x13;
+  static const uint8_t REG_RESULT_RANGE_STATUS = 0x14;
+  static const uint8_t REG_MSRC_CONFIG_CONTROL = 0x60;
+  static const uint8_t REG_PRE_RANGE_CONFIG_VCSEL_PERIOD = 0x50;
+  static const uint8_t REG_PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI = 0x51;
+  static const uint8_t REG_FINAL_RANGE_CONFIG_VCSEL_PERIOD = 0x70;
+  static const uint8_t REG_FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI = 0x71;
+  static const uint8_t REG_FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT = 0x44;
+  static const uint8_t REG_MSRC_CONFIG_TIMEOUT_MACROP = 0x46;
+  static const uint8_t REG_IDENTIFICATION_MODEL_ID = 0xC0;
+  static const uint8_t REG_IDENTIFICATION_REVISION_ID = 0xC2;
+  static const uint8_t REG_DYNAMIC_SPAD_NUM_REQUESTED_REF_SPAD = 0x4E;
+  static const uint8_t REG_DYNAMIC_SPAD_REF_EN_START_OFFSET = 0x4F;
+  static const uint8_t REG_GLOBAL_CONFIG_REF_EN_START_SELECT = 0xB6;
+  static const uint8_t REG_GLOBAL_CONFIG_SPAD_ENABLES_REF_0 = 0xB0;
 
-  const int VCSEL_PERIOD_PRE_RANGE = 0;
-  const int VCSEL_PERIOD_FINAL_RANGE = 1;
+  static const int VCSEL_PERIOD_PRE_RANGE = 0;
+  static const int VCSEL_PERIOD_FINAL_RANGE = 1;
 
-  const int TIMEOUT_TRIES = 1000; // ~1s con delay(1) adentro del loop
+  static const int TIMEOUT_TRIES = 1000; // ~1s con delay(1) adentro del loop
 
-  uint8_t stop_variable = 0;
-  uint32_t measurement_timing_budget_us = 0;
-  bool vl53l0x_ok = false;
+  static uint8_t stop_variable = 0;
+  static uint32_t measurement_timing_budget_us = 0;
+  static bool vl53l0x_ok = false;
 
-  uint8_t read_u8(uint8_t reg) {
+  static uint8_t read_u8(uint8_t reg) {
     uint8_t val = 0;
     i2cRead(I2C0, VL53L0X_ADDR, &reg, 1, TRUE, &val, 1, TRUE);
     return val;
   }
 
-  void write_u8(uint8_t reg, uint8_t val) {
+  static void write_u8(uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
     i2cWrite(I2C0, VL53L0X_ADDR, buf, 2, TRUE);
   }
 
-  uint16_t read_u16(uint8_t reg) {
+  static uint16_t read_u16(uint8_t reg) {
     uint8_t buf[2] = {0, 0};
     i2cRead(I2C0, VL53L0X_ADDR, &reg, 1, TRUE, buf, 2, TRUE);
     return ((uint16_t)buf[0] << 8) | buf[1];
   }
 
-  void write_u16(uint8_t reg, uint16_t val) {
+  static void write_u16(uint8_t reg, uint16_t val) {
     uint8_t buf[3] = {reg, (uint8_t)(val >> 8), (uint8_t)(val & 0xFF)};
     i2cWrite(I2C0, VL53L0X_ADDR, buf, 3, TRUE);
   }
 
-  float decode_timeout(uint16_t val) {
+  static float decode_timeout(uint16_t val) {
     return (float)(val & 0xFF) * powf(2.0f, (float)((val & 0xFF00) >> 8)) + 1.0f;
   }
 
-  uint16_t encode_timeout(uint32_t timeout_mclks) {
+  static uint16_t encode_timeout(uint32_t timeout_mclks) {
     uint32_t ls_byte = 0;
     uint16_t ms_byte = 0;
     if (timeout_mclks > 0) {
@@ -77,24 +76,24 @@ namespace {
     return 0;
   }
 
-  uint32_t timeout_mclks_to_us(uint32_t timeout_period_mclks, uint8_t vcsel_period_pclks) {
+  static uint32_t timeout_mclks_to_us(uint32_t timeout_period_mclks, uint8_t vcsel_period_pclks) {
     uint32_t macro_period_ns = ((2304UL * vcsel_period_pclks * 1655UL) + 500UL) / 1000UL;
     return ((timeout_period_mclks * macro_period_ns) + (macro_period_ns / 2)) / 1000UL;
   }
 
-  uint32_t timeout_us_to_mclks(uint32_t timeout_period_us, uint8_t vcsel_period_pclks) {
+  static uint32_t timeout_us_to_mclks(uint32_t timeout_period_us, uint8_t vcsel_period_pclks) {
     uint32_t macro_period_ns = ((2304UL * vcsel_period_pclks * 1655UL) + 500UL) / 1000UL;
     return ((timeout_period_us * 1000UL) + (macro_period_ns / 2)) / macro_period_ns;
   }
 
-  uint8_t get_vcsel_pulse_period(int type) {
+  static uint8_t get_vcsel_pulse_period(int type) {
     uint8_t val = (type == VCSEL_PERIOD_PRE_RANGE)
                       ? read_u8(REG_PRE_RANGE_CONFIG_VCSEL_PERIOD)
                       : read_u8(REG_FINAL_RANGE_CONFIG_VCSEL_PERIOD);
     return ((val + 1) & 0xFF) << 1;
   }
 
-  void get_sequence_step_enables(bool* tcc, bool* dss, bool* msrc,
+  static void get_sequence_step_enables(bool* tcc, bool* dss, bool* msrc,
                                   bool* pre_range, bool* final_range) {
     uint8_t seq = read_u8(REG_SYSTEM_SEQUENCE_CONFIG);
     *tcc = (seq >> 4) & 0x1;
@@ -104,7 +103,7 @@ namespace {
     *final_range = (seq >> 7) & 0x1;
   }
 
-  void get_sequence_step_timeouts(bool pre_range, uint32_t* msrc_dss_tcc_us,
+  static void get_sequence_step_timeouts(bool pre_range, uint32_t* msrc_dss_tcc_us,
                                    uint32_t* pre_range_us, uint32_t* final_range_us,
                                    uint8_t* final_range_vcsel_pclks,
                                    uint32_t* pre_range_mclks) {
@@ -122,7 +121,7 @@ namespace {
     *final_range_us = timeout_mclks_to_us(final_mclks, *final_range_vcsel_pclks);
   }
 
-  uint32_t get_measurement_timing_budget() {
+  static uint32_t get_measurement_timing_budget() {
     uint32_t budget = 1910 + 960;
     bool tcc, dss, msrc, pre_range, final_range;
     get_sequence_step_enables(&tcc, &dss, &msrc, &pre_range, &final_range);
@@ -141,7 +140,7 @@ namespace {
     return budget;
   }
 
-  bool set_measurement_timing_budget(uint32_t budget_us) {
+  static bool set_measurement_timing_budget(uint32_t budget_us) {
     if (budget_us < 20000) return false;
 
     uint32_t used = 1320 + 960;
@@ -169,7 +168,7 @@ namespace {
     return true;
   }
 
-  bool get_spad_info(uint8_t* count, bool* is_aperture) {
+  static bool get_spad_info(uint8_t* count, bool* is_aperture) {
     write_u8(0x80, 0x01);
     write_u8(0xFF, 0x01);
     write_u8(0x00, 0x00);
@@ -202,7 +201,7 @@ namespace {
     return true;
   }
 
-  bool perform_single_ref_calibration(uint8_t vhv_init_byte) {
+  static bool perform_single_ref_calibration(uint8_t vhv_init_byte) {
     write_u8(REG_SYSRANGE_START, 0x01 | (vhv_init_byte & 0xFF));
     int tries = 0;
     while ((read_u8(REG_RESULT_INTERRUPT_STATUS) & 0x07) == 0) {
@@ -214,7 +213,7 @@ namespace {
     return true;
   }
 
-  bool vl53l0x_init() {
+  static bool vl53l0x_init() {
     write_u8(0x88, 0x00);
     write_u8(0x80, 0x01);
     write_u8(0xFF, 0x01);
@@ -303,7 +302,7 @@ namespace {
     return true;
   }
 
-  bool vl53l0x_do_range_measurement() {
+  static bool vl53l0x_do_range_measurement() {
     write_u8(0x80, 0x01);
     write_u8(0xFF, 0x01);
     write_u8(0x00, 0x00);
@@ -321,12 +320,11 @@ namespace {
     return true;
   }
 
-  uint16_t vl53l0x_read_range_mm() {
+  static uint16_t vl53l0x_read_range_mm() {
     uint16_t range = read_u16(REG_RESULT_RANGE_STATUS + 10);
     write_u8(REG_SYSTEM_INTERRUPT_CLEAR, 0x01);
     return range;
   }
-}
 
 bool hal_tof_init(void) {
   uint8_t model_id = read_u8(REG_IDENTIFICATION_MODEL_ID);
