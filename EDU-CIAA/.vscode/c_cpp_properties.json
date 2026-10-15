@@ -6,7 +6,8 @@
                 "${workspaceFolder}/../shared/config",
                 "${workspaceFolder}/../shared/layer1_hal",
                 "${workspaceFolder}/../shared/layer2_drivers",
-                "${workspaceFolder}/libs/**/inc"
+                "${workspaceFolder}/libs/**/inc",
+                "${workspaceFolder}/libs/lpc_open/lpc_chip_43xx/usbd_rom"
             ],
             "defines": [
                 "BOARD=edu_ciaa_nxp",

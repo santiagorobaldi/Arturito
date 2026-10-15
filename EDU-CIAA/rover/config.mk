@@ -11,6 +11,7 @@ DEFINES += BOARD_EDUCIAA
 USE_LPCOPEN=y
 USE_SAPI=y
 USE_FREERTOS=y
+USE_VL53L0X=y
 FREERTOS_HEAP_TYPE=4
 LOAD_INRAM=n
 
@@ -29,5 +30,5 @@ SRC += $(wildcard ../shared/layer3_app/*.c)
 # 3. Implementaciones HAL de EDU-CIAA en C
 SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_time_educiaa.c
 SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_mpu6050_educiaa.c
-SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_tof_educiaa.c
+SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_vl53l0x_educiaa.c
 SRC += $(PROGRAM_PATH_AND_NAME)/src/layer1_hal/hal_telemetry_educiaa.c
