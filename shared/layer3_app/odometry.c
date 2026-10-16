@@ -6,8 +6,7 @@ static float angle, deadband, previous_velocity;
 static uint32_t previous_time;
 
 bool odometry_init(float initial_angle_rad, float deadband_rads) {
-    if (!isfinite(initial_angle_rad) || !isfinite(deadband_rads) ||
-        deadband_rads < 0.0f) {
+    if (deadband_rads < 0.0f) {
         return false;
     }
     angle = initial_angle_rad;
@@ -18,7 +17,7 @@ bool odometry_init(float initial_angle_rad, float deadband_rads) {
 }
 
 bool odometry_update(float angular_velocity_rads, uint32_t sample_time_ms) {
-    if (!initialized || !isfinite(angular_velocity_rads)) {
+    if (!initialized) {
         return false;
     }
     float velocity = fabsf(angular_velocity_rads) <= deadband ?
@@ -28,12 +27,9 @@ bool odometry_update(float angular_velocity_rads, uint32_t sample_time_ms) {
         if (elapsed == 0U || elapsed >= 0x80000000U) {
             return false;
         }
-        float next = angle + (float)(((double)previous_velocity + velocity) *
-                                     0.5 * ((double)elapsed / 1000.0));
-        if (!isfinite(next)) {
-            return false;
-        }
-        angle = next;
+        double dt_s = (double)elapsed / 1000.0;
+        double average_velocity = ((double)previous_velocity + velocity) / 2.0;
+        angle += (float)(average_velocity * dt_s);
     }
     previous_velocity = velocity;
     previous_time = sample_time_ms;
@@ -44,7 +40,7 @@ bool odometry_update(float angular_velocity_rads, uint32_t sample_time_ms) {
 float odometry_get_angle(void) { return angle; }
 
 bool odometry_reset(float angle_rad) {
-    if (!initialized || !isfinite(angle_rad)) {
+    if (!initialized) {
         return false;
     }
     angle = angle_rad;
@@ -53,9 +49,5 @@ bool odometry_reset(float angle_rad) {
 }
 
 bool odometry_restart_tracking(void) {
-    if (!initialized) {
-        return false;
-    }
-    has_previous = false;
-    return true;
+    return odometry_reset(odometry_get_angle());
 }

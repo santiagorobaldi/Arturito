@@ -9,7 +9,7 @@ Adafruit_MPU6050 sensor;
 bool initialized = false;
 }
 
-// Mantiene los rangos previos de ESP32: +/-2 g y +/-250 grados/s.
+
 // Adafruit entrega unidades SI sin calibracion automatica de offsets.
 bool hal_mpu6050_init(uint8_t address) {
     initialized = false;
@@ -21,8 +21,8 @@ bool hal_mpu6050_init(uint8_t address) {
     if (!sensor.begin(address, &Wire)) {
         return false;
     }
-    sensor.setAccelerometerRange(MPU6050_RANGE_2_G);
-    sensor.setGyroRange(MPU6050_RANGE_250_DEG);
+    sensor.setAccelerometerRange(MPU6050_RANGE_16_G);
+    sensor.setGyroRange(MPU6050_RANGE_2000_DEG);
     sensor.setFilterBandwidth(MPU6050_BAND_260_HZ);
     initialized = true;
     return true;

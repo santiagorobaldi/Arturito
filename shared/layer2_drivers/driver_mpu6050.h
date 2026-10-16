@@ -16,8 +16,8 @@ typedef struct {
 } mpu6050_sample_t;
 
 /** Inicializa una MPU6050 en una direccion I2C de 7 bits.
- * Establece offsets en cero si tiene exito; ante fallo inhabilita la lectura.
- * Devuelve true cuando el dispositivo queda disponible.
+ * Establece offsets en cero. Requiere direccion valida (0x68U o 0x69U) y acceso I2C funcional.
+ * Devuelve true cuando el dispositivo queda disponible. False si la direccion es invalida o falla la inicializacion.
  * Los rangos de adquisicion se especifican en la implementacion de acceso. */
 bool mpu6050_init(uint8_t address);
 

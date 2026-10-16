@@ -1,12 +1,11 @@
 #include "app_runtime.h"
 
 #include "config.h"
-#include "driver_distancia.h"
+#include "driver_vl53l0x.h"
 #include "driver_mpu6050.h"
 #include "odometry.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
-#include "hal_tof.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -68,7 +67,7 @@ static void task_acquire(void *context) {
         sample.time_ms = hal_millis();
         sample.sequence = ++sequence;
         sample.gyro_z_rads = sample.imu_valid ? imu.gyro_z_rads : 0.0f;
-        sample.distancia_m_raw = hal_tof_get_distance_m();
+        sample.distancia_m_raw = vl53l0x_get_distance_m();
 
         xSemaphoreTake(raw_mutex, portMAX_DELAY);
         raw_sample = sample;
@@ -102,7 +101,7 @@ static void task_update_drivers(void *context) {
 
         AppSample sample;
         sample.theta_rad = odometry_get_angle();
-        sample.distancia_m = distancia_validate_m(raw.distancia_m_raw);
+        sample.distancia_m = raw.distancia_m_raw;
 
         xSemaphoreTake(app_mutex, portMAX_DELAY);
         app_sample = sample;
@@ -147,7 +146,7 @@ static void task_start_application(void *context) {
     }
     hal_telemetry_write("# IMU OK");
 
-    if (!hal_tof_init()) {
+    if (!vl53l0x_init()) {
         hal_telemetry_write("# WARN: VL53L0X no encontrado. distancia_m=-1");
     } else {
         hal_telemetry_write("# ToF OK");
@@ -161,7 +160,6 @@ static void task_start_application(void *context) {
         vTaskDelete(NULL);
         return;
     }
-    distancia_init();
     hal_telemetry_write("# Calibracion OK. Datos CSV:");
 
     raw_mutex = xSemaphoreCreateMutex();

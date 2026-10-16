@@ -115,3 +115,35 @@ El primer build EDU-CIAA encontró una cabecera C++ que el toolchain no resolví
 Por preferencia del equipo, los cuatro adaptadores del rover EDU-CIAA usan C: hal_mpu6050_educiaa.c, hal_tof_educiaa.c, hal_time_educiaa.c y hal_telemetry_educiaa.c. Las declaraciones privadas del ToF y el estado MPU6050 utilizan static; se retiraron namespace y static_cast. config.mk incorpora esos archivos mediante SRC. La biblioteca sAPI y las interfaces públicas permanecen sin cambios por esta conversión.
 
 El rover compiló y enlazó correctamente utilizando el compilador C, sin CPLUS_INCLUDE_PATH adicional. El ajuste de cabeceras C++ registrado anteriormente deja de ser necesario para este programa. ESP32 conserva sus adaptadores C++ para utilizar Arduino y Adafruit. No se realizaron cargas ni pruebas físicas.
+## Integracion VL53L0X — 14 de octubre de 2026
+
+La API ST 1.0.4 esta integrada en `EDU-CIAA/libs/vl53l0x`, activada con `USE_VL53L0X=y`. El adaptador `hal_vl53l0x_educiaa.c` sustituye la implementacion manual de registros y utiliza la inicializacion/calibracion ST y `VL53L0X_PerformSingleRangingMeasurement`. La interfaz compartida es `hal_vl53l0x.h`; runtime conserva su secuencia de adquisicion y su politica de tareas.
+
+Los archivos `hal_tof_*` se renombraron a `hal_vl53l0x_*` en ambas plataformas. El diagnostico ESP32 ahora se llama `vl53l0x_only`. Se comprobaron compilacion y enlace del rover EDU-CIAA y los entornos ESP32 `esp32dev` y `vl53l0x_only`. No se cargo hardware.
+
+Pendientes: medir tiempos y asociacion ToF/IMU, validar inicializacion y distancias, resolver timeout I2C y revisar concurrencia si se agregan usuarios del bus. `PollingDelay` tiene 250 iteraciones activas con `nop`; no suspende la tarea FreeRTOS. La biblioteca y sus limites estan documentados en `EDU-CIAA/libs/vl53l0x/README.md`.
+
+### Correccion de capas y estructura — 15 de octubre de 2026
+
+El driver compartido se llama `driver_vl53l0x.c/.h`, antes `driver_distancia`.
+La aplicacion inicializa y lee mediante ese driver; ya no llama a la HAL del
+VL53L0X directamente. El driver delega inicializacion y acceso en
+`hal_vl53l0x`, y valida los limites de distancia antes de entregar la lectura.
+La tarea de procesamiento recibe ese valor ya validado.
+
+La biblioteca conserva `EDU-CIAA/libs/vl53l0x/Api/core/{inc,src}` y
+`Api/platform/{inc,src}`. Solo se incorporan los componentes de la API necesarios
+para EDU-CIAA, sin ejemplos PC ni transporte Windows. La carpeta auxiliar
+`VL53L0X_1.0.4/Api/platform/educiaa` y los logs generados por las verificaciones
+se retiraron del workspace a un respaldo temporal. La descarga original deja
+de contener esa copia adicional. La biblioteca integrada es la copia activa.
+
+### Conservacion de las capas de ST — 15 de octubre de 2026
+
+Por indicacion del equipo se conserva la separacion original: `platform.c`
+traduce las operaciones ST y llama a `i2c_platform.c`, que implementa el
+transporte EDU-CIAA mediante LPCOpen. Se restauro `vl53l0x_i2c_platform.h`
+con sus firmas originales. El nucleo coincide byte a byte con la descarga ST.
+La compilacion y el enlace del rover con ambas capas pasaron; no se probo
+hardware. Las funciones auxiliares no utilizadas y aun sin backend devuelven
+fallo explicito, segun lo documentado en la biblioteca.

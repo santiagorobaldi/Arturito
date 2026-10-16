@@ -491,3 +491,14 @@ Desde el 12/10/2026, los entornos esp32dev e imu_only declaran Adafruit MPU6050 
 Las implementaciones HAL MPU6050 sustituyen a los archivos hal_imu anteriores. El diagnóstico imu_only ahora también compila odometry.c; tof_only conserva sus fuentes y dependencias.
 
 Los cuatro adaptadores del rover EDU-CIAA están implementados en C y seleccionados mediante SRC en rover/config.mk. Este programa no necesita la ruta adicional de cabeceras C++ utilizada en una comprobación anterior. ESP32 conserva sus adaptadores .cpp para utilizar sus bibliotecas C++.
+
+## Actualizacion VL53L0X (14/10/2026)
+
+La interfaz vigente es `shared/layer1_hal/hal_vl53l0x.h` y los adaptadores se llaman `hal_vl53l0x_educiaa.c` y `hal_vl53l0x_esp32.cpp`. EDU-CIAA incorpora `libs/vl53l0x` mediante `USE_VL53L0X=y`; ESP32 conserva Adafruit.
+
+El diagnostico antes llamado `tof_only` pasa a `vl53l0x_only`: compilarlo con `pio run -e vl53l0x_only`. Las menciones anteriores del nombre corresponden al estado previo. Para compilar EDU-CIAA, ejecutar `make all` desde `EDU-CIAA`, con el toolchain configurado. Ninguno de esos comandos carga firmware en la placa.
+
+Desde el 15/10/2026, runtime utiliza `driver_vl53l0x.h`, que delega en
+`hal_vl53l0x.h`. La biblioteca ST conserva `libs/vl53l0x/Api/core` y
+`libs/vl53l0x/Api/platform`. Las comprobaciones no requieren guardar logs en las
+carpetas del firmware.

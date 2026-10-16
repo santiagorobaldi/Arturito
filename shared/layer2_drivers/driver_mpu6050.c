@@ -2,17 +2,10 @@
 #include "hal_mpu6050.h"
 #include "hal_time.h"
 
-#include <math.h>
 #include <stddef.h>
 
 static bool initialized;
 static float offset_x, offset_y, offset_z;
-
-static bool sample_is_finite(const mpu6050_sample_t *s) {
-    return isfinite(s->accel_x_mss) && isfinite(s->accel_y_mss) &&
-           isfinite(s->accel_z_mss) && isfinite(s->gyro_x_rads) &&
-           isfinite(s->gyro_y_rads) && isfinite(s->gyro_z_rads);
-}
 
 bool mpu6050_init(uint8_t address) {
     initialized = false;
@@ -26,15 +19,12 @@ bool mpu6050_init(uint8_t address) {
 
 bool mpu6050_read(mpu6050_sample_t *sample) {
     mpu6050_sample_t next;
-    if (!initialized || sample == NULL || !hal_mpu6050_read(&next) || !sample_is_finite(&next)) {
+    if (!initialized || sample == NULL || !hal_mpu6050_read(&next)) {
         return false;
     }
     next.gyro_x_rads -= offset_x;
     next.gyro_y_rads -= offset_y;
     next.gyro_z_rads -= offset_z;
-    if (!sample_is_finite(&next)) {
-        return false;
-    }
     *sample = next;
     return true;
 }
@@ -44,9 +34,9 @@ bool mpu6050_calibrate_gyro(uint32_t sample_count, uint32_t interval_ms) {
     if (!initialized || sample_count == 0U || interval_ms == 0U) {
         return false;
     }
+    mpu6050_sample_t sample;
     for (uint32_t i = 0; i < sample_count; ++i) {
-        mpu6050_sample_t sample;
-        if (!hal_mpu6050_read(&sample) || !sample_is_finite(&sample)) {
+        if (!hal_mpu6050_read(&sample)) {
             return false;
         }
         sum_x += sample.gyro_x_rads;
