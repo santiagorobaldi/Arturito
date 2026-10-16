@@ -3,16 +3,39 @@
         {
             "name": "EDU-CIAA",
             "includePath": [
+                "${workspaceFolder}/test/perception_v0/inc",
                 "${workspaceFolder}/../shared/config",
                 "${workspaceFolder}/../shared/layer1_hal",
                 "${workspaceFolder}/../shared/layer2_drivers",
-                "${workspaceFolder}/libs/**/inc",
-                "${workspaceFolder}/libs/lpc_open/lpc_chip_43xx/usbd_rom"
+                "${workspaceFolder}/../shared/layer3_app",
+                "${workspaceFolder}/../shared/tests/perception_v0",
+                "${workspaceFolder}/libs/lpc_open/boards/edu_ciaa_nxp/inc",
+                "${workspaceFolder}/libs/lpc_open/boards/inc",
+                "${workspaceFolder}/libs/lpc_open/lpc_chip_43xx/inc",
+                "${workspaceFolder}/libs/lpc_open/lpc_chip_43xx/usbd_rom",
+                "${workspaceFolder}/libs/cmsis_core/inc",
+                "${workspaceFolder}/libs/cmsis_dsp/inc",
+                "${workspaceFolder}/libs/sapi/sapi_v0.5.2/**/inc",
+                "${workspaceFolder}/libs/freertos/include",
+                "${workspaceFolder}/libs/freertos/include/private",
+                "${workspaceFolder}/libs/freertos/source/portable/ARM_CM4F",
+                "${workspaceFolder}/libs/freertos/source/portable/ARM_CM",
+                "${workspaceFolder}/libs/freertos/source/portable/lpc4337",
+                "${workspaceFolder}/libs/vl53l0x/Api/core/inc",
+                "${workspaceFolder}/libs/vl53l0x/Api/platform/inc"
             ],
             "defines": [
                 "BOARD=edu_ciaa_nxp",
                 "USE_SAPI",
-                "MPU60X0_DEBUG"
+                "MPU60X0_DEBUG",
+                "BOARD_EDUCIAA",
+                "USE_FREERTOS",
+                "TICK_OVER_RTOS",
+                "__USE_LPCOPEN",
+                "CHIP_LPC43XX",
+                "ARM_MATH_CM4",
+                "CORE_M4",
+                "__USE_NEWLIB"
             ],
             "compilerPath": "arm-none-eabi-gcc",
             "cStandard": "c99",

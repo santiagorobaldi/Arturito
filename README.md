@@ -26,7 +26,7 @@ Esta lista describe la selección del proyecto; el avance de integración está 
 
 El firmware se organiza en tres capas: **Application → Device Drivers → HAL**. La aplicación reúne la lógica del robot; los drivers ofrecen el tratamiento de sensores y actuadores; y la HAL concentra el acceso al hardware mediante implementaciones específicas para cada plataforma. Esta separación permite reutilizar la lógica compartida y probar los módulos de manera independiente.
 
-El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que otras plataformas como ESP32/Arduino se utiliza para validar sensores y firmware compartido.
+El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que otras plataformas como firmware/ESP32/Arduino se utiliza para validar sensores y firmware compartido.
 
 El documento [software-architecture.md](docs/software-architecture.md) desarrolla más a fondo las responsabilidades de cada capa y su interacción.
 
@@ -35,16 +35,18 @@ El documento [software-architecture.md](docs/software-architecture.md) desarroll
 
 | Carpeta | Contenido |
 | --- | --- |
-| `shared/config/` | Configuración general. |
-| `shared/layer1_hal/` | Contratos de capa HAL. |
-| `shared/layer2_drivers/` | Drivers para la utilización de sensores y modulos integrados. |
-| `shared/layer3_app/` | Lógica compartida de la aplicación y coordinación de las tareas de lectura, procesamiento y envío de datos con FreeRTOS (Runtime). |
-| `EDU-CIAA/` | Configuración de compilación, bibliotecas, inicialización de la aplicación y acceso al hardware de EDU-CIAA. |
-| `ESP32/` | Proyecto PlatformIO con Arduino, inicialización de la aplicación y acceso al hardware de ESP32. |
-| `Processing/` | Visualización de orientación y lecturas de distancia. |
-| `docs/` | Documentación técnica, decisiones e informes académicos. |
+| `firmware/shared/config/` | Configuración general. |
+| `firmware/shared/layer1_hal/` | Contratos de capa HAL. |
+| `firmware/shared/layer2_drivers/` | Drivers para la utilización de sensores y modulos integrados. |
+| `firmware/shared/layer3_app/` | Lógica compartida de la aplicación y coordinación de las tareas de lectura, procesamiento y envío de datos con FreeRTOS (Runtime). |
+| `firmware/EDU-CIAA/` | Configuración de compilación, bibliotecas, inicialización de la aplicación y acceso al hardware de EDU-CIAA. |
+| `firmware/ESP32/` | Proyecto PlatformIO con Arduino, inicialización de la aplicación y acceso al hardware de ESP32. |
+| `utils/Processing/` | Visualización de orientación y lecturas de distancia. |
+| `docs/` | Documentación técnica y decisiones. |
+| `KiCad/` | Esquemáticos y diseño de PCB. |
+| `utils/` | Herramientas de PC; actualmente Processing. |
 
-`Arturito.code-workspace` reúne estas carpetas para trabajar en el proyecto. En sistemas sensibles a mayúsculas deben respetarse los nombres reales indicados arriba.
+`Arturito.code-workspace` abre únicamente la raíz del repositorio, mostrando docs, firmware, KiCad y utils sin entradas duplicadas. Para utilizar la configuración específica del editor de una plataforma, abrir directamente firmware/ESP32 o firmware/EDU-CIAA en otra ventana.
 
 ## Cómo empezar
 

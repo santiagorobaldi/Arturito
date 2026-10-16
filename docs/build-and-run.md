@@ -55,40 +55,34 @@ Este mapa muestra las partes importantes para orientarte. Describe la organizaci
 
 ```text
 Arturito/
-├── README.md                  Presentación y enlaces a la documentación
-├── Arturito.code-workspace    Carpetas que se muestran juntas en VS Code
-├── .gitignore                 Reglas para excluir archivos del seguimiento de Git
-├── shared/                    Código del firmware compartido entre plataformas
-│   ├── config/                Parámetros comunes del programa
-│   ├── layer1_hal/            Cabeceras de las interfaces de acceso al hardware
-│   ├── layer2_drivers/        Código compartido para utilizar dispositivos
-│   └── layer3_app/            Código compartido de aplicación
-├── ESP32/                     Construcción y código específico de ESP32
-│   ├── platformio.ini         Selección de placa, fuentes y dependencias
-│   ├── src/                   Fuentes específicas de esta plataforma
-│   │   ├── main.cpp           Entrada al programa
-│   │   ├── layer1_hal/        Implementaciones de acceso al hardware ESP32
-│   │   └── tests/             Programas alternativos de diagnóstico
-│   └── .pio/                  Resultados y dependencias generados por PlatformIO
-├── EDU-CIAA/                  Construcción y soporte para EDU-CIAA
-│   ├── Makefile               Instrucciones para construir y cargar
-│   ├── board.mk               Selección de placa
-│   ├── program.mk             Selección de programa
-│   ├── rover/                 Programa principal para esta plataforma
-│   │   ├── config.mk          Fuentes, opciones y dependencias del programa
-│   │   ├── inc/               Cabeceras y configuración propias del programa
-│   │   ├── src/               Entrada y código específico de EDU-CIAA
-│   │   │   └── layer1_hal/    Implementaciones de acceso al hardware EDU-CIAA
-│   │   └── out/               Resultados generados por la construcción
-│   ├── libs/                  Bibliotecas y soporte externo incluidos
-│   ├── scripts/               Archivos auxiliares de construcción y programación
-│   └── test/                  Programas independientes de diagnóstico
-├── Processing/                Programas de visualización que corren en la PC
-├── KiCad/                     Proyecto electrónico, esquemático y PCB
-├── LatexSanti/                Informes y documentos académicos en LaTeX
-└── docs/                      Documentación técnica organizada por tema
-    ├── decisions/             Registros de decisiones y sus motivos
-    └── images/                Imágenes utilizadas por la documentación
+├── README.md                  Presentación y entrada a la documentación
+├── Arturito.code-workspace    Apertura de VS Code con proyectos de plataforma
+├── .gitignore                 Exclusión de archivos generados y estado local
+├── docs/                      Documentación del proyecto
+│   ├── decisions/             Decisiones y sus motivos
+│   └── images/                Imágenes de documentación
+├── firmware/                  Todo el código de firmware
+│   ├── shared/                Código reutilizado por ambas plataformas
+│   │   ├── config/            Parámetros comunes
+│   │   ├── layer1_hal/        Interfaces comunes de acceso
+│   │   ├── layer2_drivers/    Drivers compartidos
+│   │   └── layer3_app/        Aplicación, odometría y coordinación
+│   ├── ESP32/                 Proyecto PlatformIO
+│   │   ├── platformio.ini     Placa, fuentes y dependencias
+│   │   ├── src/               Entrada, HAL específica y diagnósticos
+│   │   └── .pio/              Dependencias y resultados generados
+│   └── EDU-CIAA/              Proyecto Make
+│       ├── Makefile           Reglas de compilación y carga
+│       ├── board.mk           Placa seleccionada
+│       ├── program.mk         Programa seleccionado
+│       ├── rover/             Programa principal: config.mk, inc/ y src/
+│       │   └── out/           Resultados generados
+│       ├── libs/              Bibliotecas externas y módulos de integración
+│       ├── scripts/           Utilidades de construcción y programación
+│       └── test/              Diagnósticos independientes
+├── KiCad/                     Esquemáticos y PCB
+└── utils/                     Programas auxiliares de computadora
+    └── Processing/            Visualización de datos serie
 ```
 
 `.pio/` y `out/` pueden no existir al descargar el proyecto: las herramientas las crean al construirlo. No son carpetas donde escribir la aplicación.
@@ -97,20 +91,19 @@ Arturito/
 
 | Ubicación | Qué debería contener | Qué tener presente al trabajar |
 |---|---|---|
-| `shared/` | Código del proyecto que se busca reutilizar entre plataformas, sus interfaces y parámetros comunes | Evitar incorporar aquí dependencias directas de una sola placa. La separación de responsabilidades se explica en [Arquitectura de software](software-architecture.md) |
-| `ESP32/src/` | Entrada al programa, adaptaciones ESP32 y diagnósticos de esa plataforma | El código compartido se utiliza desde shared; no necesita copiarse aquí |
-| `EDU-CIAA/rover/` | Entrada, adaptaciones y configuración del programa para EDU-CIAA | `inc/` contiene actualmente FreeRTOSConfig.h; `src/` contiene main.c y las implementaciones HAL |
-| `EDU-CIAA/libs/` | Bibliotecas y soporte externo, con sus archivos de integración | Que estén dentro del repositorio no las convierte en código propio del robot. Conservar licencias y distinguir cambios locales al modificarlas |
-| `EDU-CIAA/scripts/` | Configuraciones de programación y utilidades auxiliares de la infraestructura CIAA | Algunas son heredadas; su presencia no significa que todas se utilicen en la construcción habitual |
-| `ESP32/src/tests/` y `EDU-CIAA/test/` | Programas para diagnosticar componentes por separado | Son programas alternativos. Cargarlos reemplaza la aplicación anterior; el nombre tests no implica pruebas automáticas |
-| `Processing/` | Código que recibe y representa información en la computadora | Se ejecuta por separado; no se incorpora al firmware |
+| `firmware/shared/` | Código del proyecto que se busca reutilizar entre plataformas, sus interfaces y parámetros comunes | Evitar incorporar aquí dependencias directas de una sola placa. La separación de responsabilidades se explica en [Arquitectura de software](software-architecture.md) |
+| `firmware/ESP32/src/` | Entrada al programa, adaptaciones ESP32 y diagnósticos de esa plataforma | El código compartido se utiliza desde shared; no necesita copiarse aquí |
+| `firmware/EDU-CIAA/rover/` | Entrada, adaptaciones y configuración del programa para EDU-CIAA | `inc/` contiene actualmente FreeRTOSConfig.h; `src/` contiene main.c y las implementaciones HAL |
+| `firmware/EDU-CIAA/libs/` | Bibliotecas y soporte externo, con sus archivos de integración | Que estén dentro del repositorio no las convierte en código propio del robot. Conservar licencias y distinguir cambios locales al modificarlas |
+| `firmware/EDU-CIAA/scripts/` | Configuraciones de programación y utilidades auxiliares de la infraestructura CIAA | Algunas son heredadas; su presencia no significa que todas se utilicen en la construcción habitual |
+| `firmware/ESP32/src/tests/` y `firmware/EDU-CIAA/test/` | Programas para diagnosticar componentes por separado | Son programas alternativos. Cargarlos reemplaza la aplicación anterior; el nombre tests no implica pruebas automáticas |
+| `utils/Processing/` | Código que recibe y representa información en la computadora | Se ejecuta por separado; no se incorpora al firmware |
 | `KiCad/` | Archivos del diseño electrónico y bibliotecas de ese diseño | No interviene en la compilación del firmware |
-| `LatexSanti/` | Fuentes de informes académicos y documentación complementaria | No interviene en la compilación del firmware |
 | `docs/` | Guías, descripción del sistema, arquitectura, hardware, requisitos y estado | Enlazar al documento que desarrolla cada tema en lugar de repetirlo |
 | `.pio/` y `out/` | Dependencias administradas y productos de construcción | Cambiar la fuente o configuración original y reconstruir; no editar el resultado para cambiar el programa |
 | `.vscode/`, cuando exista | Configuración local o compartida del editor | No sustituye a platformio.ini ni a los archivos de construcción de Make |
 
-Dentro de `EDU-CIAA/libs/` hay seis grupos principales:
+Dentro de `firmware/EDU-CIAA/libs/` hay seis grupos principales:
 
 | Carpeta | Qué aporta |
 |---|---|
@@ -121,35 +114,27 @@ Dentro de `EDU-CIAA/libs/` hay seis grupos principales:
 | `cmsis_dsp/` | Funciones de procesamiento digital de señales; su presencia no implica que la aplicación las utilice |
 | `sys_newlib/` | Adaptación de servicios de la biblioteca estándar de C para el entorno embebido |
 
-En ESP32, buena parte del soporte externo se obtiene mediante PlatformIO. Sus paquetes generales están fuera del repositorio, normalmente en `.platformio` dentro del perfil del usuario; las bibliotecas descargadas para el proyecto se encuentran bajo `ESP32/.pio/`. Más adelante se explica qué descarga PlatformIO y por qué.
+En ESP32, buena parte del soporte externo se obtiene mediante PlatformIO. Sus paquetes generales están fuera del repositorio, normalmente en `.platformio` dentro del perfil del usuario; las bibliotecas descargadas para el proyecto se encuentran bajo `firmware/ESP32/.pio/`. Más adelante se explica qué descarga PlatformIO y por qué.
 
-### 3.3. Qué muestra el workspace de VS Code
+### 3.3. Qué aporta el workspace de VS Code
 
-El archivo `Arturito.code-workspace` abre actualmente estas cinco carpetas:
+El workspace abre una sola raíz: Arturito (ruta relativa .). El explorador muestra docs, firmware, KiCad y utils; ESP32 y EDU-CIAA aparecen únicamente dentro de firmware.
 
-| Nombre visible en VS Code | Carpeta real |
-|---|---|
-| ESP32 - Firmware activo | `ESP32/` |
-| EDU-CIAA - Port futuro | `EDU-CIAA/` |
-| Shared - Firmware portable | `shared/` |
-| Processing - Visualización V0 | `Processing/` |
-| Documentación | `docs/` |
+Abrir directamente la carpeta Arturito ofrece la misma organización. Conservamos el archivo workspace como punto de apertura y lugar para futuros ajustes compartidos.
 
-Los nombres visibles son etiquetas del editor: no seleccionan herramientas ni demuestran el estado de una plataforma. Por ejemplo, “Port futuro” no significa que la carpeta EDU-CIAA carezca de código.
+La compilación desde una terminal en la raíz utiliza make -C firmware/EDU-CIAA all o pio run --project-dir firmware/ESP32 -e esp32dev. El workspace no cambia las rutas de construcción ni instala herramientas.
 
-`KiCad/`, `LatexSanti/` y los archivos de la raíz no aparecen como entradas independientes en ese workspace. Para ver todo el repositorio, abrir la carpeta Arturito completa en VS Code.
-
-Las rutas del workspace están escritas en minúsculas, mientras algunas carpetas reales usan mayúsculas. Esto normalmente funciona en Windows, pero debe alinearse si se prepara el proyecto para un sistema que distinga mayúsculas y minúsculas.
+Las configuraciones .vscode de carpetas anidadas no se aplican como configuraciones independientes del workspace raíz. Para trabajar con la integración PlatformIO o IntelliSense específico de EDU-CIAA, abrir firmware/ESP32 o firmware/EDU-CIAA directamente en otra ventana. Así se utiliza la configuración de esa plataforma sin duplicar entradas en este explorador.
 
 ### 3.4. Relación con las herramientas descargadas
 
 La carpeta `Software-CIAA` que puede acompañar a Arturito es un paquete de herramientas para la computadora, no una parte de la aplicación. Puede estar fuera del repositorio. Para utilizarla se prepara la variable PATH, como se explica en el camino EDU-CIAA.
 
-Si la carpeta de trabajo también contiene otra copia de firmware CIAA, esa copia no sustituye automáticamente a `Arturito/EDU-CIAA`. Los comandos de esta guía construyen los archivos que están dentro de Arturito.
+Si la carpeta de trabajo también contiene otra copia de firmware CIAA, esa copia no sustituye automáticamente a `Arturito/firmware/EDU-CIAA`. Los comandos de esta guía construyen los archivos que están dentro de Arturito.
 
 ### 3.5. Antes de reorganizar archivos
 
-Conservá `shared`, `ESP32` y `EDU-CIAA` como carpetas hermanas mientras uses la configuración actual: hay rutas relativas entre ellas. Una ruta relativa describe cómo llegar a un archivo desde otra carpeta, en lugar de indicar una ubicación completa como C:\Arturito.
+Conservá `shared`, `ESP32` y `EDU-CIAA` como carpetas hermanas dentro de `firmware/` mientras uses la configuración actual: hay rutas relativas entre ellas. Una ruta relativa describe cómo llegar a un archivo desde otra carpeta, en lugar de indicar una ubicación completa como C:\Arturito.
 
 Para una refactorización posterior, comprobar cada movimiento contra los lugares que lo utilizan:
 
@@ -213,7 +198,7 @@ Un **framework** es un conjunto de código de soporte y bibliotecas sobre el cua
 3. Abrir la sección Extensions o Extensiones.
 4. Buscar **PlatformIO IDE**, identificador `platformio.platformio-ide`, e instalarla.
 5. Esperar a que termine de preparar sus componentes. Reiniciar VS Code si lo solicita.
-6. En VS Code, abrir la carpeta `C:\Arturito\ESP32` mediante Abrir carpeta.
+6. En VS Code, abrir la carpeta `C:\Arturito\firmware\ESP32` mediante Abrir carpeta.
 
 PlatformIO Core viene incluido en la preparación de PlatformIO IDE. La [documentación oficial de instalación](https://docs.platformio.org/en/latest/core/installation/) describe esta relación.
 
@@ -251,7 +236,7 @@ pio --version
 En esa terminal:
 
 ```powershell
-Set-Location 'C:\Arturito\ESP32'
+Set-Location 'C:\Arturito\firmware\ESP32'
 pio run -e esp32dev
 ```
 
@@ -259,7 +244,7 @@ pio run -e esp32dev
 
 La primera vez puede demorar porque descarga los paquetes que faltan. Necesitás Internet. No tenés que descargar manualmente cada compilador o biblioteca de la tabla A1.
 
-Los paquetes generales se guardan normalmente bajo `.platformio` en tu perfil de usuario. Los archivos generados para este proyecto se guardan dentro de `ESP32/.pio/`. Son resultados y paquetes administrados por la herramienta; no necesitás editarlos para modificar la aplicación.
+Los paquetes generales se guardan normalmente bajo `.platformio` en tu perfil de usuario. Los archivos generados para este proyecto se guardan dentro de `firmware/ESP32/.pio/`. Son resultados y paquetes administrados por la herramienta; no necesitás editarlos para modificar la aplicación.
 
 Al finalizar, comprobar que PlatformIO informe éxito. Si informa un error, resolverlo antes de intentar la carga.
 
@@ -314,7 +299,7 @@ Para obtenerlas usaremos el paquete **Software-CIAA para Windows**, que reúne v
 | Herramientas de enlace y conversión | Unir el código compilado y generar los archivos de firmware | Incluidas con el conjunto de herramientas ARM |
 | Utilidades como sh, mkdir y rm | Ejecutar operaciones de las instrucciones de construcción, como crear carpetas | Carpeta tools/system del paquete |
 | OpenOCD | Acceder a la placa por su interfaz de programación y escribir el firmware | Paquete Software-CIAA |
-| Bibliotecas utilizadas por el firmware | Aportar soporte de placa y funciones utilizadas por la aplicación | Ya incluidas en EDU-CIAA/libs |
+| Bibliotecas utilizadas por el firmware | Aportar soporte de placa y funciones utilizadas por la aplicación | Ya incluidas en firmware/EDU-CIAA/libs |
 | Controladores USB | Permitir que Windows acceda a programación y puerto serie | Preparación indicada por el paquete |
 
 El conjunto de compilador y herramientas asociadas también se llama **toolchain**. El nombre `arm-none-eabi-gcc` identifica el compilador ARM utilizado aquí. No es el mismo compilador que utiliza ESP32.
@@ -336,7 +321,7 @@ C:\CIAA\CIAA_Software_1.1-Win
 
 Si la carpeta extraída tiene otro nombre o ubicación, usar su ruta real en el próximo paso.
 
-Las bibliotecas como sAPI, LPCOpen y FreeRTOS ya vienen en `EDU-CIAA/libs`. No requieren instalar un programa en Windows: son código que las instrucciones de construcción incorporan cuando corresponde.
+Las bibliotecas como sAPI, LPCOpen y FreeRTOS ya vienen en `firmware/EDU-CIAA/libs`. No requieren instalar un programa en Windows: son código que las instrucciones de construcción incorporan cuando corresponde.
 
 ## B3. Hacer que la terminal encuentre las herramientas
 
@@ -376,11 +361,11 @@ Make toma las instrucciones del archivo `Makefile` y de otros archivos con exten
 
 | Archivo | Para qué se usa |
 |---|---|
-| `EDU-CIAA/Makefile` | Organizar la construcción y definir acciones como compilar y cargar |
-| `EDU-CIAA/board.mk` | Elegir la placa; actualmente edu_ciaa_nxp |
-| `EDU-CIAA/program.mk` | Elegir la carpeta/programa; actualmente rover |
-| `EDU-CIAA/rover/config.mk` | Indicar fuentes, opciones y bibliotecas de ese programa |
-| `EDU-CIAA/libs/*/module.mk` | Indicar cómo incorporar cada biblioteca |
+| `firmware/EDU-CIAA/Makefile` | Organizar la construcción y definir acciones como compilar y cargar |
+| `firmware/EDU-CIAA/board.mk` | Elegir la placa; actualmente edu_ciaa_nxp |
+| `firmware/EDU-CIAA/program.mk` | Elegir la carpeta/programa; actualmente rover |
+| `firmware/EDU-CIAA/rover/config.mk` | Indicar fuentes, opciones y bibliotecas de ese programa |
+| `firmware/EDU-CIAA/libs/*/module.mk` | Indicar cómo incorporar cada biblioteca |
 
 El programa que se construye lo elige esta configuración. Si se crea otro programa, también necesita una configuración que describa sus archivos y dependencias.
 
@@ -392,12 +377,12 @@ Desde la terminal preparada:
 
 ```powershell
 Set-Location 'C:\Arturito'
-make -C EDU-CIAA all
+make -C firmware/EDU-CIAA all
 ```
 
 `-C EDU-CIAA` indica a Make que use esa carpeta. `all` es el nombre de la acción de construcción definida por el proyecto.
 
-Make ejecuta las herramientas y compila el programa seleccionado. Actualmente los resultados se guardan en `EDU-CIAA/rover/out/`.
+Make ejecuta las herramientas y compila el programa seleccionado. Actualmente los resultados se guardan en `firmware/EDU-CIAA/rover/out/`.
 
 Entre ellos hay un archivo `.elf`, que contiene el programa enlazado y datos útiles para depuración, y archivos `.bin`/`.hex`, que representan el programa para su carga. El proyecto se encarga de generarlos; no necesitás fabricarlos a mano.
 
@@ -424,12 +409,12 @@ Falta registrar y probar en esta guía el controlador exacto elegido y su versi�
 Volver a la terminal preparada, desde la raíz de Arturito:
 
 ```powershell
-make -C EDU-CIAA download
+make -C firmware/EDU-CIAA download
 ```
 
 `download` es la acción de carga definida en el Makefile. Ejecuta OpenOCD con la configuración de conexión y microcontrolador incluida en el proyecto.
 
-Esa configuración está en `EDU-CIAA/scripts/openocd/`. Le indica a OpenOCD cómo acceder a esta placa. Normalmente se conserva al cambiar el programa de aplicación; una placa diferente puede necesitar otra configuración.
+Esa configuración está en `firmware/EDU-CIAA/scripts/openocd/`. Le indica a OpenOCD cómo acceder a esta placa. Normalmente se conserva al cambiar el programa de aplicación; una placa diferente puede necesitar otra configuración.
 
 Comprobar que el proceso de programación termine correctamente. La carga reemplaza el programa anterior.
 
@@ -486,19 +471,40 @@ El cableado y la alimentación necesarios para ejecutar cada aplicación deben e
 
 ## Nota de dependencias de la actualización MPU6050
 
-Desde el 12/10/2026, los entornos esp32dev e imu_only declaran Adafruit MPU6050 2.2.9. PlatformIO también resuelve Adafruit BusIO y Adafruit Unified Sensor. Esa biblioteca proporciona inicialización y adquisición de aceleración y giro en unidades físicas; el adaptador del proyecto está en src/layer1_hal/hal_mpu6050_esp32.cpp. La calibración residual está en el driver compartido y la estimación angular en shared/layer3_app/odometry.c.
+Desde el 12/10/2026, los entornos esp32dev e imu_only declaran Adafruit MPU6050 2.2.9. PlatformIO también resuelve Adafruit BusIO y Adafruit Unified Sensor. Esa biblioteca proporciona inicialización y adquisición de aceleración y giro en unidades físicas; el adaptador del proyecto está en src/layer1_hal/hal_mpu6050_esp32.cpp. La calibración residual está en el driver compartido y la estimación angular en firmware/shared/layer3_app/odometry.c.
 
-Las implementaciones HAL MPU6050 sustituyen a los archivos hal_imu anteriores. El diagnóstico imu_only ahora también compila odometry.c; tof_only conserva sus fuentes y dependencias.
+Las implementaciones HAL MPU6050 sustituyen a los archivos hal_imu anteriores. El diagnóstico imu_only ahora también compila odometry.c; el diagnóstico de distancia se selecciona actualmente como vl53l0x_only.
 
 Los cuatro adaptadores del rover EDU-CIAA están implementados en C y seleccionados mediante SRC en rover/config.mk. Este programa no necesita la ruta adicional de cabeceras C++ utilizada en una comprobación anterior. ESP32 conserva sus adaptadores .cpp para utilizar sus bibliotecas C++.
 
 ## Actualizacion VL53L0X (14/10/2026)
 
-La interfaz vigente es `shared/layer1_hal/hal_vl53l0x.h` y los adaptadores se llaman `hal_vl53l0x_educiaa.c` y `hal_vl53l0x_esp32.cpp`. EDU-CIAA incorpora `libs/vl53l0x` mediante `USE_VL53L0X=y`; ESP32 conserva Adafruit.
+La interfaz vigente es `firmware/shared/layer1_hal/hal_vl53l0x.h` y los adaptadores se llaman `hal_vl53l0x_educiaa.c` y `hal_vl53l0x_esp32.cpp`. EDU-CIAA incorpora `libs/vl53l0x` mediante `USE_VL53L0X=y`; ESP32 conserva Adafruit.
 
-El diagnostico antes llamado `tof_only` pasa a `vl53l0x_only`: compilarlo con `pio run -e vl53l0x_only`. Las menciones anteriores del nombre corresponden al estado previo. Para compilar EDU-CIAA, ejecutar `make all` desde `EDU-CIAA`, con el toolchain configurado. Ninguno de esos comandos carga firmware en la placa.
+El diagnostico antes llamado `tof_only` pasa a `vl53l0x_only`: compilarlo con `pio run -e vl53l0x_only`. Las menciones anteriores del nombre corresponden al estado previo. Para compilar EDU-CIAA, ejecutar `make all` desde `firmware/EDU-CIAA`, con el toolchain configurado. Ninguno de esos comandos carga firmware en la placa.
 
 Desde el 15/10/2026, runtime utiliza `driver_vl53l0x.h`, que delega en
 `hal_vl53l0x.h`. La biblioteca ST conserva `libs/vl53l0x/Api/core` y
 `libs/vl53l0x/Api/platform`. Las comprobaciones no requieren guardar logs en las
 carpetas del firmware.
+
+
+## Reorganización de carpetas (16/10/2026)
+
+Las fuentes están en firmware/EDU-CIAA, firmware/ESP32 y firmware/shared. Processing está en utils/Processing. Las rutas relativas desde cada proyecto hacia shared se conservaron: los tres directorios se movieron juntos. Por eso no es necesario agregar otro ../ a config.mk ni a platformio.ini.
+
+Desde la raíz Arturito, los comandos principales son:
+
+```powershell
+make -C firmware/EDU-CIAA all
+make -C firmware/EDU-CIAA download
+pio run --project-dir firmware/ESP32 -e esp32dev
+pio run --project-dir firmware/ESP32 -e imu_only
+pio run --project-dir firmware/ESP32 -e vl53l0x_only
+```
+
+Las instrucciones de carga requieren hardware conectado. Para los diagnósticos EDU-CIAA se utiliza el mismo -C firmware/EDU-CIAA junto con PROGRAM_PATH=test y PROGRAM_NAME correspondiente.
+
+Las carpetas antiguas EDU-CIAA y ESP32 en la raíz eran restos ignorados de builds previos. Las dependencias PlatformIO se conservan en firmware/ESP32/.pio/libdeps; los resultados se regeneran en la nueva ubicación. Los .o y .d de código externo al directorio de proyecto pueden aparecer también en rover/shared o .pio/build/shared por las reglas heredadas; siguen dentro de firmware y están excluidos por Git.
+
+Comprobación del 16/10/2026 desde las rutas nuevas: compilaron y enlazaron esp32dev, imu_only y vl53l0x_only en ESP32; rover, i2c_scan, i2c_pinmux e i2c_loopback en EDU-CIAA. Son verificaciones de construcción; no se realizaron cargas ni pruebas de funcionamiento físico.

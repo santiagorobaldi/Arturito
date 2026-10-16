@@ -13,7 +13,7 @@ Confirmar las etiquetas y ubicación física en el esquemático de la propia pla
 
 ## Compilar y cargar
 
-Desde EDU-CIAA:
+Desde `Arturito/firmware/EDU-CIAA`:
 
 ```text
 make BOARD=edu_ciaa_nxp PROGRAM_PATH=test PROGRAM_NAME=i2c_loopback all

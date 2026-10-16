@@ -4,7 +4,7 @@ Este programa escanea las direcciones I2C estandar y lee `WHO_AM_I` si encuentra
 
 ## Compilar y cargar
 
-Desde la carpeta `edu-ciaa`:
+Desde la carpeta `Arturito/firmware/EDU-CIAA`:
 
 ```sh
 make PROGRAM_PATH=test PROGRAM_NAME=i2c_scan all

@@ -4,7 +4,7 @@ Primer paso del ensayo I2C0–I2C1 en EDU-CIAA. Configura P2_3 como I2C1_SDA y P
 
 ## Compilar y cargar
 
-Desde la carpeta EDU-CIAA, en una terminal con las herramientas CIAA disponibles:
+Desde la carpeta `Arturito/firmware/EDU-CIAA`, en una terminal con las herramientas CIAA disponibles:
 
 ```text
 make BOARD=edu_ciaa_nxp PROGRAM_PATH=test PROGRAM_NAME=i2c_pinmux all

@@ -1,24 +1,8 @@
 {
     "folders": [
         {
-            "name": "ESP32 - Firmware activo",
-            "path": "esp32"
-        },
-        {
-            "name": "EDU-CIAA - Port futuro",
-            "path": "edu-ciaa"
-        },
-        {
-            "name": "Shared - Firmware portable",
-            "path": "shared"
-        },
-        {
-            "name": "Processing - Visualización V0",
-            "path": "processing"
-        },
-        {
-            "name": "Documentación",
-            "path": "docs"
+            "name": "Arturito",
+            "path": "."
         }
     ],
     "settings": {}

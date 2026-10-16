@@ -8,7 +8,7 @@ El proyecto tiene EDU-CIAA como plataforma objetivo y dispone de ESP32 para prot
 
 ## Decisión
 
-Mantener EDU-CIAA/LPC4337 como plataforma objetivo y ESP32 como plataforma de validación. Compartir la lógica de aplicación y los drivers, con backends de HAL e integración de ejecución específicos para cada plataforma.
+Mantener firmware/EDU-CIAA/LPC4337 como plataforma objetivo y ESP32 como plataforma de validación. Compartir la lógica de aplicación y los drivers, con backends de HAL e integración de ejecución específicos para cada plataforma.
 
 ## Justificación
 

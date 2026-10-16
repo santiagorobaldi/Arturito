@@ -6,7 +6,7 @@ Revisión documental: 3 de octubre de 2026. Base inspeccionada: `a3a36acb065916d
 
 | Componente | Evidencia en el árbol | Validación y límite |
 | --- | --- | --- |
-| HAL ESP32/EDU-CIAA | Cuatro backends por placa: IMU, ToF, tiempo, telemetría | Existencia y selección de fuentes inspeccionadas. |
+| HAL firmware/ESP32/EDU-CIAA | Cuatro backends por placa: IMU, ToF, tiempo, telemetría | Existencia y selección de fuentes inspeccionadas. |
 | Drivers compartidos | MPU con offset/zona muerta/integración y filtro de distancia | Algoritmos presentes; precisión sin ensayo en esta revisión. |
 | Aplicación | Bootstrap, tres tareas, dos mutex y CSV | Runtime compartido presente; falta evidencia temporal por muestra. |
 | Build ESP32 | `esp32dev`, `imu_only`, `tof_only` | Informe de avance declara builds exitosos y carga; no reproducidos aquí. |
@@ -19,9 +19,9 @@ Revisión documental: 3 de octubre de 2026. Base inspeccionada: `a3a36acb065916d
 
 ## Cambios recientes de organización
 
-El último commit concentra el runtime en `shared/layer3_app`, reduce los arranques a adaptadores de plataforma y divide las HAL combinadas en IMU, ToF, tiempo y telemetría. El agrupador `hal_sensors.h` se conserva. Se incorporaron diagnósticos aislados, documentos en `docs`, rutas compartidas en builds y configuración de editor. Se retiró `Processing/prueba_imu` y se alinearon los sketches restantes a metros y dos columnas. Las capas antiguas `layer3_robotics`/`layer4_app` ya no forman parte del árbol actual.
+El último commit concentra el runtime en `firmware/shared/layer3_app`, reduce los arranques a adaptadores de plataforma y divide las HAL combinadas en IMU, ToF, tiempo y telemetría. El agrupador `hal_sensors.h` se conserva. Se incorporaron diagnósticos aislados, documentos en `docs`, rutas compartidas en builds y configuración de editor. Se retiró `utils/Processing/prueba_imu` y se alinearon los sketches restantes a metros y dos columnas. Las capas antiguas `layer3_robotics`/`layer4_app` ya no forman parte del árbol actual.
 
-`EDU-CIAA/libs` contiene soporte de plataforma y bibliotecas, no funcionalidades del rover listas para usar. Se inspeccionaron inventario, selección de módulos y código relevante de integración; no se auditó exhaustivamente cada archivo de terceros. Los scripts de prueba/build heredados no demuestran por sí mismos cobertura del rover.
+`firmware/EDU-CIAA/libs` contiene soporte de plataforma y bibliotecas, no funcionalidades del rover listas para usar. Se inspeccionaron inventario, selección de módulos y código relevante de integración; no se auditó exhaustivamente cada archivo de terceros. Los scripts de prueba/build heredados no demuestran por sí mismos cobertura del rover.
 
 ## Fuentes y mantenimiento
 
@@ -86,13 +86,13 @@ ni se dio por realizada una reubicación de funciones. Véase
 
 Se separó el tratamiento de mediciones del cálculo de orientación:
 
-- `shared/layer2_drivers/driver_mpu6050.h/.c`: inicialización, adquisición de aceleración/giro X/Y/Z y calibración de offsets residuales. Muestra pública única, parámetros directos y resultado booleano.
-- `shared/layer1_hal/hal_mpu6050.h`: contrato específico de adquisición MPU6050. Reemplaza hal_imu.h y reutiliza el tipo de muestra del driver.
-- `ESP32/src/layer1_hal/hal_mpu6050_esp32.cpp`: adaptador Adafruit MPU6050 2.2.9. Mantiene los rangos ESP32 previos de ±2 g y ±250 grados/s; biblioteca declarada para esp32dev e imu_only.
-- `EDU-CIAA/rover/src/layer1_hal/hal_mpu6050_educiaa.c`: adaptador de sAPI existente, sin cambios a la biblioteca. sAPI configura ±16 g y ±2000 grados/s y calibra automáticamente al inicializar. El driver compartido calibra el error residual de sus lecturas, por decisión explícita del usuario.
-- `shared/layer3_app/odometry.h/.c`: orientación relativa de un eje, zona muerta e integración trapezoidal usando el instante de cada muestra. La primera muestra establece referencia; reset modifica orientación y restart_tracking conserva el ángulo y descarta el historial temporal.
+- `firmware/shared/layer2_drivers/driver_mpu6050.h/.c`: inicialización, adquisición de aceleración/giro X/Y/Z y calibración de offsets residuales. Muestra pública única, parámetros directos y resultado booleano.
+- `firmware/shared/layer1_hal/hal_mpu6050.h`: contrato específico de adquisición MPU6050. Reemplaza hal_imu.h y reutiliza el tipo de muestra del driver.
+- `firmware/ESP32/src/layer1_hal/hal_mpu6050_esp32.cpp`: adaptador Adafruit MPU6050 2.2.9. Mantiene los rangos ESP32 previos de ±2 g y ±250 grados/s; biblioteca declarada para esp32dev e imu_only.
+- `firmware/EDU-CIAA/rover/src/layer1_hal/hal_mpu6050_educiaa.c`: adaptador de sAPI existente, sin cambios a la biblioteca. sAPI configura ±16 g y ±2000 grados/s y calibra automáticamente al inicializar. El driver compartido calibra el error residual de sus lecturas, por decisión explícita del usuario.
+- `firmware/shared/layer3_app/odometry.h/.c`: orientación relativa de un eje, zona muerta e integración trapezoidal usando el instante de cada muestra. La primera muestra establece referencia; reset modifica orientación y restart_tracking conserva el ángulo y descarta el historial temporal.
 - `app_runtime.c`: adquiere mediante el driver; adjunta tiempo, validez y secuencia. Procesa una secuencia una sola vez. Ante lectura fallida o salto de secuencia reinicia seguimiento temporal conservando el ángulo. Se conserva el intercambio de última muestra mediante mutex; sigue sin ser una cola de todas las mediciones.
-- `ESP32/src/tests/imu_only.cpp`: utiliza driver y odometry. Conserva el formato theta,-1. El programa completo conserva theta,distancia y los mensajes de calibración.
+- `firmware/ESP32/src/tests/imu_only.cpp`: utiliza driver y odometry. Conserva el formato theta,-1. El programa completo conserva theta,distancia y los mensajes de calibración.
 
 La espera inicial de 2 s, las 1000 muestras separadas por 2 ms y la zona muerta de 1 grado/s permanecen en el código que coordina la aplicación, no como dependencias de configuración del driver. La calibración ahora cubre los tres ejes de giro. Application conserva el montaje actual: giro Z del sensor usado directamente como giro Z del robot; otro montaje exige una transformación explícita.
 
@@ -117,11 +117,11 @@ Por preferencia del equipo, los cuatro adaptadores del rover EDU-CIAA usan C: ha
 El rover compiló y enlazó correctamente utilizando el compilador C, sin CPLUS_INCLUDE_PATH adicional. El ajuste de cabeceras C++ registrado anteriormente deja de ser necesario para este programa. ESP32 conserva sus adaptadores C++ para utilizar Arduino y Adafruit. No se realizaron cargas ni pruebas físicas.
 ## Integracion VL53L0X — 14 de octubre de 2026
 
-La API ST 1.0.4 esta integrada en `EDU-CIAA/libs/vl53l0x`, activada con `USE_VL53L0X=y`. El adaptador `hal_vl53l0x_educiaa.c` sustituye la implementacion manual de registros y utiliza la inicializacion/calibracion ST y `VL53L0X_PerformSingleRangingMeasurement`. La interfaz compartida es `hal_vl53l0x.h`; runtime conserva su secuencia de adquisicion y su politica de tareas.
+La API ST 1.0.4 esta integrada en `firmware/EDU-CIAA/libs/vl53l0x`, activada con `USE_VL53L0X=y`. El adaptador `hal_vl53l0x_educiaa.c` sustituye la implementacion manual de registros y utiliza la inicializacion/calibracion ST y `VL53L0X_PerformSingleRangingMeasurement`. La interfaz compartida es `hal_vl53l0x.h`; runtime conserva su secuencia de adquisicion y su politica de tareas.
 
 Los archivos `hal_tof_*` se renombraron a `hal_vl53l0x_*` en ambas plataformas. El diagnostico ESP32 ahora se llama `vl53l0x_only`. Se comprobaron compilacion y enlace del rover EDU-CIAA y los entornos ESP32 `esp32dev` y `vl53l0x_only`. No se cargo hardware.
 
-Pendientes: medir tiempos y asociacion ToF/IMU, validar inicializacion y distancias, resolver timeout I2C y revisar concurrencia si se agregan usuarios del bus. `PollingDelay` tiene 250 iteraciones activas con `nop`; no suspende la tarea FreeRTOS. La biblioteca y sus limites estan documentados en `EDU-CIAA/libs/vl53l0x/README.md`.
+Pendientes: medir tiempos y asociacion ToF/IMU, validar inicializacion y distancias, resolver timeout I2C y revisar concurrencia si se agregan usuarios del bus. `PollingDelay` tiene 250 iteraciones activas con `nop`; no suspende la tarea FreeRTOS. La biblioteca y sus limites estan documentados en `firmware/EDU-CIAA/libs/vl53l0x/README.md`.
 
 ### Correccion de capas y estructura — 15 de octubre de 2026
 
@@ -131,7 +131,7 @@ VL53L0X directamente. El driver delega inicializacion y acceso en
 `hal_vl53l0x`, y valida los limites de distancia antes de entregar la lectura.
 La tarea de procesamiento recibe ese valor ya validado.
 
-La biblioteca conserva `EDU-CIAA/libs/vl53l0x/Api/core/{inc,src}` y
+La biblioteca conserva `firmware/EDU-CIAA/libs/vl53l0x/Api/core/{inc,src}` y
 `Api/platform/{inc,src}`. Solo se incorporan los componentes de la API necesarios
 para EDU-CIAA, sin ejemplos PC ni transporte Windows. La carpeta auxiliar
 `VL53L0X_1.0.4/Api/platform/educiaa` y los logs generados por las verificaciones
@@ -147,3 +147,13 @@ con sus firmas originales. El nucleo coincide byte a byte con la descarga ST.
 La compilacion y el enlace del rover con ambas capas pasaron; no se probo
 hardware. Las funciones auxiliares no utilizadas y aun sin backend devuelven
 fallo explicito, segun lo documentado en la biblioteca.
+
+## Organización del repositorio — 16 de octubre de 2026
+
+La raíz contiene docs (documentación), firmware (EDU-CIAA, ESP32 y shared), KiCad (electrónica) y utils (Processing). La reorganización de fuentes ya estaba versionada al comenzar esta revisión. Las antiguas carpetas EDU-CIAA y ESP32 de la raíz contenían únicamente archivos ignorados: productos de construcción, configuración generada y dependencias descargadas. Se verificó su contenido antes de retirarlas; las dependencias PlatformIO se trasladaron a firmware/ESP32/.pio/libdeps.
+
+Se actualizaron Arturito.code-workspace, la excepción de .gitignore para la configuración EDU-CIAA, las rutas documentales y las instrucciones de los diagnósticos. El workspace final abre solamente la raíz Arturito: se retiraron los accesos adicionales de plataforma porque duplicaban su aparición en el explorador. La configuración específica de cada plataforma puede utilizarse abriendo su carpeta directamente en otra ventana. La configuración del editor EDU-CIAA incorpora Application, FreeRTOS y la API ST; selecciona cabeceras de sAPI 0.5.2 en vez de buscar indiscriminadamente todas las versiones. PlatformIO regeneró su configuración local para la ubicación nueva.
+
+Las rutas relativas hacia shared en config.mk y platformio.ini siguen siendo válidas porque las tres carpetas se movieron juntas. No se cambiaron fuentes, dependencias declaradas ni reglas del Makefile para esta reorganización.
+
+Verificación desde las rutas nuevas: compilación y enlace satisfactorios de ESP32 esp32dev, imu_only y vl53l0x_only; rover EDU-CIAA; diagnósticos EDU-CIAA i2c_scan, i2c_pinmux e i2c_loopback. Se comprobaron las rutas del workspace, los directorios de cabeceras explícitos y los enlaces locales Markdown. No se cargó hardware ni se verificó funcionamiento físico. Se conservaron los cambios preexistentes de KiCad/DesignSchematic/.history.

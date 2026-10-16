@@ -1,5 +1,5 @@
 #include "sapi.h"
-#include "app_runtime.h"
+#include "perception_v0.h"
 #include "hal_telemetry.h"
 
 #include "FreeRTOS.h"
@@ -8,7 +8,7 @@
 /* FUNCION PRINCIPAL, PUNTO DE ENTRADA AL PROGRAMA LUEGO DE RESET. */
 int main(void) {
   boardConfig();
-  if (!app_runtime_start()) {
+  if (!perception_v0_start()) {
     hal_telemetry_write("# ERROR: no se pudo crear la tarea de inicio.");
     while (TRUE) {
     }

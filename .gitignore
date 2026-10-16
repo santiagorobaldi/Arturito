@@ -74,7 +74,7 @@ out/
 .vscode/ipch
 **/.vscode/c_cpp_properties.json
 **/.vscode/launch.json
-!EDU-CIAA/.vscode/c_cpp_properties.json
+!firmware/EDU-CIAA/.vscode/c_cpp_properties.json
 
 ## Kicad
 *.lck
