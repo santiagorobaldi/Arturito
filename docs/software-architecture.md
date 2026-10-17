@@ -1,14 +1,10 @@
 # Arquitectura de software
 
-La arquitectura de Arturito separa la lógica del rover, el manejo de
-dispositivos y los detalles específicos de cada plataforma.
+El firmware se organiza en tres capas: **Application → Device Drivers → HAL (Hardware Abstraction Layer)**. 
+La aplicación reúne la lógica del robot; los drivers ofrecen el tratamiento de sensores y actuadores; y la HAL concentra el acceso al hardware mediante implementaciones específicas para cada plataforma. Esta separación permite reutilizar la lógica compartida y probar los módulos de manera independiente.
 
+El kernel del sistema operativo de tiempo real FreeRTOS proporciona la ejecución concurrente y la sincronización como infraestructura transversal. La EDU-CIAA con el microcontrolador LPC4337 es la plataforma objetivo, mientras que otras plataformas como ESP32/Arduino se utiliza para validar sensores y firmware compartido.
 
-## Organización
-
-El firmware se organiza conceptualmente en tres capas:
-
-Application → Device Drivers → HAL
 
 ![Esquema general de la organización en capas](images/capas.png)
 
@@ -19,8 +15,7 @@ Application contiene la lógica propia del sistema, incluyendo módulos
 como odometría, mapeo, navegación, control y comunicaciones.
 
 Trabaja con conceptos del dominio —pose, velocidades, mapa y comandos—
-sin depender de APIs específicas de EDU-CIAA, ESP32 o de los
-dispositivos utilizados.
+sin depender de APIs específicas de EDU-CIAA, ESP32 o de la implementación de los drivers para cada dispositivo.
 
 
 ## Device Drivers
@@ -46,8 +41,7 @@ corresponde a la aplicación.
 
 Si se utiliza una biblioteca de dispositivo ligada a una plataforma,
 el driver puede delegar ese acceso mediante un adaptador de HAL, como
-se describe a continuación. Su interfaz hacia Application conserva
-el mismo significado independientemente de cómo se obtenga la lectura.
+se describe a continuación. 
 
 ## HAL
 
@@ -80,19 +74,10 @@ Por tanto, se contemplan dos formas de acceso:
 
 - **Driver → servicio de bus de HAL → dispositivo:** el driver implementa
   el protocolo y los registros del sensor o actuador.
-- **Driver → adaptador de periférico en HAL → biblioteca existente →
-  dispositivo:** la biblioteca implementa el acceso al chip y HAL adapta
-  sus operaciones a una interfaz independiente de la plataforma.
+- **Driver → adaptador de periférico en HAL → biblioteca existente → dispositivo:** la biblioteca implementa el acceso al chip y HAL adapta sus operaciones a una interfaz independiente de la plataforma.
 
-Este segundo caso complementa los servicios de bajo nivel de HAL y
-mantiene los drivers de dispositivos como capa diferenciada. El adaptador
-preserva unidades, validez y significado de los resultados, sin añadir
-lógica de odometría, mapeo o navegación.
 
-Los backends y adaptadores pertenecen a HAL, sin constituir otra capa.
-La separación y las razones para reutilizar bibliotecas se documentan
-en [ADR-0001](decisions/0001-firmware-architecture.md). La selección de
-plataformas se registra en [ADR-0002](decisions/0002-target-platform.md).
+La separación y las razones para reutilizar bibliotecas se documentan en [ADR-0001](decisions/0001-firmware-architecture.md). La selección de plataformas se registra en [ADR-0002](decisions/0002-target-platform.md).
 
 
 ## FreeRTOS
@@ -104,10 +89,4 @@ Proporciona scheduling, temporización y mecanismos de comunicación y
 sincronización entre tareas. La división en tareas no modifica las
 responsabilidades de los módulos anteriores.
 
-Siempre que sea posible, los algoritmos independientes del hardware
-deben mantenerse desacoplados del RTOS para facilitar su prueba y
-reutilización.
-
-
-Esta decisión se documenta en
-[ADR-0003](decisions/0003-freertos-runtime.md).
+Esta decisión se documenta en [ADR-0003](decisions/0003-freertos-runtime.md).

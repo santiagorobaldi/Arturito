@@ -3,6 +3,10 @@
         {
             "name": "Arturito",
             "path": "."
+        },
+        {
+            "name": "ESP32",
+            "path": "firmware/ESP32"
         }
     ],
     "settings": {}
