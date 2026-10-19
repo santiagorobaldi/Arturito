@@ -34,7 +34,7 @@ encoders, la construcción del mapa y el control de motores.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=1\textwidth]{capas.png}
+    \includegraphics[width=1\textwidth]{imagenes/capas.png}
     \caption{Estructura jerárquica de la arquitectura en capas para el firmware de Arturito.}
     \label{fig:capas_software}
 \end{figure}
@@ -177,7 +177,7 @@ controles de esta interfaz queda por definir.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{InterfazDispExt.png}
+    \includegraphics[width=1\linewidth]{imagenes/InterfazDispExt.png}
     \caption{Interfaz para ver el mapeo desde el punto de vista del usuario.}
     \label{fig:interfaz-dispext}
 \end{figure}
@@ -209,7 +209,7 @@ parada segura y la interfaz indicará la desconexión.
 
   \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.3\textwidth]{workspace.png}
+    \includegraphics[width=0.3\textwidth]{imagenes/workspace.png}
     \caption{Estrucura del Workspace.}
     \label{fig:workspace}
 \end{figure}
@@ -251,9 +251,9 @@ El firmware V0 fue cargado tanto en ESP32 como en EDU-CIAA y validado con Proces
 recepción de las muestras serie y la visualización de orientación y distancia.
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.6\textwidth]{V0.png}
+    \includegraphics[width=0.6\textwidth]{imagenes/V0.png}
     \hfill
-    \includegraphics[width=0.38\textwidth]{f1.png}
+    \includegraphics[width=0.38\textwidth]{imagenes/f1.png}
     \caption{Visualización de V0 en Processing (izquierda) y sensores montados en un auto a control remoto (derecha). \href{https://drive.google.com/file/d/1k8-xx6FHV0KANsshld4rqhePZVvpV37A/view?usp=drive_link}{Link para ver funcionamiento en video.}}
     \label{fig:v0_y_sensores}
 \end{figure}
@@ -271,7 +271,7 @@ Algunos cosas interesantes de mensionar:
 ms para estimar el offset, y reinicia el estado de integración, luego resta el offset, elimina velocidades dentro de ±1◦/s, calcula un promedio trapezoidal entre muestras y acumula el angulo con el tiempo transcurrido.
    \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.9\textwidth]{V0-grados.jpeg}
+    \includegraphics[width=0.9\textwidth]{imagenes/V0-grados.jpeg}
     \caption{Obtención del angulo crudo vs. procesado por capa 2.}
     \label{fig:grados_crudos}
 \end{figure}
@@ -280,7 +280,7 @@ Se ve que a tan solo 30s de inicializado el rover el angulo crudo difiere en 5°
 
    \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.9\textwidth]{resta.jpeg}
+    \includegraphics[width=0.9\textwidth]{imagenes/resta.jpeg}
     \caption{Angulo procesado - Angulo crudo}
     \label{fig:resta_grados}
 \end{figure}
