@@ -3,3 +3,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# Credenciales locales para el ensayo Wi-Fi/TCP.
+/include/wifi_secrets.h
