@@ -31,6 +31,8 @@ Se determina identificando el instante de tiempo donde $t=\tau$ tal que la veloc
 
 
 \subsubsection{Lazo Interno: Diseño y Sintonización de Controlador PI del Motor GA12-N20}
+
+\paragraph{Diseño en el Dominio Continuo}~\\
 Habiendo identificado la función de transferencia de la planta (motor), es posible ahora plantear un lazo cerrado por PID de la velocidad angular de un motor, y por lo tanto de la rueda correspondiente.
 
 
@@ -82,6 +84,42 @@ Donde $\tau_{;c}$ es la constante de tiempo a lazo cerrado. Siendo que depende d
 
 \[\tau(K_p) = \frac{1}{K_pK}\]
 \[K_i(K_p) = \frac{K_p}{\tau}\]
+
+
+\paragraph{Criterio del Muestreo}~\\
+En el mundo real, es imposible integrar cada instante de tiempo. El intervalo de muestreo del estado del lazo cerrado (medición del sensor y computo de la lógica en consecuencia) se deberá de hacer cada cierto $\Delta t$. Para garantizar que el controlador digital represente fielmente el comportamiento diseñado en el dominio continuo, el intervalo de muestreo $\Delta t$ debe ser lo suficientemente chico respecto a la velocidad de respuesta del lazo cerrado ($\tau_{lc}$).
+
+Un período de muestreo del orden de la constante de tiempo ($\Delta t\approx\tau_{lc}$) resulta inaceptable por: Dado que $t=\tau_{lc}$ la velocidad angular ya ha alcanzado el $63,2\%$ de su estado permanente para cuando se hace el primer muestreo. Esto impide detectar las variaciones bruscas de velocidad a lo largo del recorrido hacia el regimen permanente. Por otro lado, la aproximación de la integral por suma de rectángulos $e[k]\Delta t$ asume que el error varía suavemente entre muestras. Un $\Delta t$ elevado induce error por discretización sustancial.
+
+Por lo tanto, se toma el criterio empírico de diseño, el cual establece que se deben tomar al menos entre 5 y 10 muestras durante la constante de lazo cerrado:
+
+\[\Delta t <= \frac{\tau_{lc}}{10}\]
+
+Dado que la constante de tiempo del motor a lazo cerrado es de $\tau_{lc}\approx LLENAR$, se toma entonces un valor de $\Delta t = LLENAR$.
+
+\paragraph{Discretización}~\\
+Para trasladar el lazo de control diseñado en el dominio continuo $s$ al microcontrolador, se requiere discretizar la ecuación diferencial en el dominio del tiempo t:
+
+\[u(t)=K_pe(t)+K_i\int_{0}^{t} e(m) \,dm\]
+
+Evaluando $t = k\Delta t$ (donde $k$ representa el número de muestra actual y $\Delta t$ el período de muestreo elegido anteriormente), se obtiene la ecuación en diferencias:
+
+\[u[k]=K_pe[k]+\sum_{i=1}^{k} e[i]\Delta t\]
+
+Donde la integral se aproxima mediante una suma de Riemann (rectángulos de ancho $\Delta t$ y altura $e[k]$).
+
+El cálculo directo de la sumatoria $\sum_{i=1}^{k} e[i]\Delta t$ requeriría de almacenar todo el historial de errores en memoria RAM, lo que incrementaría el tiempo de procesamiento a medida que el robot opera.
+
+Para resolver esto, es posible expresar la integral k-ésima de manera recursiva, en función del cálculo anterior. Siendo $I[k]$ el término integral:
+
+\[I[k] = I[k-1] + e[k]\Delta t\]
+
+De esta forma el algoritmo solo conserva en memoria un único valor, resultando en la ecuación en diferencias final:
+
+\[u[k]=K_pe[k]+K_iI[k]\]
+
+VER DE HACER EL CODIGO ACA O EN ALGUN LADO, TAMBIEN MENCIONAR QUE EN EL CODIGO SE DEBERIA LIMITAR LA SALIDA DEL CONTROLADOR PI (u(s)) A MAX 100\% y MIN 0\%.
+
 \subsubsection{Cinemática Directa: Odometría Primaria a partir de Encoders}
 
 
