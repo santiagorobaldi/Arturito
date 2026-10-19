@@ -1,0 +1,127 @@
+\section{Modelado, Control y Algoritmos de Navegación}
+
+
+
+\subsection{Bloque de Cinemática y Control de Tracción}
+
+
+\subsubsection{Modelo dinámico e Identificación de la Planta del Motor GA12-N20}
+Desde el punto de vista físico, el motor DC (GA12-N20) no responde de forma instantánea a los cambios de tensión debido a la inercia del rotor y la fricción de los engranajes. A su vez, existe una relación proporcional entre el ciclo de trabajo de la señal PWM aplicada a través del puente H y la velocidad angular alcanzada en estado permanente.
+
+Para representar este comportamiento dinámico en el dominio de Laplace, la planta se modela como un sistema de primer orden:
+
+\[G(s) = \frac{\Omega(s)}{U(s)} = \frac{K}{\tau s + 1}\]
+
+Donde
+\begin{itemize}
+	\item {$\Omega(s)$} es la velocidad angular de salida de la rueda, expresada en $[rad/s]$.
+	\item {$U(s)$} es la señal de control aplicada al puente H, expresada en unidades de PWM (Duty Cycle $[0-100\%]$)
+	\item {$K$} es la ganancia del sistema, expresada en $[(rad/s)/unidad PWM]$.
+	\item {$\tau$} es la constante de tiempo mecánica, expresada en milisegundos $[ms]$, que representa el tiempo necesario para que la respuesta alcance el $63,2\%$ de su valor de estado permanente.
+\end{itemize}
+
+Para obtener los valores de $K$ y $\tau$ para cada rueda (izquierda y derecha) se aplica un escalón de tensión partiendo del reposo y se registra la velocidad angular en función del tiempo mediante el sensor magnético AS5600.
+
+\paragraph{Identificación de la Ganancia $K$}
+Una vez alcanzado el régimen permanente, se calcula $K$ como el cociente entre la velocidad angular alcanzada y el ciclo de trabajo definido por el escalón en U(s).
+
+\paragraph{Identificación de la constante de tiempo $\tau$}
+Se determina identificando el instante de tiempo donde $t=\tau$ tal que la velocidad angular alcanzada sea del $63,2\%$.
+
+
+
+\subsubsection{Lazo Interno: Diseño y Sintonización de Controlador PI del Motor GA12-N20}
+Habiendo identificado la función de transferencia de la planta (motor), es posible ahora plantear un lazo cerrado por PID de la velocidad angular de un motor, y por lo tanto de la rueda correspondiente.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{Imagenes/Lazo Interno-Motor.png}
+	\caption{Lazo interno de control de un motor. (MEJORAR, CAMBIAR PI POR C(S))}
+	\label{fig:lazointernomotor}
+\end{figure}
+
+Donde:
+\begin{itemize}
+	\item {$\Omega\_$ref(s)} es la velocidad angular de referencia para el motor.
+	\item {$E(s)$} es el error entre la velocidad de referencia y la velocidad medida.
+	\item {$C(s)$} es el control proporcional e integral.
+	\item {$U(s)$} es la señal PWM enviada al motor por $C(s)$.
+	\item {$G(s)$} es la función de transferencia del motor.
+	\item {$\Omega\_$r(s)} es la velocidad angular real que tiene el motor.
+	\item {$H(s)=1$} es la función de transferencia del encoder, se la asume sin retrasos.
+	\item {$\Omega\_$med(s)} es la velocidad medida por el encoder, utilizada para el cálculo del error.
+\end{itemize}
+
+Siendo que la función de transferencia de la planta es
+
+\[G(s) = \frac{K}{\tau s + 1}\]
+
+Es posible plantear un control por PI
+
+\[C(s) = K_p + K_i/s = K_p(\frac{s+K_i/K_p}{s})\]
+
+Donde la función de transferencia a lazo abierto es (renombrando $\tau$ como $\tau_{la}$, constante de tiempo de lazo abierto)
+
+\[LA(s) = C(s)G(s) =  K_p(\frac{s+K_i/K_p}{s}) \frac{K}{\tau_{la} s + 1}\]
+
+Analizando la función de lazo abierto, vemos es que posible cancelar uno de sus polos, eligiendo $K_i$ y $K_p$ tal que
+
+\[\frac{K_i}{K_p} = \frac{1}{\tau_{la}} => K_i=\frac{K_p}{\tau_{la}}\]
+
+Queda entonces la función de transferencia a lazo abierto
+
+\[LA(s) = \frac{K_pK}{s\tau_{la}}\]
+
+Al cerrar el lazo, la función de transferencia a lazo cerrado queda
+
+\[LC(s) = \frac{LA(s)}{1+LA(s)H(s)} = \frac{\frac{K_pK}{s\tau_{la}}}{1+\frac{K_pK}{s\tau_{la}}1}\] 
+\[LC(s) = \frac{1}{\frac{1}{K_pK}s+1} = \frac{1}{\tau_{lc}s+1}\]
+
+Donde $\tau_{;c}$ es la constante de tiempo a lazo cerrado. Siendo que depende del valor de la constante $K_p$, nos da un grado de libertad para definir el tiempo de respuesta que queremos que tenga el lazo cerrado de control.
+
+\[\tau(K_p) = \frac{1}{K_pK}\]
+\[K_i(K_p) = \frac{K_p}{\tau}\]
+\subsubsection{Cinemática Directa: Odometría Primaria a partir de Encoders}
+
+
+\subsubsection{Lazo Externo: Control Cinemático Polar para Seguimiento Punto a Punto}
+
+
+\subsubsection{Cinemática Inversa}
+
+
+
+
+\subsection{Bloque de Mapeo y Estimación de Posición}
+
+
+\subsubsection{Análisis Experimental de Deriva Odométrica en theta}
+
+
+\subsubsection{Corrección de orientación mediante IMU}
+
+
+\subsubsection{Modelado del sensor TOF y construcción de la grilla de ocupación}
+
+
+
+
+\subsection{Bloque de Navegación Autónoma}
+
+
+\subsubsection{Estrategia de exploración y selección de metas}
+
+
+\subsubsection{Algoritmo de evasión de obstáculos}
+
+
+
+
+\subsection{Integración de Lazos y Arquitectura de Control Global}
+
+
+\subsubsection{Diagrame unificado del sistema de control}
+
+
+\subsubsection{Máquina de estados y lógica de selección de modos}

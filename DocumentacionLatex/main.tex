@@ -1,0 +1,242 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{pdfpages}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} % <-- Agrega esta línea
+\usepackage{float} % Permite usar la opción [H] para fijar figuras
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+% ==============================================================================
+% CONFIGURACIONES GLOBALES Y COMANDOS PERSONALIZADOS
+% ==============================================================================
+
+% Configuración de SIUnitx
+\sisetup{output-decimal-marker={,}}
+\DeclareSIUnit\rpm{RPM}
+\DeclareSIUnit\Wh{Wh}
+\DeclareSIUnit\mAh{mAh}
+\DeclareSIUnit\Ah{Ah}
+
+% Marcadores de revisión y colores
+\definecolor{rojoObjetivo}{RGB}{180, 40, 40}
+\newcommand{\pendiente}[1]{\textcolor{red}{\textbf{[PENDIENTE: #1]}}}
+\newcommand{\pq}{\textcolor{red}{\textbf{[?]}}}
+
+% Entorno tcolorbox personalizado para revisión
+\newtcolorbox{visar}{colback=yellow!35, colframe=yellow!60!black, boxrule=0.4pt,
+    arc=1mm, left=5pt, right=5pt, top=3pt, bottom=3pt, boxsep=1pt, breakable}
+
+% Formatos de tabla
+\newcommand{\vc}{\cellcolor{yellow!50}}
+\newcommand{\vr}{\rowcolor{yellow!50}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Configuración de formato para pies de figuras (traído de primer-informe)
+\captionsetup{font=small, labelfont=bf}
+
+% Márgenes y encabezados
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm, headheight=15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small \textit{Arturito - Rover autónomo}}
+\lhead{\small \textit{Taller de Proyecto I - UNLP}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+% ==============================================================================
+% CONTROL DE COMPILACIÓN (Evita el "Compile timed out")
+% ==============================================================================
+%\includeonly{Diseño-Hardware, Diseño-Software}
+
+\begin{document}
+
+% Desactivar la división de palabras (hiphenación)
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+% Permitir mayor flexibilidad en los espacios interpalabra
+\tolerance=1000
+\emergencystretch=3em
+
+% ==============================================================================
+% PORTADA / CARÁTULA PERSONALIZADA
+% ==============================================================================
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    
+    \vspace*{1.5cm}
+    
+    % TÍTULO DEL INFORME
+    {\huge \bfseries Arturito\\[0.3em] Rover autónomo diferencial mapeador \par}
+    
+    \vfill % Empuja el contenido hacia la parte inferior
+    
+    % AUTORES (Organizados en matriz 2x2)
+    {\Large \bfseries Autores \par}
+    \vspace{0.6cm}
+    \begin{tabular}{c c}
+        \textbf{Joaquín Guzmán} & \textbf{Tomás Gamarra} \\
+        \small Legajo: 03751/4 & \small Legajo: 03852/8 \\[1.5em]
+        \textbf{Robaldi Santiago} & \textbf{Gonçalves Federico} \\
+        \small Legajo: 03769/4 & \small Legajo: 03866/5
+    \end{tabular}
+    
+    \vspace{1.5cm}
+    
+    % DATOS DE LA UNIVERSIDAD, DEPARTAMENTO Y FECHA
+    \hrule height 0.5pt
+    \vspace{0.4cm}
+    
+    {\large \textbf{Universidad Nacional de La Plata}} \par
+    \vspace{0.15cm}
+    {Facultad de Ingeniería -- Departamento de Electrotecnia} \par
+    \vspace{0.15cm}
+    {\small Asignatura: Taller de Proyecto I} \par
+    \vspace{0.3cm}
+    {\small \today}
+    
+\end{titlepage}
+
+% ==============================================================================
+% ÍNDICE GENERAL (Unificado automáticamente)
+% ==============================================================================
+\pagenumbering{arabic}
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% MÓDULOS TÉCNICOS Y DISEÑOS
+% ==============================================================================
+\include{Primer-informe}
+\include{Diseño-Hardware}
+\include{Diseño-ModeladoYControl}
+\include{Diseño-Firmware}
+
+% ==============================================================================
+% SECCIÓN 4: CRONOGRAMA PRELIMINAR
+% ==============================================================================
+\section{Cronograma Preliminar}
+
+\begin{tcolorbox}[colframe=green!60!black, colback=green!5!white, arc=2mm, title=\textbf{Cronograma (Google Sheets)}]
+  En el siguiente enlace podrá acceder al cronograma preliminar detallado:
+  \vspace{0.2cm}
+  
+  \textbf{Enlace:} \href{https://docs.google.com/spreadsheets/d/1GAEeQZzlFaMgwrWLOeSPeK0nOuYQg2peXEuDazYDfk4/edit?usp=sharing}{Ver Planilla de Cronograma en Google Sheets}
+\end{tcolorbox}
+
+% ==============================================================================
+% SECCIÓN 5: DIVISIÓN DE TAREAS DEL GRUPO
+% ==============================================================================
+\section{División de Tareas del Grupo}
+
+\begin{tcolorbox}[colframe=green!60!black, colback=green!5!white, arc=2mm, title=\textbf{División de tareas (Google Sheets)}]
+  En el siguiente enlace podrá acceder a una plantilla con los módulos y requerimientos a realizar por integrante:
+  \vspace{0.2cm}
+  
+  \textbf{Enlace:} \href{https://docs.google.com/spreadsheets/d/1GAEeQZzlFaMgwrWLOeSPeK0nOuYQg2peXEuDazYDfk4/edit?usp=sharing}{Ver Planilla de División de tareas en Google Sheets}
+\end{tcolorbox}
+
+\section{Bibliografía}
+
+\begin{thebibliography}{99}
+
+\bibitem{siegwart}
+R. Siegwart, I. R. Nourbakhsh y D. Scaramuzza,
+\textit{Introduction to Autonomous Mobile Robots}, 2.a ed.
+Cambridge, MA, USA: MIT Press, 2011, cap. 3, pp. 89--108.
+URL: \url{https://www.ucg.ac.me/skladiste/blog_13268/objava_56689/fajlovi/Introduction%20to%20Autonomous%20Mobile%20Robots%20book.pdf}.
+
+\bibitem{thrun}
+S. Thrun, W. Burgard y D. Fox,
+\textit{Probabilistic Robotics}.
+Cambridge, MA, USA: MIT Press, 2005, cap. 5, 8, 9, 10.
+URL: \url{https://docs.ufpr.br/~danielsantos/ProbabilisticRobotics.pdf}.
+
+\bibitem{lidar}
+Homemade LIDAR sensor with Arduino \& Processing,
+URL: \url{https://www.youtube.com/watch?v=fQ2iB7qkrUg}.
+
+\bibitem{slam}
+How to Make an Autonomous Mapping Robot Using SLAM,
+URL: \url{https://www.youtube.com/watch?v=xqjVTE7QvOg}.
+
+\bibitem{autonomo}
+Autonomous Navigation playlist by MATLAB,
+URL: \url{https://www.youtube.com/watch?v=Fw8JQ5Q-ZwU&list=PLn8PRpmsu08rLRGrnF-S6TyGrmcA2X7kg}.
+
+\bibitem{drv8833}
+Texas Instruments, \textit{DRV8833 Dual H-Bridge Motor Driver}, hoja de datos.
+
+\bibitem{nano}
+Arduino, \textit{Arduino Nano}, hoja de datos.
+
+\bibitem{vl53mod}
+Microcontrollers Lab, \textit{VL53L0X LIDAR Distance Sensor Interfacing with Arduino}, URL: \url{https://microcontrollerslab.com/vl53l0x-module-interfacing-arduino/}.
+
+\bibitem{as5600mod}
+TinyTronics, \textit{AS5600 Magnetic Angle Sensor Encoder Module (AS5600MOD)}, URL: \url{https://www.tinytronics.nl/en/sensors/magnetic-field/as5600-magnetic-angle-sensor-encoder-module}.
+
+\bibitem{ga12n20}
+Handson Technology, \textit{G12-N20 Geared Mini DC Motor}, hoja de datos, URL: \url{https://www.handsontec.com/dataspecs/motor_fan/GA12-N20.pdf}.
+
+\bibitem{ciaaconsumo}
+Retro-Ciaa,\textit{Lic. Santiago Germino, Biblioteca Digital, Facultad de Ingeniería, Universidad de Buenos Aires} , URL: \url{https://bibliotecadigital.fi.uba.ar/files/original/ecb2999e1e35ec2daea21bd31b3343a1.pdf}.
+
+\bibitem{vl53l0x}
+STMicroelectronics, \textit{VL53L0X: Time-of-Flight ranging sensor}, hoja de datos.
+
+\bibitem{as5600}
+ams-OSRAM, \textit{AS5600: 12-Bit Programmable Contactless Potentiometer}, hoja de datos.
+
+\bibitem{mt3608}
+Aerosemi, \textit{MT3608 2A Step-Up Converter}, hoja de datos.
+
+\bibitem{esp32}
+Espressif Systems, \textit{ESP32 Series Datasheet}.
+
+\bibitem{ciaa}
+Proyecto CIAA, \textit{EDU-CIAA-NXP}, esquemáticos y documentación.
+
+\bibitem{kicad}
+KiCad EDA, URL: \url{https://www.kicad.org/}.
+
+\bibitem{MPU Datasheet}
+MPU 6050 Datasheet, URL: \url{https://www.alldatasheet.com/datasheet-pdf/view/517744/ETC1/MPU-6050.html}.
+
+
+
+\end{thebibliography}
+
+% ==============================================================================
+% ANEXOS / APÉNDICES
+% ==============================================================================
+\newpage
+\include{Anexos}
+
+\end{document}
