@@ -1,6 +1,6 @@
 # Estado de desarrollo
 
-Actualización: 17 de octubre de 2026.
+Actualización: 19 de octubre de 2026.
 
 Este documento registra el avance de los módulos del firmware, organizado por las capas definidas en la [arquitectura de software](software-architecture.md). Permite identificar qué está pendiente, qué tiene implementación, qué fue probado individualmente y qué ya funciona dentro del sistema final. Refleja el estado actual; no es un historial de cambios.
 
@@ -41,6 +41,7 @@ Las interfaces comunes están en `firmware/shared/layer1_hal`; cada plataforma p
 | [Tiempo](../firmware/EDU-CIAA/rover/src/layer1_hal/hal_time_educiaa.c) | Proporcionar tiempo en milisegundos y esperas. | EDU-CIAA | Implementado | Utilizado por la prueba V0; sin registro de comprobación individual de tiempos. | Sin test independiente |
 | [Telemetría serie](../firmware/ESP32/src/layer1_hal/hal_telemetry_esp32.cpp) | Enviar líneas de texto por el puerto serie. | ESP32 | Implementado | La prueba V0 utiliza este adaptador. Falta registrar validación de la implementación actual. | Sin test independiente |
 | [Telemetría serie](../firmware/EDU-CIAA/rover/src/layer1_hal/hal_telemetry_educiaa.c) | Enviar líneas de texto por el puerto serie. | EDU-CIAA | Implementado | La prueba V0 utiliza este adaptador. Falta registrar validación de la implementación actual. | Sin test independiente |
+| [Telemetría Wi-Fi/TCP](../firmware/ESP32/src/layer1_hal/hal_telemetry_network_esp32.cpp) | Conectar en modo STA y publicar líneas a un cliente TCP. | ESP32 | Validado individualmente | Prueba física V0.2: conexión al router, recepción TCP y desconexión/reconexión del cliente; el contador continúa. La recuperación ante caída del router sigue pendiente. Se corrigió y compiló la comprobación de inicio del listener; ese caso aún requiere prueba física. Solo un cliente, puerto 3333. La escritura TCP no garantiza un tiempo máximo estricto; véase la [guía](wifi-tcp-only.md). | [wifi_tcp_only.cpp](../firmware/ESP32/src/tests/wifi_tcp_only.cpp) — ESP32 |
 | Acceso a AS5600 | Proporcionar el acceso de plataforma requerido por los encoders. | EDU-CIAA | A definir | El equipo confirmó la usabilidad del segundo bus I²C. La interfaz y la implementación para los encoders siguen pendientes. | Sin test independiente |
 | Acceso a DRV8833 | Proporcionar el acceso a las señales de control de los motores. | EDU-CIAA | A definir | Pendiente definir interfaz y configuración de GPIO/PWM. | Sin test independiente |
 | Comunicación EDU-CIAA–NodeMCU | Proporcionar acceso a la UART por hardware entre placas. | EDU-CIAA / NodeMCU | A definir | Enlace previsto para transmitir información hacia Wi-Fi; falta definir e implementar su interfaz de software. NodeMCU es la placa de comunicación, distinta de la plataforma ESP32 utilizada para pruebas. | Sin test independiente |
@@ -76,6 +77,8 @@ Esta sección identifica los programas de prueba actuales y su alcance. Su exist
 | --- | --- | --- | --- |
 | [imu_only.cpp](../firmware/ESP32/src/tests/imu_only.cpp) | ESP32 | Ensayo de MPU6050, calibración y estimación angular local al test; entrega ángulo por serie. | Compilación satisfactoria. Combina adquisición y cálculo angular; falta registrar ejecución física de la versión actual. |
 | [vl53l0x_only.cpp](../firmware/ESP32/src/tests/vl53l0x_only.cpp) | ESP32 | Prueba dedicada de inicialización y lectura de distancia mediante el driver y su adaptador. | Compilación satisfactoria; falta registrar ejecución física de la versión actual. |
+| [wifi_tcp_only.cpp](../firmware/ESP32/src/tests/wifi_tcp_only.cpp) | ESP32 | Conexión STA y envío TCP de `COUNT,<contador>\n` aproximadamente una vez por segundo; sin sensores. | Compila y fue probado físicamente: STA, recepción y reconexión del cliente con contador continuo. La recuperación tras pérdida del router sigue pendiente. |
+| [perception_v0_wifi](../firmware/ESP32/platformio.ini) | ESP32 | Ensayo de percepción V0 existente con su salida CSV por USB y por TCP. | El equipo validó físicamente sensores, conexión STA, servidor TCP, recepción de mediciones, alimentación externa y reinicio por EN con el monitor cerrado. La recuperación después de una caída del router sigue pendiente. El monitor serie se configuró con DTR/RTS en 0 para evitar alterar el arranque. |
 | [i2c_scan](../firmware/EDU-CIAA/test/i2c_scan/src/main.c) | EDU-CIAA | Diagnóstico de dispositivos y comunicación I²C. | Compilación registrada; identificar condiciones y resultado físico antes de usarlo como evidencia de validación. |
 | [i2c_pinmux](../firmware/EDU-CIAA/test/i2c_pinmux/src/main.c) | EDU-CIAA | Diagnóstico de selección de pines para I²C. | El equipo confirmó la usabilidad de los pines del segundo bus. Falta asociar esa comprobación a un test y registrar su resultado concreto. |
 | [i2c_loopback](../firmware/EDU-CIAA/test/i2c_loopback/src/main.c) | EDU-CIAA | Comunicación entre I2C0 maestro e I2C1 esclavo con puentes entre buses. | Compilación registrada. El programa permite comprobar transferencias; no acredita por sí solo lectura de encoders ni I2C1 como maestro. |
@@ -84,7 +87,8 @@ Esta sección identifica los programas de prueba actuales y su alcance. Su exist
 
 | Test | Plataforma | Alcance | Evidencia disponible / pendiente |
 | --- | --- | --- | --- |
-| [perception_v0.c](../firmware/shared/tests/perception_v0/perception_v0.c) | ESP32 / EDU-CIAA | Adquisición MPU6050 y VL53L0X, cálculo del ángulo y envío CSV `theta_rad,distancia_m` mediante tareas FreeRTOS. | Compilación y enlace satisfactorios del test en ambas plataformas; también del alias ESP32 `esp32dev`. Falta probar la versión actual en placa y verificar la visualización con Processing. |
+| [perception_v0.c](../firmware/shared/tests/perception_v0/perception_v0.c) | ESP32 / EDU-CIAA | Adquisición MPU6050 y VL53L0X, cálculo del ángulo y envío CSV `theta_rad,distancia_m` mediante tareas FreeRTOS. | En ESP32, el equipo informó la prueba física V0.2 de los sensores y la transmisión TCP con alimentación externa y reinicio por EN. La validación en EDU-CIAA queda pendiente. La visualización Processing por TCP se registra en la fila siguiente y requiere su propia prueba física. |
+| [flecha_y_mapa_v1_wifi.pde](../utils/Processing/flecha_y_mapa_v1_wifi/flecha_y_mapa_v1_wifi.pde) | Processing / ESP32 | Visualización V0 de orientación y puntos polares recibidos por TCP. | Implementado y compilado con Processing 4.5.6; la integración gráfica con el ESP32 y sensores reales queda pendiente de prueba física. No agrega pose XY ni grilla de ocupación. Véase la [guía de uso](processing-wifi.md). |
 
 Las entradas de plataforma son [perception_v0.cpp para ESP32](../firmware/ESP32/src/tests/perception_v0.cpp) y [main.c para EDU-CIAA](../firmware/EDU-CIAA/test/perception_v0/src/main.c). El cálculo angular está dentro del archivo común del test; `imu_only` conserva su propia copia para ser independiente. Ninguno depende de un módulo `odometry.c` de Application.
 

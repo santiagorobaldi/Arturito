@@ -5,6 +5,9 @@
 #include "driver_mpu6050.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
+#if defined(PERCEPTION_V0_WIFI_TCP)
+#include "hal_telemetry_network.h"
+#endif
 
 #include <stdio.h>
 #include <stdint.h>
@@ -80,7 +83,12 @@ static bool odometry_restart_tracking(void) {
 #define APP_START_STACK_BYTES       4096U
 #define APP_ACQUIRE_STACK_BYTES     4096U
 #define APP_DRIVERS_STACK_BYTES     4096U
+#if defined(PERCEPTION_V0_WIFI_TCP)
+/* La publicación también llama a Wi-Fi/Arduino, que necesita más pila. */
+#define APP_PUBLISH_STACK_BYTES     4096U
+#else
 #define APP_PUBLISH_STACK_BYTES     2048U
+#endif
 
 #define APP_START_PRIORITY          4U
 #define APP_ACQUIRE_PRIORITY        3U
@@ -171,6 +179,22 @@ static void task_process_sample(void *context) {
 static void task_publish(void *context) {
     (void)context;
 
+#if defined(PERCEPTION_V0_WIFI_TCP)
+    hal_telemetry_write("# DEBUG: WIFI COMPILADO");
+#else
+    hal_telemetry_write("# DEBUG: WIFI NO COMPILADO");
+#endif
+
+    // El resto de la función queda exactamente igual.
+
+#if defined(PERCEPTION_V0_WIFI_TCP)
+    /* Esta tarea es la única que toca el cliente TCP durante todo el test. */
+    const bool network_started = hal_telemetry_network_start();
+    if (!network_started) {
+        hal_telemetry_write("# WARN: no se inició Wi-Fi; continúa la salida serie.");
+    }
+#endif
+
     for (;;) {
         AppSample sample;
         char line[48];
@@ -182,6 +206,14 @@ static void task_publish(void *context) {
         snprintf(line, sizeof(line), "%.4f,%.4f", sample.theta_rad,
                  sample.distancia_m);
         hal_telemetry_write(line);
+
+#if defined(PERCEPTION_V0_WIFI_TCP)
+        /* Los diagnósticos siguen por USB. TCP recibe únicamente el CSV. */
+        hal_telemetry_network_poll();
+        char tcp_line[sizeof(line) + 1U];
+        snprintf(tcp_line, sizeof(tcp_line), "%s\n", line);
+        (void)hal_telemetry_network_send_line(tcp_line);
+#endif
 
         vTaskDelay(pdMS_TO_TICKS(SAMPLE_PERIOD_MS));
     }
