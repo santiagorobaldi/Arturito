@@ -22,18 +22,18 @@ bool drv8833_set_pwm(drv8833_t m , int pwm){
     const motor_pins_t *p = &motor_pins[m];
 
     if (pwm >=0){
-        set_pwm(p->in1_pin, pwm);
-        set_pwm(p->in2_pin,0);
+        hal_pwm_set_duty(p->in1_pin, pwm);
+        hal_pwm_set_duty(p->in2_pin,0);
     } else{
-        set_pwm(p->in1_pin, 0);
-        set_pwm(p->in2_pin,-pwm);
+        hal_pwm_set_duty(p->in1_pin, 0);
+        hal_pwm_set_duty(p->in2_pin,-pwm);
     }
     return true;
 }
 
 bool drv8833_stop(drv8833_t m){
-    set_pwm(MOTOR_A_IN1_PIN, 0)
-    set_pwm(MOTOR_A_IN2_PIN, 0)
-    set_pwm(MOTOR_B_IN1_PIN, 0)
-    set_pwm(MOTOR_B_IN2_PIN, 0)
+    hal_pwm_set_duty(MOTOR_A_IN1_PIN, 0)
+    hal_pwm_set_duty(MOTOR_A_IN2_PIN, 0)
+    hal_pwm_set_duty(MOTOR_B_IN1_PIN, 0)
+    hal_pwm_set_duty(MOTOR_B_IN2_PIN, 0)
 }
