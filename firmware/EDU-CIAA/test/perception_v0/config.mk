@@ -15,6 +15,7 @@ FREERTOS_HEAP_TYPE=4
 LOAD_INRAM=n
 
 INCLUDES += -I../shared/config
+INCLUDES += -Irover/config
 INCLUDES += -I../shared/layer1_hal
 INCLUDES += -I../shared/layer2_drivers
 INCLUDES += -I../shared/layer3_app
@@ -26,6 +27,7 @@ SRC += ../shared/layer2_drivers/driver_vl53l0x.c
 SRC += ../shared/tests/perception_v0/perception_v0.c
 
 # Adaptaciones de placa compartidas con la entrada heredada rover.
+SRC += rover/src/layer1_hal/hal_i2c_educiaa.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c
 SRC += rover/src/layer1_hal/hal_mpu6050_educiaa.c
 SRC += rover/src/layer1_hal/hal_vl53l0x_educiaa.c

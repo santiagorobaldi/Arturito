@@ -1,0 +1,12 @@
+#ifndef ESP32_BOARD_CONFIG_H
+#define ESP32_BOARD_CONFIG_H
+
+#define BOARD_I2C_A_SDA_GPIO   21
+#define BOARD_I2C_A_SCL_GPIO   22
+#define BOARD_I2C_A_CLOCK_HZ   100000u
+
+#define BOARD_I2C_B_SDA_GPIO   19
+#define BOARD_I2C_B_SCL_GPIO   23
+#define BOARD_I2C_B_CLOCK_HZ   100000u
+
+#endif
