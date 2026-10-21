@@ -26,7 +26,7 @@ bool drv8833_set_pwm(drv8833_t m , int pwm){
         set_pwm(p->in2_pin,0);
     } else{
         set_pwm(p->in1_pin, 0);
-        set_pwm(p->in2_pin,pwm);
+        set_pwm(p->in2_pin,-pwm);
     }
     return true;
 }
