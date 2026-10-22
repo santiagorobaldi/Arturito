@@ -6,5 +6,6 @@
 #include <stdbool.h>
 
 bool traction_init(void);
-bool traction_start_a_b(int pwm_a, int pwm_b);
+bool traction_set_ref(int vel_a, int vel_b);
+bool traction_tick();
 bool traction_stop(void);

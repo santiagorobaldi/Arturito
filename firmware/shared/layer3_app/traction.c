@@ -27,12 +27,6 @@ bool traction_tick(){
     return true;
 }
 
-bool traction_start_a_b(int vel_a, int vel_b){
-    drv8833_set_pwm(MOTOR_A, ENC_A, vel_a);
-    drv8833_set_pwm(MOTOR_B, ENC_B, vel_b);
-    return true;
-}
-
 bool traction_stop(void){
     ref_izq = 0;
     ref_der = 0;
