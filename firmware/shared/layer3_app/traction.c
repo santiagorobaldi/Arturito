@@ -13,9 +13,14 @@ typedef struct{
 
 static motor_vel_t ref = {0,0};
 
+static bool stopped = 1;
+
 static bool pid(drv8833_t m, as5600_t n, float vel){  
     //conversión de vel -> pwm
-    int pwm = (vel > 100) ? 100 : vel;
+    int pwm;
+    if (vel > VEL_SATURATION) pwm = VEL_SATURATION;
+    else if (vel < -VEL_SATURATION) vel = -VEL_SATURATION;
+
     return drv8833_set_pwm(m,pwm);
 }
 
@@ -24,18 +29,21 @@ bool traction_init(void){
 }
 
 bool traction_set_ref(float vel_a, float vel_b){
+    stopped = 0;
     ref.izq = vel_a;
     ref.der = vel_b; 
     return true;
 }
 
 bool traction_tick(void){
+    if (stopped) return true;
     pid(MOTOR_A, ENC_A, ref.izq);
     pid(MOTOR_B, ENC_B, ref.der);
     return true;
 }
 
 bool traction_stop(void){
+    stopped = 1;
     ref.izq = 0;
     ref.der = 0;
     drv8833_stop();
