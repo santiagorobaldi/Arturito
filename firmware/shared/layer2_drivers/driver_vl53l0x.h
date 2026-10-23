@@ -1,17 +1,18 @@
 #ifndef DRIVER_VL53L0X_H
 #define DRIVER_VL53L0X_H
 
-#include <stdbool.h>
+#include "hal_vl53l0x.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-bool vl53l0x_init(void);
-float vl53l0x_validate_cm(float distancia_cm);
-float vl53l0x_get_raw_distance_cm(void);
-float vl53l0x_calibrate_cm(float distancia_cruda_cm);
-float vl53l0x_get_distance_cm(void);
+hal_vl53l0x_status_t vl53l0x_init(void);
+hal_vl53l0x_status_t vl53l0x_set_profile(hal_vl53l0x_profile_t profile);
+hal_vl53l0x_status_t vl53l0x_start(void);
+hal_vl53l0x_status_t vl53l0x_distance_ready(bool *ready);
+/* Devuelve la distancia en cm cuando status es HAL_VL53L0X_OK. */
+hal_vl53l0x_status_t vl53l0x_get_distance(float *distance_cm);
 
 #ifdef __cplusplus
 }

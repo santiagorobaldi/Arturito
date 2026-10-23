@@ -1,4 +1,4 @@
-#include "driver_vl53l0x.h"
+#include "distance.h"
 #include "hal_vl53l0x.h"
 
 #include <Arduino.h>
@@ -43,11 +43,11 @@ void run_measurement_batch() {
     hal_vl53l0x_reset_diagnostics();
 
     for (uint16_t i = 0U; i < kSampleCount; ++i) {
-        const float raw_cm = vl53l0x_get_raw_distance_cm();
+        const float raw_cm = distance_get_raw();
         if (isfinite(raw_cm) && raw_cm > 0.0f) {
             add_sample(raw_stats, raw_cm);
 
-            const float calibrated_cm = vl53l0x_calibrate_cm(raw_cm);
+            const float calibrated_cm = distance_calibrate(raw_cm);
             if (isfinite(calibrated_cm) && calibrated_cm > 0.0f) {
                 add_sample(calibrated_stats, calibrated_cm);
             }
@@ -79,7 +79,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("# test vl53l0x_only: promedio crudo y calibrado");
 
-    if (!vl53l0x_init()) {
+    if (!distance_init()) {
         Serial.println("# ERROR: VL53L0X no encontrado. Halt.");
         while (true) {
             delay(1000);

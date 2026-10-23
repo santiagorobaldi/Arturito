@@ -20,6 +20,8 @@ INCLUDES += -Itest/perception_v0/inc
 
 SRC += ../shared/layer2_drivers/driver_mpu6050.c
 SRC += ../shared/layer2_drivers/driver_vl53l0x.c
+SRC += ../shared/layer3_app/angle.c
+SRC += ../shared/layer3_app/distance.c
 SRC += ../shared/tests/perception_v0/perception_v0.c
 
 # Adaptaciones de placa compartidas con la entrada heredada rover.

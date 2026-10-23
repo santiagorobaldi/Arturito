@@ -30,12 +30,14 @@ informacion, StaticInit, calibracion de referencia, gestion de SPAD y modo
 single-ranging. No reinicializa el bus compartido. Una prueba independiente
 debe configurar I2C0 antes de llamar a `hal_vl53l0x_init`.
 
-El driver compartido inicializa mediante HAL, obtiene la distancia y valida
-los limites configurados. La aplicacion no llama directamente a la HAL del sensor.
-La lectura HAL usa `VL53L0X_PerformSingleRangingMeasurement`, que espera la medicion
-nueva y limpia su interrupcion. Devuelve metros solo si la API tiene exito y
-`RangeStatus == 0`; de lo contrario devuelve -1. El backend ESP32 sigue usando
-Adafruit, con los archivos y las funciones renombrados a `vl53l0x`.
+La HAL ofrece inicio, consulta de disponibilidad y recoleccion de cada medicion.
+El driver compartido `vl53l0x_get_distance` conserva el contrato de estado del
+driver de la rama `feature/encoders` y entrega la distancia en centimetros,
+convirtiendola desde metros al recoger una muestra valida. La capa `distance`
+gestiona el tiempo de espera, valida el rango y aplica la interpolacion; la
+aplicacion no llama directamente a la HAL del sensor. En EDU-CIAA, una muestra
+solo es valida si la API tiene exito y `RangeStatus == 0`. El backend ESP32 usa
+Adafruit y ofrece el mismo contrato de adquisicion.
 El diagnostico ESP32 pasa de `tof_only` a `vl53l0x_only`.
 
 ## Separacion original de ST
