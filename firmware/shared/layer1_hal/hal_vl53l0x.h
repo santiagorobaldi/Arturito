@@ -2,7 +2,6 @@
 #define HAL_VL53L0X_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
 typedef enum {
     HAL_VL53L0X_OK = 0,
@@ -23,24 +22,33 @@ typedef enum {
 extern "C" {
 #endif
 
+
+/** Inicializa tras reset del sensor, calibra referencia y aplica DEFAULT.
+ * Puede bloquear durante el arranque. El bus debe estar preparado.
+ */
 hal_vl53l0x_status_t hal_vl53l0x_init(void);
+
+/** Cambia el perfil entre mediciones, antes del siguiente start.
+ * Requiere init exitoso y uno de los perfiles del enum.
+ */
 hal_vl53l0x_status_t hal_vl53l0x_set_profile(hal_vl53l0x_profile_t profile);
+
+/** Inicia una medicion single sin esperar su resultado completo.
+ * Requiere inicializacion exitosa y haber recogido la medicion anterior.
+ */
 hal_vl53l0x_status_t hal_vl53l0x_start(void);
+
+/** Consulta tras start: Estado OK con *ready=false significa pendiente, no error.
+ * ready debe ser distinto de NULL. Una consulta no espera toda la conversion.
+ * La espera entre consultas corresponde al llamador; no hay plazo acumulado.
+ */
 hal_vl53l0x_status_t hal_vl53l0x_distance_ready(bool *ready);
-/* La HAL conserva la unidad nativa solicitada por el driver: metros. */
+
+/** Recoge y reconoce la muestra tras distance_ready con ready=true.
+ * distance_m debe ser distinto de NULL; se escribe solo si devuelve OK.
+ * Rechaza muestras que el sensor considera invalidas. No espera conversion.
+ */
 hal_vl53l0x_status_t hal_vl53l0x_get_distance(float *distance_m);
-
-#if defined(BOARD_ESP32)
-typedef struct {
-    uint16_t api_errors;
-    uint16_t range_status_counts[6];
-    uint16_t other_status_count;
-    uint16_t sentinel_count;
-} hal_vl53l0x_diagnostics_t;
-
-void hal_vl53l0x_reset_diagnostics(void);
-void hal_vl53l0x_get_diagnostics(hal_vl53l0x_diagnostics_t *diagnostics);
-#endif
 
 #ifdef __cplusplus
 }
