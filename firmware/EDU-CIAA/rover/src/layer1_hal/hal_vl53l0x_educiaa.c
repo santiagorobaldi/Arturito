@@ -57,7 +57,7 @@ bool hal_vl53l0x_init(void)
     return true;
 }
 
-float hal_vl53l0x_get_distance_m(void)
+float hal_vl53l0x_get_distance_cm(void)
 {
     VL53L0X_RangingMeasurementData_t measurement = {0};
     if (!initialized) {
@@ -72,5 +72,5 @@ float hal_vl53l0x_get_distance_m(void)
     if (status != VL53L0X_ERROR_NONE || measurement.RangeStatus != 0) {
         return -1.0f;
     }
-    return (float)measurement.RangeMilliMeter / 1000.0f;
+    return (float)measurement.RangeMilliMeter / 10.0f;
 }

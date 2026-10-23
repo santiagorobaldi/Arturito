@@ -8,8 +8,10 @@ extern "C" {
 #endif
 
 bool vl53l0x_init(void);
-float vl53l0x_validate_m(float distancia_m);
-float vl53l0x_get_distance_m(void);
+float vl53l0x_validate_cm(float distancia_cm);
+float vl53l0x_get_raw_distance_cm(void);
+float vl53l0x_calibrate_cm(float distancia_cruda_cm);
+float vl53l0x_get_distance_cm(void);
 
 #ifdef __cplusplus
 }
