@@ -44,20 +44,19 @@ bool drv8833_init(void) {
     return hal_gpio_write(HAL_GPIO_DRV_SLEEP, true);   // chip activo
 }
 
-bool drv8833_set_pwm(drv8833_motor_t m, int pwm) {
+bool drv8833_set_pwm(drv8833_motor_t m, int duty_pwm) {
     if ((unsigned)m >= MOTOR_COUNT) return false;
 
-    if (pwm >  MAX_PWM) pwm =  MAX_PWM;
-    if (pwm < -MAX_PWM) pwm = -MAX_PWM;
+    if (duty_pwm >  100.0f) duty_pwm =  100.0f;
+    if (duty_pwm < -100.0f) duty_pwm = -100.0f;
 
-    int abs_pwm = (pwm >= 0) ? pwm : -pwm;
-    float duty = (float)abs_pwm * 100.0f / (float)MAX_PWM;
+    float duty = (duty_pwm >= 0.0f) ? duty_pwm : -duty_pwm;
 
     hal_pwm_pin_t ch1 = role_to_hal[motor_roles[m].in1];
     hal_pwm_pin_t ch2 = role_to_hal[motor_roles[m].in2];
 
     bool ok;
-    if (pwm >= 0) {
+    if (duty_pwm >= 0) {
         ok &= hal_pwm_set_duty(ch2, 0.0f); 
         ok  = hal_pwm_set_duty(ch1, duty);//Si de reversa a adelante se ejecutara esta lineas primero, el motor activa los breaks. Por eso primero seteamos en cero el otro ch
     } else {
