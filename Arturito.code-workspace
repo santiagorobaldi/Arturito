@@ -7,7 +7,16 @@
         {
             "name": "ESP32",
             "path": "firmware/ESP32"
+        },
+        {
+            "name": "EDU-CIAA",
+            "path": "firmware/EDU-CIAA"
         }
     ],
-    "settings": {}
+    "settings": {
+        "C_Cpp.default.includePath": [
+            "${workspaceFolder:Arturito}/firmware/shared/layer1_hal",
+            "${workspaceFolder:Arturito}/firmware/shared/layer2_drivers"
+        ]
+    }
 }
