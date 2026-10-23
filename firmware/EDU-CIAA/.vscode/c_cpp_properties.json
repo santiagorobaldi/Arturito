@@ -3,12 +3,10 @@
         {
             "name": "EDU-CIAA",
             "includePath": [
-                "${workspaceFolder}/test/perception_v0/inc",
                 "${workspaceFolder}/../shared/config",
                 "${workspaceFolder}/../shared/layer1_hal",
                 "${workspaceFolder}/../shared/layer2_drivers",
                 "${workspaceFolder}/../shared/layer3_app",
-                "${workspaceFolder}/../shared/tests/perception_v0",
                 "${workspaceFolder}/libs/lpc_open/boards/edu_ciaa_nxp/inc",
                 "${workspaceFolder}/libs/lpc_open/boards/inc",
                 "${workspaceFolder}/libs/lpc_open/lpc_chip_43xx/inc",

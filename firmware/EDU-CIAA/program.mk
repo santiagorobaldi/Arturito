@@ -1,3 +1,3 @@
-# Programa predeterminado: ensayo de integracion de sensores y telemetria V0.
-PROGRAM_PATH = test
-PROGRAM_NAME = perception_v0
+# Base del rover; los proximos ensayos se seleccionaran explicitamente.
+PROGRAM_PATH =
+PROGRAM_NAME = rover

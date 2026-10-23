@@ -25,8 +25,7 @@
             "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/libraries/**/src",
             "${workspaceFolder:EDU-CIAA}/libs/**/inc",
             "${workspaceFolder:EDU-CIAA}/libs/**/src",
-            "${workspaceFolder:EDU-CIAA}/rover/src/**",
-            "${workspaceFolder:EDU-CIAA}/test/perception_v0/inc"
+            "${workspaceFolder:EDU-CIAA}/rover/src/**"
         ],
         "C_Cpp.default.browse.path": [
             "${workspaceFolder:Arturito}/firmware/shared/**",
@@ -35,8 +34,7 @@
             "${workspaceFolder:ESP32}/.pio/libdeps/**/src",
             "${workspaceFolder:EDU-CIAA}/libs/**/inc",
             "${workspaceFolder:EDU-CIAA}/libs/**/src",
-            "${workspaceFolder:EDU-CIAA}/rover/src/**",
-            "${workspaceFolder:EDU-CIAA}/test/perception_v0/inc"
+            "${workspaceFolder:EDU-CIAA}/rover/src/**"
         ],
         "C_Cpp.default.cStandard": "c99",
         "C_Cpp.default.cppStandard": "c++11"
