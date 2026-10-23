@@ -19,6 +19,7 @@ static const hal_pwm_pin_t role_to_hal[DRV_PWM_COUNT] = {
     [DRV_AIN2] = HAL_PWM_CH_2,
     [DRV_BIN1] = HAL_PWM_CH_3,
     [DRV_BIN2] = HAL_PWM_CH_4,
+
 }; 
 
 // puertos de un motor
