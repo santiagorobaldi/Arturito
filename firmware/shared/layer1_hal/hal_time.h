@@ -9,6 +9,7 @@ extern "C" {
 
 void hal_delay(uint32_t ms);
 uint32_t hal_millis(void);
+uint32_t hal_micros(void);
 
 #ifdef __cplusplus
 }

@@ -9,3 +9,7 @@ void hal_delay(uint32_t ms) {
 uint32_t hal_millis(void) {
     return millis();
 }
+
+uint32_t hal_micros(void) {
+    return micros();
+}

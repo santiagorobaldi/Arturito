@@ -13,14 +13,11 @@ extern "C" {
  * La implementacion documenta rangos de medicion y limites de espera. */
 bool hal_mpu6050_init(uint8_t address);
 
-/** Adquiere una muestra conjunta en ejes del sensor.
- * Aceleracion en m/s2 con gravedad y velocidad angular en rad/s,
- * Incluye las correcciones propias de la biblioteca de adquisicion.
- * La implementacion documenta cualquier calibracion automatica.
- * Requiere inicializacion y sample valido. La llamada es bloqueante.
+/** Adquiere velocidad angular Z en rad/s.
+ * Requiere inicializacion y puntero valido. La llamada es bloqueante.
  * Devuelve true al completar la adquisicion; ante un fallo detectado
- * conserva *sample. La deteccion de fallos depende del soporte de acceso. */
-bool hal_mpu6050_read(mpu6050_sample_t *sample);
+ * conserva *gyro_z_rads. */
+bool hal_mpu6050_read_gyro_z(float *gyro_z_rads);
 
 #ifdef __cplusplus
 }
