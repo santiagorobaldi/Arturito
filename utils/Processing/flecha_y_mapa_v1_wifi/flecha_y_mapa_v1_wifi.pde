@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-// Cambiá estos dos valores si el router le asigna otra IP al ESP32.
-final String ARTURITO_IP = "192.168.0.172";
+// IP predeterminada del AP creado por el ESP32.
+final String ARTURITO_IP = "192.168.4.1";
 final int ARTURITO_PORT = 3333;
 
 // Los intentos tienen un timeout corto y se hacen en otro hilo para que

@@ -14,10 +14,9 @@ uint32_t counter = 0U;
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("[wifi_tcp_only] ensayo COUNT por Wi-Fi/TCP; puerto serie para diagnóstico.");
-    // Si faltan credenciales, la HAL lo informa y el test sigue vivo sin red.
+    Serial.println("[wifi_tcp_only] ensayo COUNT por AP/TCP.");
     if (!hal_telemetry_network_start()) {
-        Serial.println("[wifi_tcp_only] configure include/wifi_secrets.h y vuelva a compilar.");
+        Serial.println("[wifi_tcp_only] no se pudo iniciar el AP.");
     }
 }
 

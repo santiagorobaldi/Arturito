@@ -7,16 +7,13 @@
 extern "C" {
 #endif
 
-/* Arranca el intento de conexión; no espera a que el router responda. */
+/* Inicia el AP de Arturito y el servidor TCP. */
 bool hal_telemetry_network_start(void);
 
-/* Llamar seguido desde loop() para atender la red y aceptar clientes. */
+/* Llamar desde loop() para aceptar clientes. */
 void hal_telemetry_network_poll(void);
 
-/*
- * Envía una línea ASCII terminada en '\n' (hasta 127 bytes).
- * Devuelve false si no hay cliente o el envío no se completa.
- */
+/* Envia una linea ASCII terminada en '\n' (maximo 127 bytes). */
 bool hal_telemetry_network_send_line(const char *line);
 
 #ifdef __cplusplus
