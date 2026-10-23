@@ -170,23 +170,23 @@ void acceptTelemetryLine(String line) {
     return;
   }
 
-  float nextTheta;
-  float nextDistance;
+  float nextThetaDeg;
+  float nextDistanceCm;
   try {
-    nextTheta = Float.parseFloat(trim(cleanLine.substring(0, comma)));
-    nextDistance = Float.parseFloat(trim(cleanLine.substring(comma + 1)));
+    nextThetaDeg = Float.parseFloat(trim(cleanLine.substring(0, comma)));
+    nextDistanceCm = Float.parseFloat(trim(cleanLine.substring(comma + 1)));
   } catch (NumberFormatException e) {
     return;
   }
 
-  if (Float.isNaN(nextTheta) || Float.isInfinite(nextTheta) ||
-      Float.isNaN(nextDistance) || Float.isInfinite(nextDistance)) {
+  if (Float.isNaN(nextThetaDeg) || Float.isInfinite(nextThetaDeg) ||
+      Float.isNaN(nextDistanceCm) || Float.isInfinite(nextDistanceCm)) {
     return;
   }
 
   // Una trama válida actualiza el estado visible, aunque la distancia sea inválida.
-  theta = nextTheta;
-  distancia = nextDistance;
+  theta = radians(nextThetaDeg);
+  distancia = nextDistanceCm / 100.0;
   lastSampleMs = millis();
   hasReceivedSample = true;
   receivedSampleOnCurrentConnection = true;

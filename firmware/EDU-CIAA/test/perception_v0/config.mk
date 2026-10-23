@@ -9,12 +9,9 @@ DEFINES += BOARD_EDUCIAA
 
 USE_LPCOPEN=y
 USE_SAPI=y
-USE_FREERTOS=y
 USE_VL53L0X=y
-FREERTOS_HEAP_TYPE=4
 LOAD_INRAM=n
 
-INCLUDES += -I../shared/config
 INCLUDES += -I../shared/layer1_hal
 INCLUDES += -I../shared/layer2_drivers
 INCLUDES += -I../shared/layer3_app

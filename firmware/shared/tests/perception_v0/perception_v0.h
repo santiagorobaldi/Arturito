@@ -7,13 +7,13 @@
 extern "C" {
 #endif
 
-/** Inicia el ensayo de percepcion: orientacion y distancia por serie.
- * Crea una tarea que inicializa sensores, calibra giro y prepara adquisicion,
- * procesamiento y publicacion. El formato es theta_rad,distancia_m.
- * Devuelve true si pudo crear la tarea de arranque.
- * Los resultados posteriores de inicializacion se informan por telemetria.
- * Invocar una sola vez durante el arranque del programa. */
-bool perception_v0_start(void);
+/** Inicializa sensores y calibra gyro Z con el robot quieto.
+ * El formato publicado es theta_deg,distancia_cm. Invocar una sola vez. */
+bool perception_v0_init(void);
+
+/** Adquiere y publica una lectura. Llamar repetidamente desde el while/loop
+ * principal; incluye la pausa configurada entre lecturas. */
+void perception_v0_step(void);
 
 #ifdef __cplusplus
 }

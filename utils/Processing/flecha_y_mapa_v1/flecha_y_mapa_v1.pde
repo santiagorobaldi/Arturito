@@ -16,7 +16,7 @@ void setup() {
 }
 
 void draw() {
-  // 1. CSV V0: theta_rad,distancia_m; las lineas # son logs.
+  // CSV V0: theta_deg,distancia_cm; las lineas # son logs.
   while (myPort.available() > 0) {
     String inString = myPort.readStringUntil('\n');
     if (inString != null) {
@@ -27,15 +27,15 @@ void draw() {
       String[] data = split(inString, ',');
 
       if (data.length == 2) {
-        float nextTheta = float(data[0]);
-        float nextDistance = float(data[1]);
-        if (Float.isNaN(nextTheta) || Float.isInfinite(nextTheta) ||
-            Float.isNaN(nextDistance) || Float.isInfinite(nextDistance)) {
+        float nextThetaDeg = float(data[0]);
+        float nextDistanceCm = float(data[1]);
+        if (Float.isNaN(nextThetaDeg) || Float.isInfinite(nextThetaDeg) ||
+            Float.isNaN(nextDistanceCm) || Float.isInfinite(nextDistanceCm)) {
           continue;
         }
 
-        theta = nextTheta;
-        distancia = nextDistance;
+        theta = radians(nextThetaDeg);
+        distancia = nextDistanceCm / 100.0;
 
         if (distancia >= 0.05 && distancia <= 1.50) {
           float pixelsPerMeter = 250.0;

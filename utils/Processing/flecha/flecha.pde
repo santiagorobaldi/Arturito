@@ -1,7 +1,7 @@
 import processing.serial.*;
 
 Serial myPort;
-float theta = 0; // Ángulo recibido del ESP32 (en radianes)
+float theta = 0; // Ángulo interno para dibujar (radianes)
 
 void setup() {
   size(600, 600);
@@ -52,7 +52,8 @@ void serialEvent(Serial myPort) {
       String[] data = split(inString, ',');
       
       if (data.length == 2) {
-        theta = float(data[0]);
+        // perception_v0 publica theta_deg; Processing usa radianes en rotate().
+        theta = radians(float(data[0]));
       }
     }
   } catch (Exception e) {

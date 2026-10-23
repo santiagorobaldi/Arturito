@@ -5,13 +5,11 @@
 
 void setup() {
     Serial.begin(115200);
-    if (!perception_v0_start()) {
+    if (!perception_v0_init()) {
         hal_telemetry_write("# ERROR: no se pudo iniciar la aplicacion.");
-        for (;;) {
-            delay(1000);
-        }
     }
 }
 
 void loop() {
+    perception_v0_step();
 }
