@@ -3,8 +3,5 @@
 
 /* Parametros propios del modulo MPU6050. */
 #define MPU6050_I2C_ADDRESS               0x68U
-#define MPU6050_CALIBRATION_SAMPLE_COUNT   500U
-#define MPU6050_CALIBRATION_INTERVAL_MS     10U
-#define MPU6050_MAX_SAMPLE_GAP_US        100000U
 
 #endif /* DRIVER_MPU6050_CONFIG_H */

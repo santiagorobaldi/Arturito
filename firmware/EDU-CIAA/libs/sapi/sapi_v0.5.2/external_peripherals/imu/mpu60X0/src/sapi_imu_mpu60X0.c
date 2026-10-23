@@ -335,23 +335,23 @@ int8_t mpu60X0Init( MPU60X0_address_t address )
 	}
 	control._accelScale = MPU60X0_G * 16.0f / 32767.5f; // setting the accel scale to 16G
 	control._accelRange = MPU60X0_ACCEL_RANGE_16G;
-	// setting the gyro range to 2000DPS as default
-	if (mpu60X0WriteRegister(MPU60X0_GYRO_CONFIG, MPU60X0_GYRO_FS_SEL_2000DPS) < 0) {
+	// setting the gyro range to 250DPS as default
+	if (mpu60X0WriteRegister(MPU60X0_GYRO_CONFIG, MPU60X0_GYRO_FS_SEL_250DPS) < 0) {
 		return -8;
 	}
-   // setting the gyro scale to 2000DPS
-	control._gyroScale = 2000.0f / 32767.5f * MPU60X0_D2R;
-	control._gyroRange = MPU60X0_GYRO_RANGE_2000DPS;
-	// setting accel bandwidth to 184Hz and gyro bandwidth to 188Hz as default
-	if (mpu60X0WriteRegister(MPU60X0_CONFIG, MPU60X0_DLPF_184HZ) < 0) {
+   // setting the gyro scale to 250DPS
+	control._gyroScale = 250.0f / 32767.5f * MPU60X0_D2R;
+	control._gyroRange = MPU60X0_GYRO_RANGE_250DPS;
+	// setting accel bandwidth to 44Hz and gyro bandwidth to 42Hz as default
+	if (mpu60X0WriteRegister(MPU60X0_CONFIG, MPU60X0_DLPF_44HZ) < 0) {
 		return -9;
 	}
-	control._bandwidth = MPU60X0_DLPF_BANDWIDTH_184HZ;
-	// setting the sample rate divider to 0 as default
-	if (mpu60X0WriteRegister(MPU60X0_SMPRT_DIV, 0x00) < 0) {
+	control._bandwidth = MPU60X0_DLPF_BANDWIDTH_44HZ;
+	// setting the sample rate divider to 9 for 100Hz as default
+	if (mpu60X0WriteRegister(MPU60X0_SMPRT_DIV, 0x09) < 0) {
 		return -10;
 	}
-	control._srd = 0;
+	control._srd = 9;
 	// enable I2C master mode
   if (mpu60X0WriteRegister(MPU60X0_USER_CTRL, MPU60X0_I2C_MST_EN) < 0) {
 		return -11;
