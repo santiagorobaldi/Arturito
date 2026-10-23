@@ -1,8 +1,8 @@
 #include "perception_v0.h"
 
-#include "driver_mpu6050.h"
 #include "driver_mpu6050_config.h"
-#include "driver_vl53l0x.h"
+#include "angle.h"
+#include "distance.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
 #include "perception_v0_config.h"
@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 
+/* Ensayo V0: combina angulo y distancia y publica theta_deg,distancia_cm. */
 static bool initialized;
 static double last_angle_deg;
 
@@ -22,13 +23,14 @@ bool perception_v0_init(void) {
 
     hal_telemetry_write("# Arturito protocolo V0: theta_deg,distancia_cm");
 
-    if (!mpu6050_init(MPU6050_I2C_ADDRESS)) {
-        hal_telemetry_write("# ERROR: IMU MPU6050 no encontrada.");
+    hal_telemetry_write("# IMU: quedate quieto para calibrar gyro Z...");
+    if (!angle_init(MPU6050_I2C_ADDRESS)) {
+        hal_telemetry_write("# ERROR: no se pudo iniciar o calibrar la IMU.");
         return false;
     }
-    hal_telemetry_write("# IMU OK");
+    hal_telemetry_write("# IMU OK; gyro Z calibrado.");
 
-    if (!vl53l0x_init()) {
+    if (!distance_init()) {
         hal_telemetry_write("# WARN: VL53L0X no encontrado. distancia_cm=-1");
     } else {
         hal_telemetry_write("# ToF OK");
@@ -43,15 +45,7 @@ bool perception_v0_init(void) {
     hal_telemetry_write("# DEBUG: WIFI NO COMPILADO");
 #endif
 
-    hal_telemetry_write("# Calibrando IMU (quedate quieto)...");
-    hal_delay(2000U);
-    if (!mpu6050_calibrate_gyro_z(MPU6050_CALIBRATION_SAMPLE_COUNT,
-                                  MPU6050_CALIBRATION_INTERVAL_MS)) {
-        hal_telemetry_write("# ERROR: fallo la calibracion del gyro Z.");
-        return false;
-    }
-
-    hal_telemetry_write("# Calibracion OK. Datos CSV:");
+    hal_telemetry_write("# Datos CSV:");
     initialized = true;
     return true;
 }
@@ -62,11 +56,11 @@ void perception_v0_step(void) {
     }
 
     double angle_deg = last_angle_deg;
-    (void)mpu6050_read_angle_deg(&angle_deg);
-    last_angle_deg = angle_deg;
+    if (angle_read_deg(&angle_deg)) {
+        last_angle_deg = angle_deg;
+    }
 
-    /* La API del driver devuelve distancia calibrada o -1 si no es valida. */
-    const float distance_cm = vl53l0x_get_distance_cm();
+    const float distance_cm = distance_get();
     char line[48];
     snprintf(line, sizeof(line), "%.3f,%.4f", angle_deg, distance_cm);
     hal_telemetry_write(line);
