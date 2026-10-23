@@ -11,11 +11,12 @@
  *
  */
 
-/* EDU-CIAA backend: original ST signatures, fixed hardware bus I2C0.
+/* EDU-CIAA backend: original ST signatures, fixed HAL bus A (I2C0).
  * Address uses ST's 8-bit convention. The application serializes access.
  * Blocking transfers have no timeout if the peripheral stops progressing.
  */
 #include "vl53l0x_i2c_platform.h"
+#include "hal_i2c.h"
 #include "sapi_i2c.h"
 #include <string.h>
 
@@ -39,36 +40,27 @@ int32_t VL53L0X_write_multi(uint8_t address, uint8_t index, uint8_t *pdata,
                            int32_t count)
 {
     uint8_t buffer[COMMS_BUFFER_SIZE];
-    I2CM_XFER_T transfer = {0};
     if (pdata == NULL || count <= 0 || count >= COMMS_BUFFER_SIZE ||
         address == 0 || (address & 1U) != 0)
         return STATUS_FAIL;
 
     buffer[0] = index;
     memcpy(&buffer[1], pdata, (size_t)count);
-    transfer.slaveAddr = address >> 1;
-    transfer.txBuff = buffer;
-    transfer.txSz = (uint16_t)(count + 1);
-    Chip_I2CM_XferBlocking(LPC_I2C0, &transfer);
-    return transfer.status == I2CM_STATUS_OK ? STATUS_OK : STATUS_FAIL;
+    return hal_i2c_write(HAL_I2C_BUS_A, address >> 1, buffer, (int)(count + 1))
+               ? STATUS_OK : STATUS_FAIL;
 }
 
 int32_t VL53L0X_read_multi(uint8_t address, uint8_t index, uint8_t *pdata,
                           int32_t count)
 {
-    I2CM_XFER_T transfer = {0};
     if (pdata == NULL || count <= 0 || count >= COMMS_BUFFER_SIZE ||
         address == 0 || (address & 1U) != 0)
         return STATUS_FAIL;
 
-    /* LPCOpen generates a repeated START between transmit and receive. */
-    transfer.slaveAddr = address >> 1;
-    transfer.txBuff = &index;
-    transfer.txSz = 1;
-    transfer.rxBuff = pdata;
-    transfer.rxSz = (uint16_t)count;
-    Chip_I2CM_XferBlocking(LPC_I2C0, &transfer);
-    return transfer.status == I2CM_STATUS_OK ? STATUS_OK : STATUS_FAIL;
+    /* HAL preserves the repeated START between register selection and reading. */
+    return hal_i2c_write_read(HAL_I2C_BUS_A, address >> 1,
+                              &index, 1, pdata, (int)count)
+               ? STATUS_OK : STATUS_FAIL;
 }
 
 int32_t VL53L0X_write_byte(uint8_t address, uint8_t index, uint8_t data)

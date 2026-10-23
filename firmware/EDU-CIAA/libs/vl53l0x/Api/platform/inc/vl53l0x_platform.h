@@ -64,7 +64,6 @@ typedef struct {
     uint8_t   comms_type;                /*!< Type of comms : VL53L0X_COMMS_I2C or VL53L0X_COMMS_SPI */
     uint16_t  comms_speed_khz;           /*!< Comms speed [kHz] : typically 400kHz for I2C           */
 
-    i2cMap_t i2cBus;                    /*!< Initialized I2C bus; currently I2C0 only. */
 
 } VL53L0X_Dev_t;
 

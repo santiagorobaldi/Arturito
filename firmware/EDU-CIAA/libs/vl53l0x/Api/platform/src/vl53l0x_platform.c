@@ -90,14 +90,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 VL53L0X_Error VL53L0X_LockSequenceAccess(VL53L0X_DEV Dev){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
 
     return Status;
 }
 
 VL53L0X_Error VL53L0X_UnlockSequenceAccess(VL53L0X_DEV Dev){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
 
     return Status;
@@ -105,7 +105,7 @@ VL53L0X_Error VL53L0X_UnlockSequenceAccess(VL53L0X_DEV Dev){
 
 // EDU-CIAA transport is implemented in vl53l0x_i2c_platform.c.
 VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, uint32_t count){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
 
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int = 0;
@@ -127,7 +127,7 @@ VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata,
 
 // EDU-CIAA transport is implemented in vl53l0x_i2c_platform.c.
 VL53L0X_Error VL53L0X_ReadMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, uint32_t count){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_I2C_USER_VAR
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
@@ -149,7 +149,7 @@ VL53L0X_Error VL53L0X_ReadMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, 
 
 
 VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 	uint8_t deviceAddress;
@@ -165,7 +165,7 @@ VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data){
 }
 
 VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 	uint8_t deviceAddress;
@@ -181,7 +181,7 @@ VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data){
 }
 
 VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 	uint8_t deviceAddress;
@@ -197,7 +197,7 @@ VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data){
 }
 
 VL53L0X_Error VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_t AndData, uint8_t OrData){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     uint8_t deviceAddress;
@@ -222,7 +222,7 @@ VL53L0X_Error VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_t AndData
 }
 
 VL53L0X_Error VL53L0X_RdByte(VL53L0X_DEV Dev, uint8_t index, uint8_t *data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     uint8_t deviceAddress;
@@ -238,7 +238,7 @@ VL53L0X_Error VL53L0X_RdByte(VL53L0X_DEV Dev, uint8_t index, uint8_t *data){
 }
 
 VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t *data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     uint8_t deviceAddress;
@@ -254,7 +254,7 @@ VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t *data){
 }
 
 VL53L0X_Error  VL53L0X_RdDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t *data){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     uint8_t deviceAddress;
@@ -271,7 +271,7 @@ VL53L0X_Error  VL53L0X_RdDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t *data){
 
 #define VL53L0X_POLLINGDELAY_LOOPNB  250
 VL53L0X_Error VL53L0X_PollingDelay(VL53L0X_DEV Dev){
-    if (Dev == NULL || Dev->i2cBus != I2C0) return VL53L0X_ERROR_INVALID_PARAMS;
+    if (Dev == NULL) return VL53L0X_ERROR_INVALID_PARAMS;
     VL53L0X_Error status = VL53L0X_ERROR_NONE;
     LOG_FUNCTION_START("");
 
