@@ -1,52 +1,80 @@
 #include "config.h"
 #include "driver_drv8833.h"
 #include "hal_pwm.h"
+#include "hal_gpio.h"
 
-typedef struct{
-    int in1_pin;
-    int in2_pin;
-} motor_pins_t;
+#define PWM_FREQ_HZ  20000
 
 
-static const motor_pins_t motor_pins [MOTOR_COUNT] = {
-    [MOTOR_A] = {MOTOR_A_IN1_PIN, MOTOR_A_IN2_PIN},
-    [MOTOR_B] = {MOTOR_B_IN1_PIN, MOTOR_B_IN2_PIN}
+typedef enum {//Puertos internos del componente
+    DRV_AIN1 = 0,
+    DRV_AIN2,
+    DRV_BIN1,
+    DRV_BIN2,
+    DRV_PWM_COUNT
+} drv_pwm_role_t;
+
+// mapeo de puertos del driver a canales de hal_pwm
+static const hal_pwm_pin_t role_to_hal[DRV_PWM_COUNT] = {
+    [DRV_AIN1] = HAL_PWM_CH_1,
+    [DRV_AIN2] = HAL_PWM_CH_2,
+    [DRV_BIN1] = HAL_PWM_CH_3,
+    [DRV_BIN2] = HAL_PWM_CH_4,
 };
 
+// puertos de un motor
+typedef struct {
+    drv_pwm_role_t in1;
+    drv_pwm_role_t in2;
+} motor_roles_t;
 
-bool drv8833_init(void){
-    return true;
+// vector de puertos de motores
+static const motor_roles_t motor_roles[MOTOR_COUNT] = {
+    [MOTOR_A] = { DRV_AIN1, DRV_AIN2 },
+    [MOTOR_B] = { DRV_BIN1, DRV_BIN2 },
+};
+
+bool drv8833_init(void) {
+    if (!hal_gpio_init(HAL_GPIO_DRV_SLEEP, HAL_GPIO_OUT))       return false;
+    if (!hal_gpio_init(HAL_GPIO_DRV_FAULT, HAL_GPIO_IN_PULLUP)) return false;
+
+    for (int i = 0; i < DRV_PWM_COUNT; i++) {
+        if (!hal_pwm_init(role_to_hal[i], PWM_FREQ_HZ)) return false;
+    }
+    return hal_gpio_write(HAL_GPIO_DRV_SLEEP, true);   // chip activo
 }
 
-bool drv8833_set_pwm(drv8833_t m , int pwm){
-    if (m>=MOTOR_COUNT) return false;
+bool drv8833_set_pwm(drv8833_motor_t m, int pwm) {
+    if ((unsigned)m >= MOTOR_COUNT) return false;
 
-    if (pwm > MAX_PWM) {
-        pwm = MAX_PWM;
-    }else if (pwm < -MAX_PWM){
-        pwm = -MAX_PWM;
+    if (pwm >  MAX_PWM) pwm =  MAX_PWM;
+    if (pwm < -MAX_PWM) pwm = -MAX_PWM;
+
+    hal_pwm_pin_t ch1 = role_to_hal[motor_roles[m].in1];
+    hal_pwm_pin_t ch2 = role_to_hal[motor_roles[m].in2];
+    float duty = (float)((pwm >= 0) ? pwm : -pwm) / 10.0f;   // -> 0..100 %
+
+    bool ok;
+    if (pwm >= 0) {
+        ok  = hal_pwm_set_duty(ch1, duty);
+        ok &= hal_pwm_set_duty(ch2, 0.0f);
+    } else {
+        ok  = hal_pwm_set_duty(ch1, 0.0f);
+        ok &= hal_pwm_set_duty(ch2, duty);
     }
-
-    const motor_pins_t *p = &motor_pins[m];
-
-    if (pwm >=0){
-        hal_pwm_set_duty(p->in1_pin, pwm);
-        hal_pwm_set_duty(p->in2_pin,0);
-    } else{
-        hal_pwm_set_duty(p->in1_pin, 0);
-        hal_pwm_set_duty(p->in2_pin,-pwm);
-    }
-    return true;
+    return ok;
 }
 
-bool drv8833_stop(void){
-    const motor_pins_t *l = &motor_pins[MOTOR_A];
-    const motor_pins_t *r = &motor_pins[MOTOR_B];
+bool drv8833_stop(void) {
+    bool ok = true;
+    for (int i = 0; i < DRV_PWM_COUNT; i++) {
+        ok &= hal_pwm_set_duty(role_to_hal[i], 0.0f);
+    }
+    return ok;
+}
 
-    hal_pwm_set_duty(l->in1_pin, 0);
-    hal_pwm_set_duty(l->in2_pin, 0);
-    hal_pwm_set_duty(r->in1_pin, 0);
-    hal_pwm_set_duty(r->in2_pin, 0);
-
-    return true;
+bool drv8833_fault(void) {
+    bool level = true;
+    if (!hal_gpio_read(HAL_GPIO_DRV_FAULT, &level)) return true;  // si no puedo leer, asumo falla
+    return !level;   // nFAULT activo en bajo
 }
