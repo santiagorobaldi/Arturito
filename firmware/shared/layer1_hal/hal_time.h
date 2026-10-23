@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+/* Reloj compartido: demoras en ms y marcas de tiempo en ms o microsegundos. */
 void hal_delay(uint32_t ms);
 uint32_t hal_millis(void);
 uint32_t hal_micros(void);

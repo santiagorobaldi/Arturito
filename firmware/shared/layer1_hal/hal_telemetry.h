@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+/* Envia una linea por el transporte de telemetria activo en la placa. */
 void hal_telemetry_write(const char *line);
 
 #ifdef __cplusplus

@@ -14,9 +14,31 @@
         }
     ],
     "settings": {
+        "C_Cpp.default.configurationProvider": "platformio.platformio-ide",
         "C_Cpp.default.includePath": [
-            "${workspaceFolder:Arturito}/firmware/shared/layer1_hal",
-            "${workspaceFolder:Arturito}/firmware/shared/layer2_drivers"
-        ]
+            "${workspaceFolder:Arturito}/firmware/shared/**",
+            "${workspaceFolder:ESP32}/src/**",
+            "${workspaceFolder:ESP32}/lib/**",
+            "${workspaceFolder:ESP32}/.pio/libdeps/**/src",
+            "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/cores/esp32",
+            "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/variants/esp32",
+            "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/libraries/**/src",
+            "${workspaceFolder:EDU-CIAA}/libs/**/inc",
+            "${workspaceFolder:EDU-CIAA}/libs/**/src",
+            "${workspaceFolder:EDU-CIAA}/rover/src/**",
+            "${workspaceFolder:EDU-CIAA}/test/perception_v0/inc"
+        ],
+        "C_Cpp.default.browse.path": [
+            "${workspaceFolder:Arturito}/firmware/shared/**",
+            "${workspaceFolder:ESP32}/src/**",
+            "${workspaceFolder:ESP32}/lib/**",
+            "${workspaceFolder:ESP32}/.pio/libdeps/**/src",
+            "${workspaceFolder:EDU-CIAA}/libs/**/inc",
+            "${workspaceFolder:EDU-CIAA}/libs/**/src",
+            "${workspaceFolder:EDU-CIAA}/rover/src/**",
+            "${workspaceFolder:EDU-CIAA}/test/perception_v0/inc"
+        ],
+        "C_Cpp.default.cStandard": "c99",
+        "C_Cpp.default.cppStandard": "c++11"
     }
 }
