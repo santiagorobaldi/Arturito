@@ -1,7 +1,6 @@
 #ifndef DRV8833_H
 #define DRV8833_H
 
-#include <stdint.h>
 #include <stdbool.h>
 
 #define MAX_PWM 1000   // 0..1000 = 0..100.0 %, resolución 0.1 %

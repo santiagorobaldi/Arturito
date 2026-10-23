@@ -15,7 +15,7 @@ static motor_vel_t ref = {0,0};
 
 static bool stopped = 1;
 
-static bool pid(drv8833_t m, as5600_t n, float vel){  
+static bool pid(drv8833_motor_t m, as5600_t n, float vel){  
     //conversión de vel -> pwm
     int pwm;
     if (vel > VEL_SATURATION) pwm = VEL_SATURATION;

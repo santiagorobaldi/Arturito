@@ -1,4 +1,3 @@
-#include "config.h"
 #include "driver_drv8833.h"
 #include "hal_pwm.h"
 #include "hal_gpio.h"
@@ -50,14 +49,16 @@ bool drv8833_set_pwm(drv8833_motor_t m, int pwm) {
     if (pwm >  MAX_PWM) pwm =  MAX_PWM;
     if (pwm < -MAX_PWM) pwm = -MAX_PWM;
 
+    int abs_pwm = (pwm >= 0) ? pwm : -pwm;
+    float duty = (float)abs_pwm * 100.0f / (float)MAX_PWM;
+
     hal_pwm_pin_t ch1 = role_to_hal[motor_roles[m].in1];
     hal_pwm_pin_t ch2 = role_to_hal[motor_roles[m].in2];
-    float duty = (float)((pwm >= 0) ? pwm : -pwm) / 10.0f;   // -> 0..100 %
 
     bool ok;
     if (pwm >= 0) {
-        ok  = hal_pwm_set_duty(ch1, duty);
-        ok &= hal_pwm_set_duty(ch2, 0.0f);
+        ok &= hal_pwm_set_duty(ch2, 0.0f); 
+        ok  = hal_pwm_set_duty(ch1, duty);//Si de reversa a adelante se ejecutara esta lineas primero, el motor activa los breaks. Por eso primero seteamos en cero el otro ch
     } else {
         ok  = hal_pwm_set_duty(ch1, 0.0f);
         ok &= hal_pwm_set_duty(ch2, duty);
