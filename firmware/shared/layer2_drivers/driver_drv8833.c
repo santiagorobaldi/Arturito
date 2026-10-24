@@ -57,8 +57,8 @@ bool drv8833_set_pwm(drv8833_motor_t m, float duty_pwm) {
 
     bool ok;
     if (duty_pwm >= 0) {
-        ok &= hal_pwm_set_duty(ch2, 0.0f); 
-        ok  = hal_pwm_set_duty(ch1, duty);//Si de reversa a adelante se ejecutara esta lineas primero, el motor activa los breaks. Por eso primero seteamos en cero el otro ch
+        ok = hal_pwm_set_duty(ch2, 0.0f); 
+        ok &= hal_pwm_set_duty(ch1, duty);//Si de reversa a adelante se ejecutara esta lineas primero, el motor activa los breaks. Por eso primero seteamos en cero el otro ch
     } else {
         ok  = hal_pwm_set_duty(ch1, 0.0f);
         ok &= hal_pwm_set_duty(ch2, duty);

@@ -6,49 +6,83 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define W_MAX (VEL_MAX / WHEEL_RADIUS_M) //rad/s
+#define W_RATE (VEL_RAMP/ WHEEL_RADIUS_M) 
 
+typedef struct{
+    float value; // 
+    float rate; // pendiente de rampa
+}ramp_t;
 
 typedef struct{
     float left;
     float right;
-}motor_vel_t;
+}wheel_w_t;
 
-static motor_vel_t ref = {0,0};
+static wheel_w_t ref = {0,0};
 
-static bool stopped = 1;
+static ramp_t ramp_left = {0,W_RATE};
+static ramp_t ramp_right = {0,W_RATE};
 
-static bool pid(drv8833_motor_t m, as5600_t n, float vel){  
-    //conversión de vel -> pwm
-    float pwm;
-    if (vel > VEL_SATURATION) pwm = VEL_SATURATION;
-    else if (vel < -VEL_SATURATION) pwm = -VEL_SATURATION;
+static bool stopped = true;
 
-    return drv8833_set_pwm(m,pwm);
+static float ramp_update(ramp_t *r, float target, float dt) {
+    float max_step = r->rate * dt;
+    float diff = target - r->value;
+    if (diff >  max_step) diff =  max_step;
+    if (diff < -max_step) diff = -max_step;
+    r->value += diff;
+    return r->value;
+}
+
+static float saturation (float x, float lim){
+    if (x > lim) return lim;
+    if (x < -lim) return -lim;
+    return x;
+}
+
+static bool pid(drv8833_motor_t m, as5600_t n, float w_ref){  
+//TODO: Conversión de W->PWM con PI 
+    float duty = 100.0f * w_ref / W_MAX;
+    return drv8833_set_pwm(m,duty);
 }
 
 bool traction_init(void){
     return drv8833_init();
 }
 
-bool traction_set_ref(float vel_a, float vel_b){
-    stopped = 0;
-    ref.left = vel_a;
-    ref.right = vel_b; 
-    return true;
-}
-
-bool traction_tick(void){
-    if (stopped) return true;
-    pid(MOTOR_A, ENC_A, ref.left);
-    pid(MOTOR_B, ENC_B, ref.right);
+bool traction_resume(void){
+    stopped = false;
     return true;
 }
 
 bool traction_stop(void){
-    stopped = 1;
-    ref.left = 0;
-    ref.right = 0;
-    drv8833_stop();
-    //Tengo entendido que tambien se debería resetear la integral de pid
+    stopped = true;
+
     return true;
 }
+
+bool traction_set_ref(float w_left, float w_right){
+    ref.left = saturation(w_left, W_MAX);
+    ref.right = saturation(w_right, W_MAX); 
+    return true;
+}
+
+bool traction_tick(void){
+    if (stopped) {
+        ref.left = 0.0f;
+        ref.right = 0.0f;
+        ramp_left.value = 0.0f;
+        ramp_right.value = 0.0f;
+        drv8833_stop();
+        return true;
+    }
+
+    float r_left = ramp_update(&ramp_left,ref.left, RAMP_DT);
+    float r_right = ramp_update(&ramp_right,ref.right, RAMP_DT);
+
+    pid(MOTOR_A, ENC_A, r_left);
+    pid(MOTOR_B, ENC_B, r_right);
+    return true;
+}
+
