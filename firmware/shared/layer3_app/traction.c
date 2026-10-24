@@ -10,6 +10,9 @@
 
 #define RAMP_DT (TRACTION_TICK_MS / 1000.0f)
 
+#define MOTOR_LEFT_SIGN (1.0f)
+#define MOTOR_RIGHT_SIGN (-1.0f)
+
 // Velocidad angular
 typedef struct{
     float left;
@@ -38,7 +41,7 @@ static float ramp_update(ramp_t *r, float target, float dt) {
     return r->value;
 }
 
-static float saturation (float x, float lim){
+static float clamp (float x, float lim){
     if (x > lim) return lim;
     if (x < -lim) return -lim;
     return x;
@@ -66,8 +69,8 @@ bool traction_stop(void){
 }
 
 bool traction_set_ref(float w_left, float w_right){
-    ref.left = saturation(w_left, W_MAX);
-    ref.right = saturation(w_right, W_MAX); 
+    ref.left = clamp(w_left, W_MAX);
+    ref.right = clamp(w_right, W_MAX); 
     return true;
 }
 
@@ -77,12 +80,12 @@ bool traction_tick(void){
     if (stopped) {
         ramp_left.value = 0.0f;
         ramp_right.value = 0.0f;
-        drv8833_stop();
-        return true;
+        //reset pi
+        return drv8833_break();
     }
 
-    float r_left = ramp_update(&ramp_left,ref.left, RAMP_DT);
-    float r_right = ramp_update(&ramp_right,ref.right, RAMP_DT);
+    float r_left = ramp_update(&ramp_left,ref.left * MOTOR_LEFT_SIGN, RAMP_DT);
+    float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, RAMP_DT);
 
     pid(MOTOR_A, ENC_A, r_left);
     pid(MOTOR_B, ENC_B, r_right);
