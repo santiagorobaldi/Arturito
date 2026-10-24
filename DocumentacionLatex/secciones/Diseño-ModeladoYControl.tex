@@ -204,9 +204,65 @@ En base a esto es posible hacer el camino inverso; cuánto debería girar cada r
 \end{equation}
 
 
-\subsubsection{Lazo Externo: Control Cinemático para Navegación}
+\subsubsection{Control Cinemático para Navegación}
 
-\paragraph{Análisis del Control Polar de Siegwart (Punto a Punto)}
+El control cinemático del robot consiste en el diseño e implementación de alguna técnica que permita comandar al robot desplazarse hacia un punto final y orientación final cualquiera y que este mismo lo realice lo mejor posible.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{Imagenes/ControlCinematicaGeneral.png}
+	\caption{Planteo control (VER DE HACER GRAFICO PROPIO).}
+	\label{fig:control_cinematica_general}
+\end{figure}
+
+
+\paragraph{Análisis del Control Polar de Siegwart (Punto a Punto)}~\\
+Siegwart (Autonomous Mobile Robots) propone un control polar, donde el vector velocidad desde la posición actual del robot hasta la meta se expresa en coordenadas polares.
+
+Puede verse que por la geometría del chasis, el robot únicamente tiene 2 coordenadas de movimiento: $x_l$ y $\theta$, por lo tanto una transformación de Cartesianas a Polares simplifica el control. Se definen 3 variables polares $[\rho,\alpha,\beta]^T$ equivalentes a las cartesianas $[x,y,\theta]^T$.
+
+\begin{itemize}
+	\item \textbf{$\rho$ (Distancia):} Representa la distancia entre el centro del robot y la meta. Reemplaza la magnitud espacial de $(x,y)$.
+	\item \textbf{$\alpha$ (Ángulo de apuntamiento):} Es el ángulo entre la dirección a la que apunta la trompa del robot ($X_L$) y la línea recta que une al centro del robot con la meta ($\hat{x}$).
+	\item \textbf{$\beta$ (Ángulo de alineación final):} Es el ángulo entre la línea recta que une el centro del robot con la meta ($\hat{x}$) y el eje de orientación final deseado ($X_M$). 
+\end{itemize}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{Imagenes/ControlPolar.png}
+	\caption{Variables control polar (VER DE HACER GRAFICO PROPIO).}
+	\label{fig:control_polar}
+\end{figure}
+
+
+El error de posición del robot con respecto a la meta puede traducirse de las coordenadas cartesianas $[\Delta x,\Delta y,\theta_M]$ a las polares como:
+
+\begin{itemize}
+	\item $\rho = \sqrt{\Delta x^2 + \Delta y^2}$
+	\item $\alpha = atan2(\Delta y,\Delta x) - \theta$
+	\item $\beta = -\theta -\alpha + \theta_M$
+\end{itemize}
+
+Se propone entonces una ley de control proporcional:
+
+\begin{equation*}
+	v = k_{\rho}\rho ~\\
+\end{equation*}
+
+\begin{equation*}
+	\omega = k_{\alpha}\alpha + k_{\beta}\beta
+\end{equation*}
+
+$v$ hace que el robot avance mientras más lejos esté y $\omega$ ajusta el giro para apuntar a la meta ($\alpha$) y quedar alineado al llegar ($\beta$).
+
+El desarrollo formal del modelo cinemático diferencial en coordenadas polares y su análisis se encuentran en detalle en Siegwart \cite{siegwart2011}. De dicho análisis se derivan las condiciones necesarias para las ganancias del controlador que aseguran que el sistema no oscile y sea estable, las ganancias han de respetar las siguientes condiciones:
+
+\begin{equation*}
+	k_{\rho}>0  ;  k_{\beta}<0  ;  k_{\alpha}-k_{\rho}>0
+\end{equation*}
+
+
 
 \paragraph{Análisis del Control para algoritmo Pure Pursuit (Seguimiento de trayectorias)}
 
