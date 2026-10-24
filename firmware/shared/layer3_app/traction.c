@@ -13,6 +13,14 @@
 #define MOTOR_LEFT_SIGN (1.0f)
 #define MOTOR_RIGHT_SIGN (-1.0f)
 
+#define MOTOR_L_K
+#define MOTOR_R_K
+
+#define MOTOR_L_K
+#define MOTOR_R_K
+
+#define MAX_PWM 100.0f
+
 // Velocidad angular
 typedef struct{
     float left;
@@ -32,6 +40,8 @@ static ramp_t ramp_right = {0,W_RATE};
 
 static volatile bool stopped = true;
 
+static float integral_left, integral_right = 0; 
+
 static float ramp_update(ramp_t *r, float target, float dt) {
     float max_step = r->rate * dt;
     float diff = target - r->value;
@@ -46,6 +56,19 @@ static float clamp (float x, float lim){
     if (x < -lim) return -lim;
     return x;
 }
+
+static float pi_update(float kp, float ki, float * integral, float ref, float meas, float dt_s){
+    
+    if (dt_s <= 0.0f) return 0.0f;
+
+    float e = ref - meas;
+    float i_new = integral + e * dt_s;
+    float u = kp * e + ki * i_new;
+
+    if (u > MAX_PWM) u = MAX_PWM;
+    if (u < -MAX_PWM) u = -MAX_PWM;
+}
+
 
 static bool pid(drv8833_motor_t m, as5600_t n, float w_ref){  
 //TODO: Conversión de W->PWM con PI 
@@ -74,6 +97,12 @@ bool traction_set_ref(float w_left, float w_right){
     return true;
 }
 
+bool wheel_loop (drv8833_motor_t m, float kp, float float w_ref, float ){
+    float w_meas = 
+    float duty = pi_update()
+    return drv8833_set_pwm(m,duty);
+}
+
 bool traction_tick(void){
     if (drv8833_fault()) stopped = true;
 
@@ -86,6 +115,8 @@ bool traction_tick(void){
 
     float r_left = ramp_update(&ramp_left,ref.left * MOTOR_LEFT_SIGN, RAMP_DT);
     float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, RAMP_DT);
+
+
 
     pid(MOTOR_A, ENC_A, r_left);
     pid(MOTOR_B, ENC_B, r_right);
