@@ -241,7 +241,7 @@ El error de posición del robot con respecto a la meta puede traducirse de las c
 \begin{itemize}
 	\item $\rho = \sqrt{\Delta x^2 + \Delta y^2}$
 	\item $\alpha = atan2(\Delta y,\Delta x) - \theta$
-	\item $\beta = -\theta -\alpha + \theta_M$
+	\item $\beta = -\theta -\alpha + \theta_M = \theta_M - atan2(\Delta y,\Delta x)$
 \end{itemize}
 
 Se propone entonces una ley de control proporcional:
