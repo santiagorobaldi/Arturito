@@ -44,7 +44,7 @@ bool drv8833_init(void) {
     return hal_gpio_write(HAL_GPIO_DRV_SLEEP, true);   // chip activo
 }
 
-bool drv8833_set_pwm(drv8833_motor_t m, int duty_pwm) {
+bool drv8833_set_pwm(drv8833_motor_t m, float duty_pwm) {
     if ((unsigned)m >= MOTOR_COUNT) return false;
 
     if (duty_pwm >  100.0f) duty_pwm =  100.0f;
