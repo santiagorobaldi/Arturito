@@ -1,7 +1,6 @@
 #include "traction.h"
 #include "driver_drv8833.h"
-
-//#include "driver_as5600.h"
+#include "driver_as5600.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -9,22 +8,26 @@
 #define W_MAX (VEL_MAX / WHEEL_RADIUS_M) //rad/s
 #define W_RATE (VEL_RAMP/ WHEEL_RADIUS_M) 
 
-typedef struct{
-    float value; // 
-    float rate; // pendiente de rampa
-}ramp_t;
+#define RAMP_DT (TRACTION_TICK_MS / 1000.0f)
 
+// Velocidad angular
 typedef struct{
     float left;
     float right;
 }wheel_w_t;
+
+// Rampa slew-rate
+typedef struct{
+    float value; // 
+    float rate; // pendiente de rampa
+}ramp_t;
 
 static wheel_w_t ref = {0,0};
 
 static ramp_t ramp_left = {0,W_RATE};
 static ramp_t ramp_right = {0,W_RATE};
 
-static bool stopped = true;
+static volatile bool stopped = true;
 
 static float ramp_update(ramp_t *r, float target, float dt) {
     float max_step = r->rate * dt;
@@ -69,9 +72,9 @@ bool traction_set_ref(float w_left, float w_right){
 }
 
 bool traction_tick(void){
+    if (drv8833_fault()) stopped = true;
+
     if (stopped) {
-        ref.left = 0.0f;
-        ref.right = 0.0f;
         ramp_left.value = 0.0f;
         ramp_right.value = 0.0f;
         drv8833_stop();
