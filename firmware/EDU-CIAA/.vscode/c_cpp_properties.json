@@ -22,8 +22,8 @@
                 "${workspaceFolder}/libs/freertos/source/portable/ARM_CM4F",
                 "${workspaceFolder}/libs/freertos/source/portable/ARM_CM",
                 "${workspaceFolder}/libs/freertos/source/portable/lpc4337",
-                "${workspaceFolder}/libs/vl53l0x/Api/core/inc",
-                "${workspaceFolder}/libs/vl53l0x/Api/platform/inc"
+                "${workspaceFolder}/../shared/libs/VL53L0X_1.0.4/Api/core/inc",
+                "${workspaceFolder}/../shared/libs/VL53L0X_1.0.4/Api/platform/inc"
             ],
             "defines": [
                 "BOARD=edu_ciaa_nxp",

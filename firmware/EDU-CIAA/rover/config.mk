@@ -27,5 +27,4 @@ SRC += ../shared/layer3_app/distance.c
 SRC += rover/src/layer1_hal/hal_i2c_educiaa.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c
 SRC += rover/src/layer1_hal/hal_mpu6050_educiaa.c
-SRC += rover/src/layer1_hal/hal_vl53l0x_educiaa.c
 SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c
