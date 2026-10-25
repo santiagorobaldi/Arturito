@@ -19,7 +19,12 @@ float pi_update(pi_t *pi, float ref, float meas, float dt_s){
     if (u > MAX_PWM) u = MAX_PWM;
     if (u < -MAX_PWM) u = -MAX_PWM;
 
-    //TODO: Windup
+    //Implementación antiwindup pero a revisar
+    bool positive_windup = (u > MAX_PWM) && (e > 0.0f);
+    bool negative_windup = (u < -MAX_PWM) && (e < 0.0f);
+    if (!positive_windup && !negative_windup) {
+        pi->integral = i_new;
+    }
 
     return u;
 }
