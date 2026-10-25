@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright Â© 2015, STMicroelectronics International N.V.
+Copyright © 2015, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "vl53l0x_def.h"
 #include "vl53l0x_platform_log.h"
 #include "vl53l0x_i2c_platform.h"
-#include "sapi_i2c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,10 +59,9 @@ typedef struct {
     VL53L0X_DevData_t Data;               /*!< embed ST Ewok Dev  data as "Data"*/
 
     /*!< user specific field */
-    uint8_t   I2cDevAddr;                /*!< ST 8-bit address convention: default 0x52; converted at transport. */
+    uint8_t   I2cDevAddr;                /*!< i2c device address user specific field */
     uint8_t   comms_type;                /*!< Type of comms : VL53L0X_COMMS_I2C or VL53L0X_COMMS_SPI */
     uint16_t  comms_speed_khz;           /*!< Comms speed [kHz] : typically 400kHz for I2C           */
-
 
 } VL53L0X_Dev_t;
 
@@ -238,7 +236,6 @@ VL53L0X_Error VL53L0X_PollingDelay(VL53L0X_DEV Dev); /* usually best implemented
 #endif
 
 #endif  /* _VL53L0X_PLATFORM_H_ */
-
 
 
 

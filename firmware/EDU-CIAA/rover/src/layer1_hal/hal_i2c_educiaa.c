@@ -3,6 +3,8 @@
 #include "educiaa_board_config.h"
 #include "i2c_18xx_43xx.h"
 
+static bool bus_a_initialized = false;
+static bool bus_b_initialized = false;
 
 bool hal_i2c_init(hal_i2c_bus_t bus){
     switch (bus) {
@@ -10,7 +12,11 @@ bool hal_i2c_init(hal_i2c_bus_t bus){
         Chip_SCU_I2C0PinConfig(I2C0_STANDARD_FAST_MODE);
         Chip_I2C_Init(I2C0);
         Chip_I2C_SetClockRate(I2C0, BOARD_I2C_A_CLOCK_HZ);
-        return Chip_I2C_SetMasterEventHandler(I2C0, Chip_I2C_EventHandlerPolling) != 0;
+        if (Chip_I2C_SetMasterEventHandler(I2C0, Chip_I2C_EventHandlerPolling) != 0) {
+            bus_a_initialized = true;
+            return true;
+        }else 
+            return false;
     case HAL_I2C_BUS_B: {
         const uint16_t mode =
             SCU_MODE_INACT |
@@ -33,8 +39,24 @@ bool hal_i2c_init(hal_i2c_bus_t bus){
         );
         Chip_I2C_Init(I2C1);
         Chip_I2C_SetClockRate(I2C1, BOARD_I2C_B_CLOCK_HZ);
-        return Chip_I2C_SetMasterEventHandler(I2C1, Chip_I2C_EventHandlerPolling) != 0;
+        if (Chip_I2C_SetMasterEventHandler(I2C1, Chip_I2C_EventHandlerPolling) != 0) {
+            bus_b_initialized = true;
+            return true;
+        } else {
+            return false;
+        }
     }
+    default:
+        return false;
+    }
+}
+
+bool hal_i2c_is_initialized(hal_i2c_bus_t bus){
+    switch (bus) {
+    case HAL_I2C_BUS_A:
+        return bus_a_initialized;
+    case HAL_I2C_BUS_B:
+        return bus_b_initialized;
     default:
         return false;
     }
