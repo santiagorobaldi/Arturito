@@ -9,4 +9,7 @@
 #define BOARD_I2C_B_SCL_GPIO   23
 #define BOARD_I2C_B_CLOCK_HZ   100000u
 
+#define BOARD_DRV_SLEEP_GPIO 25
+#define BOARD_DRV_FAULT_GPIO 18
+
 #endif

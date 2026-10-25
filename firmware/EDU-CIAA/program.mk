@@ -9,8 +9,10 @@ ifeq ($(APP_MODE),clock_test)
 # La configuracion del rover selecciona el adaptador y las fuentes del test.
 else ifeq ($(APP_MODE),tof_test)
 # La configuracion del rover selecciona el adaptador y las fuentes del ToF.
+else ifeq ($(APP_MODE),encoder_test)
+# La configuracion del rover selecciona las fuentes del test de encoders.
 else ifeq ($(APP_MODE),rover)
 # La configuracion del rover selecciona las fuentes de la aplicacion.
 else
-$(error APP_MODE debe ser clock_test, tof_test o rover)
+$(error APP_MODE debe ser clock_test, tof_test, encoder_test o rover)
 endif

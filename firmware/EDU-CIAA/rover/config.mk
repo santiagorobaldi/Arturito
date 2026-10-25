@@ -24,6 +24,14 @@ SRC += ../shared/test/hal_time/test_app.c
 SRC += ../shared/test/hal_time/test_hal_time.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c
 SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c
+else ifeq ($(APP_MODE),encoder_test)
+INCLUDES += -I../shared/libs/as5600/source
+SRC += ../shared/test/encoder/test_app.c
+SRC += ../shared/layer2_drivers/driver_encoder.c
+SRC += ../shared/libs/as5600/source/driver_as5600.c
+SRC += rover/src/layer1_hal/hal_i2c_educiaa.c
+SRC += rover/src/layer1_hal/hal_time_educiaa.c
+SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c
 else ifeq ($(APP_MODE),tof_test)
 INCLUDES += -I../shared/test/tof
 INCLUDES += -I$(VL53L0X_ROOT)/Api/core/inc
