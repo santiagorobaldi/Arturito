@@ -2,7 +2,7 @@
 
 
 
-\subsection{Bloque de Cinemática y Control de Tracción}
+\subsection{Bloque de Tracción y Actuación}
 
 
 \subsubsection{Modelo dinámico e Identificación de la Planta del Motor GA12-N20}
@@ -97,7 +97,7 @@ Por lo tanto, se toma el criterio empírico de diseño, el cual establece que se
 
 Dado que la constante de tiempo del motor a lazo cerrado es de $\tau_{lc}\approx LLENAR$, se toma entonces un valor de $\Delta t = LLENAR$.
 
-\paragraph{Discretización}~\\
+\paragraph{Consideraciones para la Implementación Algorítmica}~\\
 Para trasladar el lazo de control diseñado en el dominio continuo $s$ al microcontrolador, se requiere discretizar la ecuación diferencial en el dominio del tiempo t:
 
 \[u(t)=K_pe(t)+K_i\int_{0}^{t} e(m) \,dm\]
@@ -120,14 +120,97 @@ De esta forma el algoritmo solo conserva en memoria un único valor, resultando 
 
 VER DE HACER EL CODIGO ACA O EN ALGUN LADO, TAMBIEN MENCIONAR QUE EN EL CODIGO SE DEBERIA LIMITAR LA SALIDA DEL CONTROLADOR PI (u(s)) A MAX 100\% y MIN 0\%.
 
-\subsubsection{Cinemática Directa: Odometría Primaria a partir de Encoders}
+\subsection{Bloque de Cinemática}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{Imagenes/CinematicaRobot.png}
+	\caption{Marco local de referencia del robot (VER CAPAZ DE PONER VECTORES VELOCIDAD TODOS DE UN COLOR).}
+	\label{fig:diagrama_marco_local}
+\end{figure}
+
+\subsubsection{Cinemática Directa e Inversa}
+Dada la geometría radial del chasis, con 2 ruedas dispuestas en el mismo eje de rotación, es posible hallar la velocidad de avance que lleva el robot y la velocidad angular en base a la velocidad angular de cada rueda.
+
+Sean $\omega_{der}$ y $\omega_{izq}$ las velocidades angulares de cada rueda, es posile saber el desplazamiento lineal que aporta cada rueda multiplicando su velocidad angular por su radio $r$. 
+
+Podemos hallar la velocidad de avance del robot sumando los aportes por separado de cada rueda.
+
+La velocidad angular del chasis, podemos hallarla nuevamente tomando por separado los aportes de cada rueda. Para esto se analiza cuánto giraría el robot si una de las ruedas estuviera fija y la otra rotara. En el caso de que tomaramos de pivot la rueda izquierda, la rotación aportada por la rueda derecha sería $\omega_{der}r/2l$.
+
+Queda entonces la velocidad de avance y la velocidad angular del robot expresadas en base a la velocidad angular de cada rueda:
+
+\begin{equation*}
+	\label{eq:sistema_matriz}
+	% 1. Sistema de ecuaciones usando 'cases'
+	\begin{cases}
+		v = \frac{\omega_{der}r + \omega_{izq}r}{2} \\
+		w = \frac{\omega_{der}r - \omega_{izq}r}{2l}
+	\end{cases}
+	% 2. Flecha de relación (doble flecha larga)
+\end{equation*}
+
+\begin{equation}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		v \\
+		w 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\frac{r}{2} & \frac{r}{2} \\
+		\frac{r}{2l} & \frac{-r}{2l} 
+	\end{bmatrix}
+	\begin{bmatrix}
+		\omega_{der} \\
+		\omega_{izq}
+	\end{bmatrix}
+\end{equation}
+
+En base a esto es posible hacer el camino inverso; cuánto debería girar cada rueda para que el robot tenga una velocidad de avance $v$ y una velocidad angular $w$? Despejando $[\omega_{der},\omega_{izq}]^T$ queda:
+
+\begin{equation*}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		\omega_{der} \\
+		\omega_{izq} 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\frac{r}{2} & \frac{r}{2} \\
+		\frac{r}{2l} & \frac{-r}{2l} 
+	\end{bmatrix}^{-1}
+	\begin{bmatrix}
+		\omega_{der} \\
+		\omega_{izq}
+	\end{bmatrix}
+\end{equation*}
+
+\begin{equation}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		\omega_{der} \\
+		\omega_{izq} 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\frac{1}{r} & \frac{l}{r} \\
+		\frac{1}{r} & \frac{-l}{r} 
+	\end{bmatrix}
+	\begin{bmatrix}
+		v \\
+		w
+	\end{bmatrix}
+\end{equation}
 
 
-\subsubsection{Lazo Externo: Control Cinemático Polar para Seguimiento Punto a Punto}
+\subsubsection{Lazo Externo: Control Cinemático para Navegación}
 
+\paragraph{Análisis del Control Polar de Siegwart (Punto a Punto)}
 
-\subsubsection{Cinemática Inversa}
+\paragraph{Análisis del Control para algoritmo Pure Pursuit (Seguimiento de trayectorias)}
 
+\paragraph{Propuesta y justificación Control Híbrido}
 
 
 
