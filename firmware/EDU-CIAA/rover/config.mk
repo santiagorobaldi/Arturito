@@ -30,6 +30,7 @@ INCLUDES += -I$(VL53L0X_ROOT)/Api/core/inc
 INCLUDES += -I$(VL53L0X_ROOT)/Api/platform/inc
 SRC += ../shared/test/tof/test_app.c
 SRC += ../shared/test/tof/test_tof.c
+SRC += ../shared/layer3_app/sensing/distance.c
 SRC += ../shared/layer2_drivers/driver_vl53l0x.c
 SRC += rover/src/layer1_hal/hal_i2c_educiaa.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c

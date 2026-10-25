@@ -1,5 +1,6 @@
 #include "test_tof.h"
 
+#include "distance.h"
 #include "driver_vl53l0x.h"
 #include "hal_i2c.h"
 #include "hal_telemetry.h"
@@ -47,15 +48,26 @@ static void report_status(const char *operation,
     hal_telemetry_write(message);
 }
 
-static void report_distance(float distance_cm)
+static void report_distance(float raw_cm, float calibrated_cm)
 {
-    char message[100];
-    const uint32_t distance_centi_cm =
-        (uint32_t)(distance_cm * 100.0f + 0.5f);
+    char message[140];
+    const uint32_t raw_centi_cm = (uint32_t)(raw_cm * 100.0f + 0.5f);
 
-    snprintf(message, sizeof(message), "Distancia cruda: %lu.%02lu cm",
-             (unsigned long)(distance_centi_cm / 100U),
-             (unsigned long)(distance_centi_cm % 100U));
+    if (calibrated_cm >= 0.0f) {
+        const uint32_t calibrated_centi_cm =
+            (uint32_t)(calibrated_cm * 100.0f + 0.5f);
+        snprintf(message, sizeof(message),
+                 "Cruda: %lu.%02lu cm | Calibrada: %lu.%02lu cm",
+                 (unsigned long)(raw_centi_cm / 100U),
+                 (unsigned long)(raw_centi_cm % 100U),
+                 (unsigned long)(calibrated_centi_cm / 100U),
+                 (unsigned long)(calibrated_centi_cm % 100U));
+    } else {
+        snprintf(message, sizeof(message),
+                 "Cruda: %lu.%02lu cm | Calibrada: fuera del rango de la tabla",
+                 (unsigned long)(raw_centi_cm / 100U),
+                 (unsigned long)(raw_centi_cm % 100U));
+    }
     hal_telemetry_write(message);
 }
 
@@ -90,15 +102,15 @@ void test_tof_init(void)
         return;
     }
 
-    status = vl53l0x_set_profile(VL53L0X_PROFILE_LONG_RANGE);
+    status = vl53l0x_set_profile(VL53L0X_PROFILE_HIGH_SPEED);
     if (status != VL53L0X_OK) {
-        stop_after_error("Perfil Long Range", status);
+        stop_after_error("Perfil High Speed", status);
         return;
     }
 
     sensor_ready = true;
     hal_telemetry_write(
-        "VL53L0X listo. Perfil Long Range; distancia cruda en cm.");
+        "VL53L0X listo. Perfil High Speed; muestra distancia cruda y calibrada en cm.");
 }
 
 void test_tof_update(void)
@@ -135,7 +147,7 @@ void test_tof_update(void)
             float distance_cm = 0.0f;
             status = vl53l0x_get_distance(&distance_cm);
             if (status == VL53L0X_OK) {
-                report_distance(distance_cm);
+                report_distance(distance_cm, distance_calibrate(distance_cm));
             } else if (status == VL53L0X_ERROR_INVALID_MEASUREMENT) {
                 report_status("Lectura", status);
             } else {

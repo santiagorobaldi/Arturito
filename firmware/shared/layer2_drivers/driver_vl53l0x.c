@@ -149,7 +149,8 @@ vl53l0x_status_t vl53l0x_set_profile(vl53l0x_profile_t profile)
             status = VL53L0X_SetLimitCheckValue(&sensor, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.25 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
-            status = VL53L0X_SetLimitCheckValue(&sensor, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, (FixPoint1616_t)(1.5 * 0.023 * 65536));
+            /* Desactivar RIT: no se aplico calibracion de crosstalk. */
+            status = VL53L0X_SetLimitCheckValue(&sensor, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, 0);
         }
         if (status == VL53L0X_ERROR_NONE) {
             status = VL53L0X_SetLimitCheckEnable(&sensor, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, 1);
