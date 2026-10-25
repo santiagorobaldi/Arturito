@@ -90,15 +90,15 @@ void test_tof_init(void)
         return;
     }
 
-    status = vl53l0x_set_profile(VL53L0X_PROFILE_HIGH_SPEED);
+    status = vl53l0x_set_profile(VL53L0X_PROFILE_LONG_RANGE);
     if (status != VL53L0X_OK) {
-        stop_after_error("Perfil High Speed", status);
+        stop_after_error("Perfil Long Range", status);
         return;
     }
 
     sensor_ready = true;
     hal_telemetry_write(
-        "VL53L0X listo. Perfil High Speed; distancia cruda en cm.");
+        "VL53L0X listo. Perfil Long Range; distancia cruda en cm.");
 }
 
 void test_tof_update(void)
