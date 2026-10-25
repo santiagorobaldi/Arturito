@@ -9,8 +9,12 @@ ifeq ($(APP_MODE),clock_test)
 # La configuracion del rover selecciona el adaptador y las fuentes del test.
 else ifeq ($(APP_MODE),tof_test)
 # La configuracion del rover selecciona el adaptador y las fuentes del ToF.
+else ifeq ($(APP_MODE),telemetry_test)
+# La configuracion del rover selecciona el ensayo de telemetria por UART.
+else ifeq ($(APP_MODE),imu_test)
+# La configuracion del rover selecciona el ensayo de angulo por telemetria.
 else ifeq ($(APP_MODE),rover)
 # La configuracion del rover selecciona las fuentes de la aplicacion.
 else
-$(error APP_MODE debe ser clock_test, tof_test o rover)
+$(error APP_MODE debe ser clock_test, tof_test, telemetry_test, imu_test o rover)
 endif
