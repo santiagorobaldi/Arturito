@@ -2,24 +2,28 @@
 #include <Wire.h>
 #include "esp32_board_config.h"
 
+static bool is_initialized_bus_a = false;
+static bool is_initialized_bus_b = false;
 
 bool hal_i2c_init(hal_i2c_bus_t bus) {
     switch (bus) {
     case HAL_I2C_BUS_A:
         
-        return Wire.begin(
-            BOARD_I2C_A_SDA_GPIO,
-            BOARD_I2C_A_SCL_GPIO,
-            BOARD_I2C_A_CLOCK_HZ
-        );
+        if ( Wire.begin(BOARD_I2C_A_SDA_GPIO,BOARD_I2C_A_SCL_GPIO,BOARD_I2C_A_CLOCK_HZ) ) {
+            is_initialized_bus_a = true;
+            return true;
+        } else {
+            return false;
+        }
 
     case HAL_I2C_BUS_B:
         
-        return Wire1.begin(
-            BOARD_I2C_B_SDA_GPIO,
-            BOARD_I2C_B_SCL_GPIO,
-            BOARD_I2C_B_CLOCK_HZ
-        );
+        if ( Wire1.begin(BOARD_I2C_B_SDA_GPIO,BOARD_I2C_B_SCL_GPIO,BOARD_I2C_B_CLOCK_HZ) ) {
+            is_initialized_bus_b = true;
+            return true;
+        } else {
+            return false;
+        }
 
     default:
         return false;
@@ -91,5 +95,16 @@ bool hal_i2c_write_read(hal_i2c_bus_t bus, uint8_t addr, const uint8_t *data_out
     }
 
     return true;
+}
+
+bool hal_i2c_is_initialized(hal_i2c_bus_t bus) {
+    switch (bus) {
+        case HAL_I2C_BUS_A:
+            return is_initialized_bus_a;
+        case HAL_I2C_BUS_B:
+            return is_initialized_bus_b;
+        default:
+            return false;
+    }
 }
 

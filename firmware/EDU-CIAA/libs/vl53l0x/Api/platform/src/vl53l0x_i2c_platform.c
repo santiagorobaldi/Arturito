@@ -17,17 +17,14 @@
  */
 #include "vl53l0x_i2c_platform.h"
 #include "hal_i2c.h"
-#include "sapi_i2c.h"
 #include <string.h>
 
 #define STATUS_OK 0
 #define STATUS_FAIL 1
 
-int32_t VL53L0X_comms_initialise(uint8_t comms_type, uint16_t comms_speed_khz)
+int32_t VL53L0X_comms_initialise(uint8_t comms_type, uint16_t comms_speed_khz) //Falta enlazar esto con el init del driver
 {
-    if (comms_type != I2C || comms_speed_khz == 0 || comms_speed_khz > 400)
-        return STATUS_FAIL;
-    return i2cInit(I2C0, (uint32_t)comms_speed_khz * 1000U) ? STATUS_OK : STATUS_FAIL;
+   return STATUS_OK;
 }
 
 int32_t VL53L0X_comms_close(void)

@@ -40,10 +40,10 @@ static float interpolate_cm(float measured_cm,
 }
 
 bool distance_init(void) {
-    if (vl53l0x_init() != HAL_VL53L0X_OK) {
+    if (vl53l0x_init() != VL53L0X_OK) {
         return false;
     }
-    return vl53l0x_set_profile(HAL_VL53L0X_PROFILE_HIGH_SPEED) == HAL_VL53L0X_OK;
+    return vl53l0x_set_profile(VL53L0X_PROFILE_HIGH_SPEED) == VL53L0X_OK;
 }
 
 float distance_validate_raw(float raw_cm) {
@@ -61,18 +61,18 @@ float distance_validate_raw(float raw_cm) {
 
 float distance_get_raw(void) {
     bool ready = false;
-    if (vl53l0x_start() != HAL_VL53L0X_OK) {
+    if (vl53l0x_start() != VL53L0X_OK) {
         return -1.0f;
     }
 
     const uint32_t start_us = hal_micros();
     do {
-        if (vl53l0x_distance_ready(&ready) != HAL_VL53L0X_OK) {
+        if (vl53l0x_distance_ready(&ready) != VL53L0X_OK) {
             return -1.0f;
         }
         if (ready) {
             float distance_cm = -1.0f;
-            return (vl53l0x_get_distance(&distance_cm) == HAL_VL53L0X_OK)
+            return (vl53l0x_get_distance(&distance_cm) == VL53L0X_OK)
                 ? distance_cm
                 : -1.0f;
         }

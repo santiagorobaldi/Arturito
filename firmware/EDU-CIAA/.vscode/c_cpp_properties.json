@@ -3,6 +3,9 @@
         {
             "name": "EDU-CIAA",
             "includePath": [
+                "${workspaceFolder}/rover/config",
+                "${workspaceFolder}/rover/inc",
+                "${workspaceFolder}/libs/as5600/source",
                 "${workspaceFolder}/../shared/config",
                 "${workspaceFolder}/../shared/layer1_hal",
                 "${workspaceFolder}/../shared/layer2_drivers",

@@ -16,6 +16,8 @@
     "settings": {
         "C_Cpp.default.configurationProvider": "platformio.platformio-ide",
         "C_Cpp.default.includePath": [
+            "${workspaceFolder:EDU-CIAA}/libs/as5600/source",
+            "${workspaceFolder:EDU-CIAA}/rover/config",
             "${workspaceFolder:Arturito}/firmware/shared/**",
             "${workspaceFolder:ESP32}/src/**",
             "${workspaceFolder:ESP32}/lib/**",
@@ -28,6 +30,8 @@
             "${workspaceFolder:EDU-CIAA}/rover/src/**"
         ],
         "C_Cpp.default.browse.path": [
+            "${workspaceFolder:EDU-CIAA}/libs/as5600/source",
+            "${workspaceFolder:EDU-CIAA}/rover/config",
             "${workspaceFolder:Arturito}/firmware/shared/**",
             "${workspaceFolder:ESP32}/src/**",
             "${workspaceFolder:ESP32}/lib/**",
