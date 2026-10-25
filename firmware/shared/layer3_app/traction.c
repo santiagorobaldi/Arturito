@@ -7,22 +7,35 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#Velocidad angular máxima y tasa
 #define W_MAX (VEL_MAX / WHEEL_RADIUS_M) //rad/s
 #define W_RATE (VEL_RAMP/ WHEEL_RADIUS_M) 
 
 #define TRACTION_TS_S (TRACTION_TICK_MS / 1000.0f)
 
+#Signos de Motores
 #define MOTOR_LEFT_SIGN (1.0f)
 #define MOTOR_RIGHT_SIGN (-1.0f)
 
-#define MOTOR_L_KP 
-#define MOTOR_R_KP
-
-#define MOTOR_L_KI (MOTOR_L_KP/)
-#define MOTOR_R_KI (MOTOR_R_KP/)
-
+//Signos de Encoders 
 #define ENC_LEFT_SIGN (1.0f)
 #define ENC_RIGHT_SIGN (1.0f)
+
+//Parametros PI
+#define MOTOR_L_K 0.2f
+#define MOTOR_R_K 0.2f
+
+#define MOTOR_L_TAU_S 0.1f
+#define MOTOR_R_TAU_S 0.1f
+
+#define TAU_LC_S 0.1f
+
+#define MOTOR_L_KP (MOTOR_L_TAU_S / (MOTOR_L_K  * TAU_LC_S))
+#define MOTOR_R_KP (MOTOR_R_TAU_S / (MOTOR_R_K  * TAU_LC_S))
+
+#define MOTOR_L_KI (MOTOR_L_KP/ MOTOR_L_TAU_S)
+#define MOTOR_R_KI (MOTOR_R_KP/ MOTOR_R_TAU_S)
+
 
 // Velocidad angular
 typedef struct{
@@ -85,12 +98,6 @@ bool traction_set_ref(float w_left, float w_right){
     return true;
 }
 
-static bool wheel_loop (drv8833_motor_t m, pi_t *pi, as5600_t enc, float enc_sign, float w_ref){
-    float w_meas = enc_sign * encoder_get_speed(enc);
-    float duty = pi_update(pi, w_ref, w_meas, TRACTION_TS_S);
-    return drv8833_set_pwm(m,duty);
-}
-
 bool traction_tick(void){
     enc_left_meas = ENC_LEFT_SIGN * encoder_get_speed (ENC_LEFT);
     enc_right_meas = ENC_RIGHT_SIGN * encoder_get_speed (ENC_RIGHT);
@@ -109,13 +116,11 @@ bool traction_tick(void){
     float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, TRACTION_TS_S);
 
     float duty = pi_update(&pi_left, r_left ,enc_left_meas, TRACTION_TS_S);
-    drv8833_set_pwm(MOTOR_A,duty);
+    bool ok = drv8833_set_pwm(MOTOR_A,duty);
 
     duty = pi_update(&pi_right, r_right ,enc_right_meas, TRACTION_TS_S);
-    drv8833_set_pwm(MOTOR_B,duty);
+    ok &= drv8833_set_pwm(MOTOR_B,duty);
 
-    bool ok = wheel_loop(MOTOR_A, pi_left, ENC_LEFT, ENC_LEFT_SIGN, r_left);
-    ok &= wheel_loop(MOTOR_B, pi_right, ENC_RIGHT, ENC_RIGHT_SIGN, r_right);
     return ok;
 }
 
