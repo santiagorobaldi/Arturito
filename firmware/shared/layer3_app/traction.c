@@ -1,6 +1,8 @@
 #include "traction.h"
 #include "driver_drv8833.h"
 #include "driver_as5600.h"
+#include "pi.h"
+
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -8,18 +10,19 @@
 #define W_MAX (VEL_MAX / WHEEL_RADIUS_M) //rad/s
 #define W_RATE (VEL_RAMP/ WHEEL_RADIUS_M) 
 
-#define RAMP_DT (TRACTION_TICK_MS / 1000.0f)
+#define TRACTION_TS_S (TRACTION_TICK_MS / 1000.0f)
 
 #define MOTOR_LEFT_SIGN (1.0f)
 #define MOTOR_RIGHT_SIGN (-1.0f)
 
-#define MOTOR_L_K
-#define MOTOR_R_K
+#define MOTOR_L_KP 
+#define MOTOR_R_KP
 
-#define MOTOR_L_K
-#define MOTOR_R_K
+#define MOTOR_L_KI (MOTOR_L_KP/)
+#define MOTOR_R_KI (MOTOR_R_KP/)
 
-#define MAX_PWM 100.0f
+#define ENC_LEFT_SIGN (1.0f)
+#define ENC_RIGHT_SIGN (1.0f)
 
 // Velocidad angular
 typedef struct{
@@ -35,12 +38,16 @@ typedef struct{
 
 static wheel_w_t ref = {0,0};
 
+static pi_t pi_left = {MOTOR_L_KP, MOTOR_L_KI, 0.0f};
+static pi_t pi_right = {MOTOR_R_KP, MOTOR_R_KI, 0.0f};
+
 static ramp_t ramp_left = {0,W_RATE};
 static ramp_t ramp_right = {0,W_RATE};
 
-static volatile bool stopped = true;
+static float enc_left_meas = 0;
+static float enc_right_meas = 0;
 
-static float integral_left, integral_right = 0; 
+static volatile bool stopped = true;
 
 static float ramp_update(ramp_t *r, float target, float dt) {
     float max_step = r->rate * dt;
@@ -55,25 +62,6 @@ static float clamp (float x, float lim){
     if (x > lim) return lim;
     if (x < -lim) return -lim;
     return x;
-}
-
-static float pi_update(float kp, float ki, float * integral, float ref, float meas, float dt_s){
-    
-    if (dt_s <= 0.0f) return 0.0f;
-
-    float e = ref - meas;
-    float i_new = integral + e * dt_s;
-    float u = kp * e + ki * i_new;
-
-    if (u > MAX_PWM) u = MAX_PWM;
-    if (u < -MAX_PWM) u = -MAX_PWM;
-}
-
-
-static bool pid(drv8833_motor_t m, as5600_t n, float w_ref){  
-//TODO: Conversión de W->PWM con PI 
-    float duty = 100.0f * w_ref / W_MAX;
-    return drv8833_set_pwm(m,duty);
 }
 
 bool traction_init(void){
@@ -97,29 +85,37 @@ bool traction_set_ref(float w_left, float w_right){
     return true;
 }
 
-bool wheel_loop (drv8833_motor_t m, float kp, float float w_ref, float ){
-    float w_meas = 
-    float duty = pi_update()
+static bool wheel_loop (drv8833_motor_t m, pi_t *pi, as5600_t enc, float enc_sign, float w_ref){
+    float w_meas = enc_sign * encoder_get_speed(enc);
+    float duty = pi_update(pi, w_ref, w_meas, TRACTION_TS_S);
     return drv8833_set_pwm(m,duty);
 }
 
 bool traction_tick(void){
+    enc_left_meas = ENC_LEFT_SIGN * encoder_get_speed (ENC_LEFT);
+    enc_right_meas = ENC_RIGHT_SIGN * encoder_get_speed (ENC_RIGHT);
+
     if (drv8833_fault()) stopped = true;
 
     if (stopped) {
         ramp_left.value = 0.0f;
         ramp_right.value = 0.0f;
-        //reset pi
-        return drv8833_break();
+        pi_reset(&pi_left);
+        pi_reset(&pi_right);
+        return drv8833_brake();
     }
 
-    float r_left = ramp_update(&ramp_left,ref.left * MOTOR_LEFT_SIGN, RAMP_DT);
-    float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, RAMP_DT);
+    float r_left = ramp_update(&ramp_left,ref.left * MOTOR_LEFT_SIGN, TRACTION_TS_S);
+    float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, TRACTION_TS_S);
 
+    float duty = pi_update(&pi_left, r_left ,enc_left_meas, TRACTION_TS_S);
+    drv8833_set_pwm(MOTOR_A,duty);
 
+    duty = pi_update(&pi_right, r_right ,enc_right_meas, TRACTION_TS_S);
+    drv8833_set_pwm(MOTOR_B,duty);
 
-    pid(MOTOR_A, ENC_A, r_left);
-    pid(MOTOR_B, ENC_B, r_right);
-    return true;
+    bool ok = wheel_loop(MOTOR_A, pi_left, ENC_LEFT, ENC_LEFT_SIGN, r_left);
+    ok &= wheel_loop(MOTOR_B, pi_right, ENC_RIGHT, ENC_RIGHT_SIGN, r_right);
+    return ok;
 }
 
