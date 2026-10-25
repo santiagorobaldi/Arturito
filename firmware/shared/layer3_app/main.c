@@ -1,16 +1,14 @@
 
 #include "main.h"
 
-#include "test_hal_time.h"
-
-/* Inicializa el test seleccionado. */
+/* Inicializa la aplicacion del rover. */
 void app_init(void)
 {
-    test_hal_time_init();
+    /* TODO: inicializar la aplicacion del rover. */
 }
 
-/* Ejecuta el test seleccionado. */
+/* Ejecuta una iteracion de la aplicacion del rover. */
 void app_update(void)
 {
-    test_hal_time_update();
+    /* TODO: actualizar la aplicacion del rover. */
 }
