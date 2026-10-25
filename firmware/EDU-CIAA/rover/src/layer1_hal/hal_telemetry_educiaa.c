@@ -1,7 +1,11 @@
+
 #include "hal_telemetry.h"
 
-#include <stdio.h>
+#include "sapi.h"
 
-void hal_telemetry_write(const char *line) {
-    printf("%s\r\n", line);
+/* Envia una linea por la UART USB de EDU-CIAA. */
+void hal_telemetry_write(const char *line)
+{
+    uartWriteString(UART_USB, line);
+    uartWriteString(UART_USB, "\r\n");
 }

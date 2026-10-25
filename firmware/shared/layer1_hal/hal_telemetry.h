@@ -13,3 +13,5 @@ void hal_telemetry_write(const char *line);
 #endif
 
 #endif /* HAL_TELEMETRY_H */
+
+

@@ -9,7 +9,6 @@ El proyecto propone un rover de tracción diferencial que combine mediciones de 
 
 | Carpeta | Contenido |
 | --- | --- |
-| `firmware/shared/config/` | Configuración general. |
 | `firmware/shared/layer1_hal/` | Contratos de capa HAL. |
 | `firmware/shared/layer2_drivers/` | Drivers para la utilización de sensores y modulos integrados. |
 | `firmware/shared/layer3_app/` | Lógica compartida de la aplicación y coordinación de las tareas de lectura, procesamiento y envío de datos con FreeRTOS (Runtime). |
