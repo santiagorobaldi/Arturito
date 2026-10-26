@@ -3,6 +3,7 @@
 #include "distance.h"
 #include "driver_vl53l0x.h"
 #include "hal_i2c.h"
+#include "telemetry_app.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
 
@@ -45,7 +46,7 @@ static void report_status(const char *operation,
     char message[120];
     snprintf(message, sizeof(message), "%s: %s (%d)",
              operation, status_name(status), (int)status);
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 static void report_distance(float raw_cm, float calibrated_cm)
@@ -68,30 +69,34 @@ static void report_distance(float raw_cm, float calibrated_cm)
                  (unsigned long)(raw_centi_cm / 100U),
                  (unsigned long)(raw_centi_cm % 100U));
     }
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 static void stop_after_error(const char *operation,
                              vl53l0x_status_t status)
 {
     report_status(operation, status);
-    hal_telemetry_write(
+    telemetry_app_send_line(
         "Test ToF detenido; reiniciar la placa para reintentar.");
     test_stopped = true;
 }
 
 void test_tof_init(void)
 {
-    hal_telemetry_write("=== TEST TOF ===");
+    if (!telemetry_app_init()) {
+        hal_telemetry_write("ERROR: no se pudo iniciar la telemetria.");
+    }
+
+    telemetry_app_send_line("=== TEST TOF ===");
 
     if (!hal_time_init()) {
-        hal_telemetry_write("ERROR: no se pudo inicializar el reloj.");
+        telemetry_app_send_line("ERROR: no se pudo inicializar el reloj.");
         test_stopped = true;
         return;
     }
 
     if (!hal_i2c_init(HAL_I2C_BUS_A)) {
-        hal_telemetry_write("ERROR: no se pudo inicializar el bus I2C A.");
+        telemetry_app_send_line("ERROR: no se pudo inicializar el bus I2C A.");
         test_stopped = true;
         return;
     }
@@ -109,12 +114,14 @@ void test_tof_init(void)
     }
 
     sensor_ready = true;
-    hal_telemetry_write(
+    telemetry_app_send_line(
         "VL53L0X listo. Perfil High Speed; muestra distancia cruda y calibrada en cm.");
 }
 
 void test_tof_update(void)
 {
+    telemetry_app_update();
+
     if (!sensor_ready || test_stopped) {
         return;
     }
@@ -157,7 +164,7 @@ void test_tof_update(void)
         }
 
         if (hal_time_elapsed_us(start_us) >= TOF_READY_TIMEOUT_US) {
-            hal_telemetry_write(
+            telemetry_app_send_line(
                 "Timeout esperando dato; test detenido porque no hay cancelacion de medicion.");
             test_stopped = true;
             return;

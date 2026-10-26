@@ -18,24 +18,24 @@ void app_init(void)
         return;
     }
 
-    hal_telemetry_write("TEST IMU: mantener quieto mientras se calibra.");
+    telemetry_app_send_line("TEST IMU: mantener quieto mientras se calibra.");
     if (!angle_init(MPU6050_I2C_ADDRESS)) {
-        hal_telemetry_write("ERROR: no se pudo inicializar o calibrar la IMU.");
+        telemetry_app_send_line("ERROR: no se pudo inicializar o calibrar la IMU.");
         return;
     }
 
     last_sample_ms = hal_millis();
     last_send_ms = last_sample_ms;
     ready = true;
-    hal_telemetry_write("IMU lista. Enviando angulo Z por telemetria; ya se puede girar.");
+    telemetry_app_send_line("IMU lista. Enviando angulo Z por telemetria; ya se puede girar.");
 }
 
 void app_update(void)
 {
+    telemetry_app_update();
     if (!ready) {
         return;
     }
-    telemetry_app_update();
 
     const uint32_t now_ms = hal_millis();
     if ((uint32_t)(now_ms - last_sample_ms) < 10U) {

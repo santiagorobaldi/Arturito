@@ -12,6 +12,5 @@ typedef enum {
 bool drv8833_init(void);
 bool drv8833_set_pwm(drv8833_motor_t m, float duty_pwm);   // -MAX_PWM..MAX_PWM
 bool drv8833_break(void);
-bool drv8833_fault(void);                           // true si hay falla
 
 #endif

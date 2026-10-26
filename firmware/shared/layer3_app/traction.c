@@ -119,8 +119,6 @@ bool traction_tick(void){
     enc_left_angle.prev = left_angle_rad;
     enc_right_angle.prev = right_angle_rad;
 
-    if (drv8833_fault()) stopped = true;
-
     if (stopped) {
         ramp_left.value = 0.0f;
         ramp_right.value = 0.0f;

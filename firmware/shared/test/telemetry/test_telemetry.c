@@ -7,8 +7,12 @@ static bool ready = false;
 
 void app_init(void)
 {
-    hal_telemetry_write("TEST TELEMETRIA: recibiendo datos cada 1 s.");
     ready = telemetry_app_init();
+    if (!ready) {
+        hal_telemetry_write("ERROR: no se pudo iniciar la telemetria.");
+        return;
+    }
+    telemetry_app_send_line("TEST TELEMETRIA: recibiendo datos cada 1 s.");
 }
 
 void app_update(void)

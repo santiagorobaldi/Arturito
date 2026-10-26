@@ -4,7 +4,8 @@
 #include <Arduino.h>
 
 static HardwareSerial source_uart(2);
-static char line[128];
+/* Hasta 255 caracteres de texto mas el terminador; incluye los diagnosticos. */
+static char line[256];
 static size_t length = 0U;
 static bool dropping = false;
 static bool ready = false;

@@ -1,6 +1,7 @@
 #include "main.h"
 #include "driver_encoder.h"
 #include "hal_i2c.h"
+#include "telemetry_app.h"
 #include "hal_telemetry.h"
 #include "hal_time.h"
 
@@ -33,7 +34,7 @@ static void report_status(const char *name, const char *operation,
     char message[120];
     snprintf(message, sizeof(message), "%s %s: %s (%d)",
              name, operation, status_name(status), (int)status);
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 static void init_encoder(encoder_t encoder, hal_i2c_bus_t bus,
@@ -42,7 +43,7 @@ static void init_encoder(encoder_t encoder, hal_i2c_bus_t bus,
     if (!hal_i2c_init(bus)) {
         char message[80];
         snprintf(message, sizeof(message), "%s: error al inicializar I2C", name);
-        hal_telemetry_write(message);
+        telemetry_app_send_line(message);
         return;
     }
 
@@ -58,7 +59,7 @@ static void init_encoder(encoder_t encoder, hal_i2c_bus_t bus,
     report_status(name, "primera lectura real", read_status);
     encoder_ready[encoder] = (read_status == ENCODER_OK);
     if (!encoder_ready[encoder]) {
-        hal_telemetry_write("Encoder sin lectura valida; se omite hasta reiniciar.");
+        telemetry_app_send_line("Encoder sin lectura valida; se omite hasta reiniciar.");
     }
 }
 
@@ -81,31 +82,37 @@ static void read_encoder(encoder_t encoder, const char *name)
     snprintf(message, sizeof(message), "%s: %lu.%03lu rad",
              name, (unsigned long)(millirad / 1000U),
              (unsigned long)(millirad % 1000U));
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 void app_init(void)
 {
+    if (!telemetry_app_init()) {
+        hal_telemetry_write("ERROR: no se pudo iniciar la telemetria.");
+    }
+
     encoder_ready[ENC_IZQ] = false;
     encoder_ready[ENC_DER] = false;
     first_sample = true;
     last_sample_us = 0U;
-    hal_telemetry_write("=== TEST ENCODERS AS5600 ===");
+    telemetry_app_send_line("=== TEST ENCODERS AS5600 ===");
 
     clock_ready = hal_time_init();
     if (!clock_ready) {
-        hal_telemetry_write("ERROR: no se pudo inicializar el reloj; test detenido.");
+        telemetry_app_send_line("ERROR: no se pudo inicializar el reloj; test detenido.");
         return;
     }
 
     init_encoder(ENC_IZQ, HAL_I2C_BUS_A, "IZQ (bus A)");
     init_encoder(ENC_DER, HAL_I2C_BUS_B, "DER (bus B)");
-    hal_telemetry_write("Girar las ruedas a mano: angulo absoluto entre 0 y 2*pi rad.");
-    hal_telemetry_write("Si fallo el inicio de un encoder, reiniciar para reintentar.");
+    telemetry_app_send_line("Girar las ruedas a mano: angulo absoluto entre 0 y 2*pi rad.");
+    telemetry_app_send_line("Si fallo el inicio de un encoder, reiniciar para reintentar.");
 }
 
 void app_update(void)
 {
+    telemetry_app_update();
+
     if (!clock_ready || (!encoder_ready[ENC_IZQ] && !encoder_ready[ENC_DER])) {
         return;
     }

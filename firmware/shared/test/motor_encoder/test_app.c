@@ -3,6 +3,7 @@
 #include "driver_encoder.h"
 #include "hal_i2c.h"
 #include "hal_time.h"
+#include "telemetry_app.h"
 #include "hal_telemetry.h"
 #include <math.h>
 #include <stdint.h>
@@ -54,10 +55,10 @@ static bool set_motors(bool enable)
 static void stop_test(const char *reason)
 {
     if (motor_ready && !set_motors(false))
-        hal_telemetry_write("ERROR al cortar PWM: desconectar alimentacion de los motores.");
+        telemetry_app_send_line("ERROR al cortar PWM: desconectar alimentacion de los motores.");
     active = false;
     running = false;
-    hal_telemetry_write(reason);
+    telemetry_app_send_line(reason);
 }
 static void encoder_error(unsigned i, const char *operation, encoder_status_t status)
 {
@@ -69,13 +70,17 @@ static void encoder_error(unsigned i, const char *operation, encoder_status_t st
 }
 void app_init(void)
 {
+    if (!telemetry_app_init()) {
+        hal_telemetry_write("ERROR: no se pudo iniciar la telemetria.");
+    }
+
     active = false;
     motor_ready = false;
     running = false;
     wait_us = START_DELAY_US;
-    hal_telemetry_write("=== TEST DOS MOTORES + DOS ENCODERS ===");
+    telemetry_app_send_line("=== TEST DOS MOTORES + DOS ENCODERS ===");
     if (!hal_time_init() || !drv8833_init()) {
-        hal_telemetry_write("ERROR inicializando reloj/DRV8833; no iniciar motores.");
+        telemetry_app_send_line("ERROR inicializando reloj/DRV8833; no iniciar motores.");
         return;
     }
     motor_ready = true;
@@ -107,20 +112,18 @@ void app_init(void)
     snprintf(message, sizeof(message),
              "En 3 s: IZQ PWM=%d%%, DER PWM=%d%%; ciclo 15 s activos / 5 s detenidos.",
              (int)wheels[0].duty, (int)wheels[1].duty);
-    hal_telemetry_write(message);
-    hal_telemetry_write("RPM del eje de cada iman; signo segun montaje. Muestreo 5 ms, reporte 250 ms.");
+    telemetry_app_send_line(message);
+    telemetry_app_send_line("RPM del eje de cada iman; signo segun montaje. Muestreo 5 ms, reporte 250 ms.");
     start_us = last_poll_us = report_us = hal_time_us();
     active = true;
 }
 void app_update(void)
 {
+    telemetry_app_update();
+
     if (!active) return;
     uint32_t now = hal_time_us();
     if ((uint32_t)(now - last_poll_us) < SAMPLE_PERIOD_US) return;
-    if (drv8833_fault()) {
-        stop_test("ERROR nFAULT del DRV8833; ambos motores detenidos. Reiniciar para reintentar.");
-        return;
-    }
     for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
         float angle;
         encoder_status_t status = encoder_get_angle_rad(wheels[i].encoder, &angle);
@@ -157,7 +160,7 @@ void app_update(void)
         }
         running = true;
         run_start_us = now;
-        hal_telemetry_write("Ambos motores activos durante 15 s.");
+        telemetry_app_send_line("Ambos motores activos durante 15 s.");
     }
     if (running && (uint32_t)(now - run_start_us) >= RUN_TIME_US) {
         if (!set_motors(false)) {
@@ -167,7 +170,7 @@ void app_update(void)
         running = false;
         start_us = now;
         wait_us = OFF_TIME_US;
-        hal_telemetry_write("Ambos PWM a 0% durante 5 s; luego arranque automatico.");
+        telemetry_app_send_line("Ambos PWM a 0% durante 5 s; luego arranque automatico.");
     }
     if ((uint32_t)(now - report_us) >= REPORT_PERIOD_US) {
         for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
@@ -177,7 +180,7 @@ void app_update(void)
             snprintf(message, sizeof(message), "%s | PWM=%d%% | angulo=%.2f deg | velocidad=%.2f RPM",
                      wheels[i].name, running ? (int)wheels[i].duty : 0,
                      (double)(samples[i].angle * (180.0f / PI_F)), (double)rpm);
-            hal_telemetry_write(message);
+            telemetry_app_send_line(message);
             samples[i].window_angle = 0.0f;
             samples[i].window_us = 0U;
         }

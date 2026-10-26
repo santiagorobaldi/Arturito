@@ -1,6 +1,5 @@
 #include "driver_drv8833.h"
 #include "hal_pwm.h"
-#include "hal_gpio.h"
 
 #define PWM_FREQ_HZ  20000
 
@@ -35,13 +34,11 @@ static const motor_roles_t motor_roles[MOTOR_COUNT] = {
 };
 
 bool drv8833_init(void) {
-    if (!hal_gpio_init(HAL_GPIO_DRV_SLEEP, HAL_GPIO_OUT))       return false;
-    if (!hal_gpio_init(HAL_GPIO_DRV_FAULT, HAL_GPIO_IN_PULLUP)) return false;
-
+    /* nSLEEP habilitado por puente; nFAULT no se utiliza. */
     for (int i = 0; i < DRV_PWM_COUNT; i++) {
         if (!hal_pwm_init(role_to_hal[i], PWM_FREQ_HZ)) return false;
     }
-    return hal_gpio_write(HAL_GPIO_DRV_SLEEP, true);   // chip activo
+    return true;
 }
 
 bool drv8833_set_pwm(drv8833_motor_t m, float duty_pwm) {
@@ -72,10 +69,4 @@ bool drv8833_break(void) {
         ok &= hal_pwm_set_duty(role_to_hal[i], 100.0f);
     }
     return ok;
-}
-
-bool drv8833_fault(void) {
-    bool level = true;
-    if (!hal_gpio_read(HAL_GPIO_DRV_FAULT, &level)) return true;  // si no puedo leer, asumo falla
-    return !level;   // nFAULT activo en bajo
 }

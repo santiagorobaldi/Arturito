@@ -17,6 +17,8 @@ else ifeq ($(APP_MODE),rover)
 # La configuracion del rover selecciona las fuentes de la aplicacion.
 else ifeq ($(APP_MODE),encoder_test)
 # La configuracion del rover selecciona las fuentes del test de encoders.
+else ifeq ($(APP_MODE),motor_encoder_test)
+# La configuracion del rover selecciona motores y encoders.
 else
-$(error APP_MODE debe ser clock_test, tof_test, telemetry_test, imu_test, encoder_test o rover)
+$(error APP_MODE debe ser clock_test, tof_test, telemetry_test, imu_test, encoder_test, motor_encoder_test o rover)
 endif
