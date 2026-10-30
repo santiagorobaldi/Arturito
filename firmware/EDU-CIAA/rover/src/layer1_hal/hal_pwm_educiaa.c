@@ -49,10 +49,17 @@
 
 // ÚNICA tabla con las salidas PWM de la EDU-CIAA.
 static const pwmMap_t hw[HAL_PWM_CH_COUNT] = {
+    [HAL_PWM_CH_0] = PWM0,   // T_FIL1
     [HAL_PWM_CH_1] = PWM1,   // T_COL2
     [HAL_PWM_CH_2] = PWM2,   // T_COL0
     [HAL_PWM_CH_3] = PWM3,   // T_FIL2
     [HAL_PWM_CH_4] = PWM4,   // T_FIL3
+    [HAL_PWM_CH_5] = PWM5,   // T_COL1
+    [HAL_PWM_CH_6] = PWM6,   // GPIO8
+    [HAL_PWM_CH_7] = PWM7,   // LED1
+    [HAL_PWM_CH_8] = PWM8,   // LED2
+    [HAL_PWM_CH_9] = PWM9,   // LED3
+    [HAL_PWM_CH_10] = PWM10, // GPIO2
 };
 
 static bool     sct_ready   = false;
