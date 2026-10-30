@@ -63,7 +63,7 @@ bool drv8833_set_pwm(drv8833_motor_t m, float duty_pwm) {
     return ok;
 }
 
-bool drv8833_break(void) {
+bool drv8833_brake(void) {
     bool ok = true;
     for (int i = 0; i < DRV_PWM_COUNT; i++) {
         ok &= hal_pwm_set_duty(role_to_hal[i], 100.0f);
