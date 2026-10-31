@@ -43,7 +43,7 @@ SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c
 SRC += rover/src/layer1_hal/hal_pwm_educiaa.c
 else ifeq ($(APP_MODE),motor_encoder_test)
 INCLUDES += -I../shared/libs/as5600/source
-SRC += ../shared/test/motor_encoder/test_app.c
+SRC += ../shared/test/motor_encoder_telemetry/test_app.c
 SRC += ../shared/layer2_drivers/driver_drv8833.c
 SRC += ../shared/layer2_drivers/driver_encoder.c
 SRC += ../shared/libs/as5600/source/driver_as5600.c

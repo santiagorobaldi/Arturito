@@ -9,8 +9,8 @@
  *   5 s IZQ ADELANTE / DER ATRAS -> 2 s pausa
  *   5 s IZQ ATRAS / DER ADELANTE -> 2 s pausa final y fin
  *
- * Los encoders se leen durante TODO el ciclo (incluidas esperas y pausas):
- *   IZQ -> encoder en bus I2C A      DER -> encoder en bus I2C B
+ * El encoder IZQ (I2C A) se lee durante TODO el ciclo, incluidas esperas y pausas.
+ * El encoder DER (I2C B) no se inicializa ni se lee; su motor sigue todo el ciclo.
  *
  * Salida (misma linea por dos caminos):
  *   - telemetry_app_send_line() -> BOARD_TELEMETRY_UART (UART hacia el ESP/WiFi)
@@ -19,7 +19,7 @@
  *   se avisa que no hay salida hacia el ESP.
  *
  * Formato del reporte (cada 250 ms):
- *   t=12.250 IZQ(A):ADE 80% ang=210.5 v=45.2rpm | DER(B):ADE 80% ang=33.1 v=-44.9rpm
+ *   t=12.250 IZQ(A):ADE 80% ang=210.5 v=45.2rpm | DER:ADE 80% encoder deshabilitado
  *   ADE/ATR/STOP = sentido ordenado a la RUEDA, % = PWM ordenado,
  *   ang = angulo del encoder en grados, v = RPM del eje del iman (signo segun montaje).
  *
@@ -27,7 +27,7 @@
  *   Motores (DRV8833): AIN1<-T_COL2 (P7_5), AIN2<-T_COL0 (P1_5)  motor A = IZQ
  *                      BIN1<-T_FIL2 (P4_2), BIN2<-T_FIL3 (P4_3)  motor B = DER
  *   Encoder IZQ (bus A): I2C0, pines dedicados SDA y SCL de la EDU-CIAA
- *   Encoder DER (bus B): I2C1, SDA = P2_3, SCL = P2_4 (sin pull-up interno)
+ *   Encoder DER (bus B): no requerido para este ensayo.
  *   UART al ESP32: UART_GPIO (UART0), GPIO1 = TX, GPIO2 = RX, 115200, 3,3 V
  *     EDU GPIO1(TX) -> ESP32 GPIO16 (RX2)   EDU GPIO2(RX) <- ESP32 GPIO17 (TX2)
  *     GND comun. UART_232 NO se puede usar: comparte P2_3/P2_4 con el bus B.
@@ -72,6 +72,8 @@ static const int pwm_steps[PWM_STEP_COUNT] = { 75, 80, 85, 90, 95 };
 #define PI_F               3.14159265359f
 #define TWO_PI_F           (2.0f * PI_F)
 #define WHEEL_COUNT        2U
+/* Solo la primera rueda de wheels[] tiene encoder conectado (IZQ, I2C A). */
+#define ENCODER_COUNT      1U
 
 /* ------------------------------------------------------------------------- */
 
@@ -117,7 +119,7 @@ typedef struct {
     uint32_t window_us;
 } wheel_sample_t;
 
-static wheel_sample_t samples[WHEEL_COUNT];
+static wheel_sample_t samples[ENCODER_COUNT];
 static int  cmd_pct[WHEEL_COUNT];     /* PWM ordenado, con signo, convencion de rueda */
 static bool active, motor_ready;
 static unsigned step;
@@ -226,8 +228,8 @@ static bool update_sequence(uint32_t now)
 
 static void report(uint32_t now)
 {
-    float rpm[WHEEL_COUNT];
-    for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+    float rpm[ENCODER_COUNT];
+    for (unsigned i = 0; i < ENCODER_COUNT; ++i) {
         rpm[i] = (samples[i].window_us > 0U)
                ? samples[i].window_angle * (60000000.0f / TWO_PI_F) / (float)samples[i].window_us
                : 0.0f;
@@ -237,15 +239,14 @@ static void report(uint32_t now)
     const float rad2deg = 180.0f / PI_F;
     char message[160];
     snprintf(message, sizeof(message),
-             "t=%lu.%03lu %s(%s):%s %d%% ang=%.1f v=%.1frpm | %s(%s):%s %d%% ang=%.1f v=%.1frpm",
+             "t=%lu.%03lu %s(%s):%s %d%% ang=%.1f v=%.1frpm | %s:%s %d%% encoder deshabilitado",
              (unsigned long)(t_ms / 1000U), (unsigned long)(t_ms % 1000U),
              wheels[0].name, wheels[0].bus_label, dir_name(cmd_pct[0]), pct_abs(cmd_pct[0]),
              (double)(samples[0].angle * rad2deg), (double)rpm[0],
-             wheels[1].name, wheels[1].bus_label, dir_name(cmd_pct[1]), pct_abs(cmd_pct[1]),
-             (double)(samples[1].angle * rad2deg), (double)rpm[1]);
+             wheels[1].name, dir_name(cmd_pct[1]), pct_abs(cmd_pct[1]));
     emit(message);
 
-    for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+    for (unsigned i = 0; i < ENCODER_COUNT; ++i) {
         samples[i].window_angle = 0.0f;
         samples[i].window_us = 0U;
     }
@@ -267,6 +268,7 @@ void app_init(void)
     cmd_pct[1] = 0;
 
     emit("=== TEST MOTORES + ENCODERS: CICLO UNICO ===");
+    emit("Encoder habilitado: IZQ (I2C A). Encoder DER deshabilitado; ambos motores activos en el ensayo.");
     if (BOARD_TELEMETRY_UART == UART_USB) {
         emit("AVISO: BOARD_TELEMETRY_UART es UART_USB; no hay salida hacia el ESP.");
     }
@@ -281,7 +283,7 @@ void app_init(void)
         return;
     }
 
-    for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+    for (unsigned i = 0; i < ENCODER_COUNT; ++i) {
         if (!hal_i2c_init(wheels[i].bus)) {
             encoder_error(i, "inicio I2C", ENCODER_ERROR_COMMUNICATION);
             return;
@@ -319,7 +321,7 @@ void app_update(void)
 
     if ((uint32_t)(now - last_poll_us) < SAMPLE_PERIOD_US) return;
 
-    for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+    for (unsigned i = 0; i < ENCODER_COUNT; ++i) {
         float angle;
         encoder_status_t status = encoder_get_angle_rad(wheels[i].encoder, &angle);
         if (status != ENCODER_OK || !isfinite(angle)) {
