@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <esp_arduino_version.h>
 
 extern "C" {
 #include "hal_pwm.h"
@@ -26,8 +27,14 @@ extern "C" bool hal_pwm_init(hal_pwm_pin_t ch, uint32_t freq_hz)
     if (shared_freq == 0)              shared_freq = freq_hz;
     else if (freq_hz != shared_freq)   return false;
 
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
     if (!ledcAttach(hw_pin[ch], freq_hz, PWM_RESOLUTION_BITS)) return false;
-    if (!ledcWrite(hw_pin[ch], 0)) return false;     // arranca apagado
+    if (!ledcWrite(hw_pin[ch], 0)) return false;
+#else
+    if (ledcSetup((uint8_t)ch, freq_hz, PWM_RESOLUTION_BITS) == 0) return false;
+    ledcAttachPin(hw_pin[ch], (uint8_t)ch);
+    ledcWrite((uint8_t)ch, 0);
+#endif
 
     ch_ready[ch] = true; 
     return true;
@@ -41,5 +48,10 @@ extern "C" bool hal_pwm_set_duty(hal_pwm_pin_t ch, float duty_pct)
     if (duty_pct > 100.0f) duty_pct = 100.0f;
 
     const uint32_t duty = (uint32_t)(duty_pct * (float)PWM_DUTY_MAX / 100.0f + 0.5f);
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
     return ledcWrite(hw_pin[ch], duty);
+#else
+    ledcWrite((uint8_t)ch, duty);
+    return true;
+#endif
 }

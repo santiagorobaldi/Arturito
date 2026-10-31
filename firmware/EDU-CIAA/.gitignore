@@ -52,6 +52,7 @@ dkms.conf
 
 # Program output folders
 out/
+rover/out-*/
 .build-log
 
 # ESP32

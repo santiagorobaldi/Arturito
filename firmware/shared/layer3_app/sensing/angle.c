@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stddef.h>
 
-/* Estima el bias de gyro Z en reposo e integra la velocidad con dt medido entre lecturas. */
+/* Estima bias y ruido de gyro Z en reposo e integra con dt medido entre lecturas. */
 static const uint32_t kSettleMs = 2000U;
 static const uint32_t kCalibrationSamples = 500U;
 static const uint32_t kCalibrationIntervalMs = 10U;
@@ -16,12 +16,14 @@ static const double kRadiansToDegrees = 57.29577951308232;
 static bool initialized;
 static bool has_previous_sample;
 static float gyro_z_offset_rads;
+static float gyro_z_stddev_rads;
 static float previous_gyro_z_rads;
 static uint32_t previous_sample_time_us;
 static double angle_rad;
 
 static bool calibrate_gyro_z(void) {
-    double sum = 0.0;
+    double mean = 0.0;
+    double squared_deviations = 0.0;
     float sample;
 
     hal_delay(kSettleMs);
@@ -29,13 +31,18 @@ static bool calibrate_gyro_z(void) {
         if (!mpu6050_read_gyro_z(&sample) || !isfinite(sample)) {
             return false;
         }
-        sum += sample;
+        // Actualiza promedio y dispersion sin almacenar las muestras (Welford).
+        const double delta = (double)sample - mean;
+        mean += delta / (double)(i + 1U);
+        squared_deviations += delta * ((double)sample - mean);
         if (i + 1U < kCalibrationSamples) {
             hal_delay(kCalibrationIntervalMs);
         }
     }
 
-    gyro_z_offset_rads = (float)(sum / kCalibrationSamples);
+    gyro_z_offset_rads = (float)mean;
+    gyro_z_stddev_rads =
+        (float)sqrt(squared_deviations / (double)(kCalibrationSamples - 1U));
     return true;
 }
 
@@ -43,6 +50,7 @@ bool angle_init(uint8_t imu_address) {
     initialized = false;
     has_previous_sample = false;
     gyro_z_offset_rads = 0.0f;
+    gyro_z_stddev_rads = 0.0f;
     previous_gyro_z_rads = 0.0f;
     previous_sample_time_us = 0U;
     angle_rad = 0.0;
@@ -66,6 +74,9 @@ bool angle_read_deg(double *angle_deg) {
         return false;
     }
     gyro_z_rads -= gyro_z_offset_rads;
+    if (fabsf(gyro_z_rads) <= 10.0f * gyro_z_stddev_rads) {
+        gyro_z_rads = 0.0f;
+    }
 
     const uint32_t sample_time_us = hal_micros();
     if (has_previous_sample) {
@@ -84,6 +95,6 @@ bool angle_read_deg(double *angle_deg) {
     previous_gyro_z_rads = gyro_z_rads;
     previous_sample_time_us = sample_time_us;
     has_previous_sample = true;
-    *angle_deg = angle_rad * kRadiansToDegrees;
+    *angle_deg = -(angle_rad * kRadiansToDegrees);
     return true;
 }

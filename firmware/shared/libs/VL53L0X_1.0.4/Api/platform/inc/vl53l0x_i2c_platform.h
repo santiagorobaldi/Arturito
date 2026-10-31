@@ -57,6 +57,12 @@ typedef unsigned char bool_t;
 
 #define    COMMS_BUFFER_SIZE    64  // MUST be the same size as the SV task buffer
 
+/* Adapter limit: one register byte plus up to 63 data bytes.
+ * Preserve the transfer sizes accepted by the existing port.
+ */
+#define VL53L0X_MAX_I2C_XFER_SIZE 64
+#define VL53L0X_MAX_I2C_DATA_SIZE (VL53L0X_MAX_I2C_XFER_SIZE - 1)
+
 #define    BYTES_PER_WORD        2
 #define    BYTES_PER_DWORD       4
 
@@ -72,14 +78,6 @@ typedef unsigned char bool_t;
  *
  */
 
-/* EDU-CIAA: NO SOPORTADAS POR AHORA:
- * VL53L0X_platform_wait_us, VL53L0X_wait_ms, VL53L0X_set_gpio,
- * VL53L0X_get_gpio, VL53L0X_release_gpio, VL53L0X_cycle_power,
- * VL53L0X_get_timer_frequency y VL53L0X_get_timer_value.
- * Devuelven fallo (1), salvo una espera de cero, que devuelve exito (0).
- * Sus cuerpos originales ST se conservan comentados en el .c como referencia.
- * PollingDelay es otra funcion y si esta implementada.
- */
 int32_t VL53L0X_comms_initialise(uint8_t  comms_type,
                                           uint16_t comms_speed_khz);
 

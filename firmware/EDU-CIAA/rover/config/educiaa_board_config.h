@@ -11,5 +11,9 @@
 #define BOARD_I2C_A_CLOCK_HZ 100000u
 #define BOARD_I2C_B_CLOCK_HZ 100000u
 
+/* UART0 en el conector GPIO: GPIO1=TX, GPIO2=RX. USB queda para debug. */
+#define BOARD_TELEMETRY_UART UART_GPIO
+#define BOARD_TELEMETRY_UART_BAUD 115200U
+
 
 #endif

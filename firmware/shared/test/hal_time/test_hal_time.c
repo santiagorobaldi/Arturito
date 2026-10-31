@@ -2,6 +2,7 @@
 #include "test_hal_time.h"
 
 #include "hal_time.h"
+#include "telemetry_app.h"
 #include "hal_telemetry.h"
 
 #include <stdbool.h>
@@ -40,7 +41,7 @@ static void test_delay(uint32_t delay_ms)
         (unsigned long)elapsed_ms
     );
 
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 /* Busca el menor incremento observable del reloj. */
@@ -66,7 +67,7 @@ static void test_resolution(void)
     }
 
     if (min_step == UINT32_MAX) {
-        hal_telemetry_write(
+        telemetry_app_send_line(
             "ERROR: no se observo avance del reloj."
         );
         return;
@@ -79,14 +80,14 @@ static void test_resolution(void)
         (unsigned long)min_step
     );
 
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 
     if (min_step == 1U) {
-        hal_telemetry_write(
+        telemetry_app_send_line(
             "OK: se observaron incrementos de 1 us."
         );
     } else {
-        hal_telemetry_write(
+        telemetry_app_send_line(
             "AVISO: revisar la resolucion observada."
         );
     }
@@ -105,22 +106,26 @@ static void test_legacy_api(void)
         (unsigned long)hal_micros()
     );
 
-    hal_telemetry_write(message);
+    telemetry_app_send_line(message);
 }
 
 /* Inicializa el reloj antes de ejecutar las pruebas. */
 void test_hal_time_init(void)
 {
+    if (!telemetry_app_init()) {
+        hal_telemetry_write("ERROR: no se pudo iniciar la telemetria.");
+    }
+
     clock_ready = hal_time_init();
 
     if (!clock_ready) {
-        hal_telemetry_write(
+        telemetry_app_send_line(
             "ERROR: fallo hal_time_init()."
         );
         return;
     }
 
-    hal_telemetry_write(
+    telemetry_app_send_line(
         "HAL TIME inicializada correctamente."
     );
 }
@@ -128,6 +133,8 @@ void test_hal_time_init(void)
 /* Ejecuta una serie de pruebas cada dos segundos. */
 void test_hal_time_update(void)
 {
+    telemetry_app_update();
+
     if (!clock_ready) {
         return;
     }
@@ -142,8 +149,8 @@ void test_hal_time_update(void)
     first_run = false;
     last_run_us = now_us;
 
-    hal_telemetry_write("");
-    hal_telemetry_write("=== TEST HAL TIME ===");
+    telemetry_app_send_line("");
+    telemetry_app_send_line("=== TEST HAL TIME ===");
 
     test_delay(100U);
     test_delay(10U);
@@ -152,5 +159,5 @@ void test_hal_time_update(void)
     test_resolution();
     test_legacy_api();
 
-    hal_telemetry_write("=====================");
+    telemetry_app_send_line("=====================");
 }

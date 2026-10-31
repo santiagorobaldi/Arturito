@@ -1,6 +1,6 @@
 #include "traction.h"
 #include "driver_drv8833.h"
-#include "driver_as5600.h"
+#include "driver_encoder.h"
 #include "pi.h"
 
 
@@ -57,8 +57,16 @@ static pi_t pi_right = {MOTOR_R_KP, MOTOR_R_KI, 0.0f};
 static ramp_t ramp_left = {0,W_RATE};
 static ramp_t ramp_right = {0,W_RATE};
 
-static float enc_left_meas = 0;
-static float enc_right_meas = 0;
+typedef struct{
+    float prev;
+    float act;
+}angle_t;
+
+static angle_t enc_left_angle = {0,0};
+static angle_t enc_right_angle = {0,0};
+
+static float w_left_read = 0;
+static float w_right_read = 0;
 
 static volatile bool stopped = true;
 
@@ -99,10 +107,17 @@ bool traction_set_ref(float w_left, float w_right){
 }
 
 bool traction_tick(void){
-    enc_left_meas = ENC_LEFT_SIGN * encoder_get_speed (ENC_LEFT);
-    enc_right_meas = ENC_RIGHT_SIGN * encoder_get_speed (ENC_RIGHT);
+    float left_angle_rad = 0;
+    float right_angle_rad = 0;
 
-    if (drv8833_fault()) stopped = true;
+    encoder_get_angle_rad (ENC_IZQ, &left_angle_rad);
+    encoder_get_angle_rad (ENC_DER, &right_angle_rad);
+
+    w_left_read = (left_angle_rad - enc_left_angle.prev) / TRACTION_TS_S;
+    w_right_read = (right_angle_rad - enc_right_angle.prev) / TRACTION_TS_S;
+
+    enc_left_angle.prev = left_angle_rad;
+    enc_right_angle.prev = right_angle_rad;
 
     if (stopped) {
         ramp_left.value = 0.0f;
@@ -115,10 +130,10 @@ bool traction_tick(void){
     float r_left = ramp_update(&ramp_left,ref.left * MOTOR_LEFT_SIGN, TRACTION_TS_S);
     float r_right = ramp_update(&ramp_right,ref.right * MOTOR_RIGHT_SIGN, TRACTION_TS_S);
 
-    float duty = pi_update(&pi_left, r_left ,enc_left_meas, TRACTION_TS_S);
+    float duty = pi_update(&pi_left, r_left ,w_left_read, TRACTION_TS_S);
     bool ok = drv8833_set_pwm(MOTOR_A,duty);
 
-    duty = pi_update(&pi_right, r_right ,enc_right_meas, TRACTION_TS_S);
+    duty = pi_update(&pi_right, r_right ,w_right_read, TRACTION_TS_S);
     ok &= drv8833_set_pwm(MOTOR_B,duty);
 
     return ok;
