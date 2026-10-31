@@ -29,11 +29,11 @@
 
 /* ------------------------- Parametros a calibrar ------------------------- */
 
-#define FWD_DUTY_PCT      30.0f      /* PWM de avance (0..100)                 */
-#define TURN_DUTY_PCT     25.0f      /* PWM de cada rueda durante el giro      */
+#define FWD_DUTY_PCT      95.0f      /* PWM de avance (0..100)                 */
+#define TURN_DUTY_PCT     90.0f      /* PWM de cada rueda durante el giro      */
 
 #define START_DELAY_US    3000000U   /* tiempo para soltar el rover            */
-#define FWD_US            2000000U   /* cada tramo recto                       */
+#define FWD_US            10000000U   /* cada tramo recto                       */
 #define TURN_US           1200000U    /* giro de ~90 grados (CALIBRAR)          */
 #define RAMP_US           200000U    /* rampa de arranque                      */
 #define BRAKE_US          250000U    /* freno activo entre maniobras           */
@@ -47,8 +47,8 @@
 /* Signos de montaje (iguales a traction.c).
  * Convencion: duty positivo = la rueda empuja al rover hacia ADELANTE.
  * Si una rueda gira al reves, invertir SOLO su signo. */
-#define MOTOR_LEFT_SIGN    ( 1.0f)
-#define MOTOR_RIGHT_SIGN   ( 1.0f)
+#define MOTOR_LEFT_SIGN    ( -1.0f)
+#define MOTOR_RIGHT_SIGN   ( -1.0f)
 
 /* ------------------------------------------------------------------------- */
 

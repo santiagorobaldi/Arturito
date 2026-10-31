@@ -20,6 +20,9 @@
 #define PI_F 3.14159265359f
 #define TWO_PI_F (2.0f * PI_F)
 #define WHEEL_COUNT 2U
+/* Ensayo actual: ambos motores y un AS5600 en I2C A. */
+#define READ_RIGHT_ENCODER false
+#define STATUS_PERIOD_US 1000000U
 
 typedef struct {
     const char *name;
@@ -27,10 +30,11 @@ typedef struct {
     encoder_t encoder;
     hal_i2c_bus_t bus;
     float duty;
+    bool read_encoder;
 } wheel_config_t;
 static const wheel_config_t wheels[WHEEL_COUNT] = {
-    {"IZQ", MOTOR_A, ENC_IZQ, HAL_I2C_BUS_A, TEST_DUTY_LEFT_PCT},
-    {"DER", MOTOR_B, ENC_DER, HAL_I2C_BUS_B, TEST_DUTY_RIGHT_PCT}
+    {"IZQ", MOTOR_A, ENC_IZQ, HAL_I2C_BUS_A, TEST_DUTY_LEFT_PCT, true},
+    {"DER", MOTOR_B, ENC_DER, HAL_I2C_BUS_B, TEST_DUTY_RIGHT_PCT, READ_RIGHT_ENCODER}
 };
 typedef struct {
     float angle;
@@ -41,6 +45,8 @@ typedef struct {
 static wheel_sample_t samples[WHEEL_COUNT];
 static bool active, motor_ready, running;
 static uint32_t wait_us, start_us, run_start_us, last_poll_us, report_us;
+static char stopped_reason[160];
+static uint32_t status_ms;
 
 static bool set_motors(bool enable)
 {
@@ -58,7 +64,9 @@ static void stop_test(const char *reason)
         telemetry_app_send_line("ERROR al cortar PWM: desconectar alimentacion de los motores.");
     active = false;
     running = false;
-    telemetry_app_send_line(reason);
+    snprintf(stopped_reason, sizeof(stopped_reason), "%s", reason);
+    status_ms = hal_millis();
+    telemetry_app_send_line(stopped_reason);
 }
 static void encoder_error(unsigned i, const char *operation, encoder_status_t status)
 {
@@ -77,10 +85,13 @@ void app_init(void)
     active = false;
     motor_ready = false;
     running = false;
+    stopped_reason[0] = '\0';
     wait_us = START_DELAY_US;
-    telemetry_app_send_line("=== TEST DOS MOTORES + DOS ENCODERS ===");
+    telemetry_app_send_line("=== TEST DOS MOTORES + ENCODER IZQ (I2C A) ===");
+    if (READ_RIGHT_ENCODER)
+        telemetry_app_send_line("Encoder DER (I2C B) tambien habilitado.");
     if (!hal_time_init() || !drv8833_init()) {
-        telemetry_app_send_line("ERROR inicializando reloj/DRV8833; no iniciar motores.");
+        stop_test("ERROR inicializando reloj/DRV8833; no iniciar motores.");
         return;
     }
     motor_ready = true;
@@ -89,6 +100,7 @@ void app_init(void)
         return;
     }
     for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+        if (!wheels[i].read_encoder) continue;
         if (!hal_i2c_init(wheels[i].bus)) {
             encoder_error(i, "inicio I2C", ENCODER_ERROR_COMMUNICATION);
             return;
@@ -121,10 +133,19 @@ void app_update(void)
 {
     telemetry_app_update();
 
-    if (!active) return;
+    if (!active) {
+        const uint32_t now_ms = hal_millis();
+        if (stopped_reason[0] != '\0' &&
+            (uint32_t)(now_ms - status_ms) >= STATUS_PERIOD_US / 1000U) {
+            telemetry_app_send_line(stopped_reason);
+            status_ms = now_ms;
+        }
+        return;
+    }
     uint32_t now = hal_time_us();
     if ((uint32_t)(now - last_poll_us) < SAMPLE_PERIOD_US) return;
     for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+        if (!wheels[i].read_encoder) continue;
         float angle;
         encoder_status_t status = encoder_get_angle_rad(wheels[i].encoder, &angle);
         if (status != ENCODER_OK || !isfinite(angle)) {
@@ -174,6 +195,13 @@ void app_update(void)
     }
     if ((uint32_t)(now - report_us) >= REPORT_PERIOD_US) {
         for (unsigned i = 0; i < WHEEL_COUNT; ++i) {
+            if (!wheels[i].read_encoder) {
+                char message[80];
+                snprintf(message, sizeof(message), "%s | PWM=%d%% | encoder no habilitado",
+                         wheels[i].name, running ? (int)wheels[i].duty : 0);
+                telemetry_app_send_line(message);
+                continue;
+            }
             const float rpm = samples[i].window_angle * (60000000.0f / TWO_PI_F) /
                               (float)samples[i].window_us;
             char message[120];
