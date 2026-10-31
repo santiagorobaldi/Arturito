@@ -85,8 +85,26 @@ Donde $\tau_{;c}$ es la constante de tiempo a lazo cerrado. Siendo que depende d
 \[\tau(K_p) = \frac{1}{K_pK}\]
 \[K_i(K_p) = \frac{K_p}{\tau}\]
 
+\paragraph{Desaturación proporcional}~\\
+Se define $\omega_{max}$ como la velocidad angular máxima que admite cada rueda, se establece al $85\%$ de la velocidad angular máxima alcanzable por los motores bajo la condición de tensión mínima operativa de la batería ($V_{bat min}$). Este margen del 15\% permite a los controladores PI combatir perturbaciones sin saturar el ciclo de trabajo del PWM.
 
-\paragraph{Criterio del Muestreo}~\\
+Cuando las velocidades de referencia dadas exceden $\omega_{max}$ se aplica un escalamiento proporcional $S=\frac{max(|\omega_{izq}|,|\omega_{der}|)}{\omega_{max}}$. Al dividir ambas referencias por $S$, se mantiene la relación $\frac{\omega_{der}}{\omega_{izq}}$, garantizando de esta forma la invariancia del radio de giro instantáneo $R$, previniendo así la deformación de la trayectoria.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{Imagenes/BloqueTraccion.png}
+	\caption{MEJORAR}
+	\label{fig:bloquetraccion}
+\end{figure}
+
+
+\paragraph{Acondicionamiento de la aceleración}~\\
+Evaluar si conviene implementarlo
+
+
+\subsubsection{Análisis Discreto e Implementación Algorítmica}
+
+\paragraph{Frecuencia de funcionamiento}~\\
 En el mundo real, es imposible integrar cada instante de tiempo. El intervalo de muestreo del estado del lazo cerrado (medición del sensor y computo de la lógica en consecuencia) se deberá de hacer cada cierto $\Delta t$. Para garantizar que el controlador digital represente fielmente el comportamiento diseñado en el dominio continuo, el intervalo de muestreo $\Delta t$ debe ser lo suficientemente chico respecto a la velocidad de respuesta del lazo cerrado ($\tau_{lc}$).
 
 Un período de muestreo del orden de la constante de tiempo ($\Delta t\approx\tau_{lc}$) resulta inaceptable por: Dado que $t=\tau_{lc}$ la velocidad angular ya ha alcanzado el $63,2\%$ de su estado permanente para cuando se hace el primer muestreo. Esto impide detectar las variaciones bruscas de velocidad a lo largo del recorrido hacia el regimen permanente. Por otro lado, la aproximación de la integral por suma de rectángulos $e[k]\Delta t$ asume que el error varía suavemente entre muestras. Un $\Delta t$ elevado induce error por discretización sustancial.
@@ -95,7 +113,7 @@ Por lo tanto, se toma el criterio empírico de diseño, el cual establece que se
 
 \[\Delta t <= \frac{\tau_{lc}}{10}\]
 
-Dado que la constante de tiempo del motor a lazo cerrado es de $\tau_{lc}\approx LLENAR$, se toma entonces un valor de $\Delta t = LLENAR$.
+Dado que la constante de tiempo del motor a lazo cerrado es de $\tau_{lc}\approx LLENAR$, se toma entonces un valor de $\Delta t = LLENAR$. Significando esto una frecuencia de funcionamiento del lazo de $f_m = 1/\Delta t$.
 
 \paragraph{Consideraciones para la Implementación Algorítmica}~\\
 Para trasladar el lazo de control diseñado en el dominio continuo $s$ al microcontrolador, se requiere discretizar la ecuación diferencial en el dominio del tiempo t:
@@ -122,15 +140,106 @@ VER DE HACER EL CODIGO ACA O EN ALGUN LADO, TAMBIEN MENCIONAR QUE EN EL CODIGO S
 
 \subsection{Bloque de Cinemática}
 
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\textwidth]{Imagenes/CinematicaRobot.png}
+	\includegraphics[width=0.8\textwidth]{Imagenes/BloqueCinematica_General.png}
+	\caption{Marcos Global y Local.}
+	\label{fig:diagrama_bc_general}
+\end{figure}
+
+La arquitectura general del Bloque de Cinemática es la mostrada en la figura de arriba.
+
+\subsubsection{Transformación de Marcos y Cinemática del Chasis}
+
+
+\paragraph{Marcos de Referencia y Transformaciones}~\\
+Se plantean dos marcos de referencia, uno global, para mapeo y planificación de ruta, y otro local al robot.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{Imagenes/BloqueCinematica_MarcosGyL.png}
+	\caption{Marcos Global y Local.}
+	\label{fig:diagrama_marcos_gyl}
+\end{figure}
+
+Sea $[x,y,\theta]$ un punto cualquiera (un punto en el plano 2D con una orientación $\theta$ asociada) y $[x_p,y_p,\theta_p]$ las coordenadas del centro del robot respecto al marco global, entonces el vector de desplazamiento del centro del robot al punto es $[\Delta x,\Delta y,\Delta \theta]$. Este vector de error/desplazamiento puede traducirse del marco de referencia global al marco local:
+
+
+\begin{equation}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		\Delta x_L \\
+		\Delta y_L \\
+		\Delta \theta_L 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		cos(\theta_p) & sin(\theta_p) & 0\\
+		-sin(\theta_p) & cos(\theta_p) & 0\\
+		0 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		\Delta x \\
+		\Delta y \\
+		\Delta \theta
+	\end{bmatrix}
+\end{equation}
+
+Donde el vector desplazamiento global resulta en las coordenadas del punto respecto al marco local, ya que el origen del marco local está fijado en el centro del robot. 
+
+\begin{equation}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		x_L \\
+		y_L \\
+		\theta_L 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		cos(\theta_p) & sin(\theta_p) & 0\\
+		-sin(\theta_p) & cos(\theta_p) & 0\\
+		0 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		\Delta x \\
+		\Delta y \\
+		\Delta \theta
+	\end{bmatrix}
+\end{equation}
+
+De la misma forma, un punto con respecto al marco local del robot puede traducirse a un delta/vector desplazamiento desde el centro del robot hasta ese punto en el marco global:
+
+\begin{equation}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		\Delta x \\
+		\Delta y \\
+		\Delta \theta
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		cos(\theta) & -sin(\theta) & 0\\
+		sin(\theta) & cos(\theta) & 0 \\
+		0 & 0 & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		x_L \\
+		y_L \\
+		\theta_L
+	\end{bmatrix}
+\end{equation}
+
+
+\paragraph{Cinemática Directa e Inversa}~\\
+Dada la geometría radial del chasis, con 2 ruedas dispuestas en el mismo eje de rotación, es posible hallar la velocidad de avance que lleva el robot y la velocidad angular en base a la velocidad angular de cada rueda.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{Imagenes/CinematicaRobot.png}
 	\caption{Marco local de referencia del robot (VER CAPAZ DE PONER VECTORES VELOCIDAD TODOS DE UN COLOR).}
 	\label{fig:diagrama_marco_local}
 \end{figure}
-
-\subsubsection{Cinemática Directa e Inversa}
-Dada la geometría radial del chasis, con 2 ruedas dispuestas en el mismo eje de rotación, es posible hallar la velocidad de avance que lleva el robot y la velocidad angular en base a la velocidad angular de cada rueda.
 
 Sean $\omega_{der}$ y $\omega_{izq}$ las velocidades angulares de cada rueda, es posile saber el desplazamiento lineal que aporta cada rueda multiplicando su velocidad angular por su radio $r$. 
 
@@ -167,7 +276,7 @@ Queda entonces la velocidad de avance y la velocidad angular del robot expresada
 	\end{bmatrix}
 \end{equation}
 
-En base a esto es posible hacer el camino inverso; cuánto debería girar cada rueda para que el robot tenga una velocidad de avance $v$ y una velocidad angular $w$? Despejando $[\omega_{der},\omega_{izq}]^T$ queda:
+En base a esto es posible hacer el camino inverso; cuánto debería girar cada rueda para que el robot tenga una velocidad de avance $v$ y una velocidad angular $w$ Despejando $[\omega_{der},\omega_{izq}]^T$ queda:
 
 \begin{equation*}	
 	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
@@ -181,8 +290,8 @@ En base a esto es posible hacer el camino inverso; cuánto debería girar cada r
 		\frac{r}{2l} & \frac{-r}{2l} 
 	\end{bmatrix}^{-1}
 	\begin{bmatrix}
-		\omega_{der} \\
-		\omega_{izq}
+		v \\
+		w
 	\end{bmatrix}
 \end{equation*}
 
@@ -204,16 +313,64 @@ En base a esto es posible hacer el camino inverso; cuánto debería girar cada r
 \end{equation}
 
 
-\subsubsection{Control Cinemático para Navegación}
+\subsubsection{Algoritmos de Control Cinemático para Navegación}
 
-El control cinemático del robot consiste en el diseño e implementación de alguna técnica que permita comandar al robot desplazarse hacia un punto final y orientación final cualquiera y que este mismo lo realice lo mejor posible.
+El subsistema de control se plantea como un control configurable de 3 modos.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\textwidth]{Imagenes/ControlCinematicaGeneral.png}
+	\includegraphics[width=0.8\textwidth]{Imagenes/BloqueCinematica_EsquemaControlGeneral.png}
+	\caption{Planteo control (VER DE HACER GRAFICO PROPIO).}
+	\label{fig:control_general}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{Imagenes/ControlCinematicaGeneral.png}
 	\caption{Planteo control (VER DE HACER GRAFICO PROPIO).}
 	\label{fig:control_cinematica_general}
 \end{figure}
+
+\begin{itemize}
+	\item \textbf{Modo Tránsito:} Implementa un control de seguimiento de trayectoria donde no importa la orientación del chasis sino seguir los puntos de referencia.
+	\item \textbf{Modo Estacionamiento:} Implementa el control polar de Siegwart (libro). Activando este control a partir de una distancia minima al punto final es posible garantizar una convergencia al punto final en coordenadas $[x,y,\theta]$.
+	\item \textbf{Modo Parada:} Modo trivial de control que fuerza las salidas del control a 0. Este modo se elije al cumplirse el criterio de llegada ($\rho_{dist}<\rho_{tolerancia}$ y $\theta_{dist}<\theta_{tolerancia}$).
+\end{itemize}
+
+\paragraph{Control: Modo Parada}~\\
+Este control es el más sencillo de todos. Consiste en implementar un control trivial que fuerza la salida $[v,w]$ a $[0,0]$. El control queda:
+
+\begin{equation*}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		v \\
+		w 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		0 & 0 & 0 \\
+		0 & 0 & 0  
+	\end{bmatrix}
+	\begin{bmatrix}
+		x_e \\
+		y_e \\
+		\theta_e
+	\end{bmatrix}
+\end{equation*}
+
+\begin{equation*}	
+	% 3. Matriz aumentada usando 'bmatrix' (con corchetes)
+	\begin{bmatrix}
+		v \\
+		w 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		0 \\
+		0
+	\end{bmatrix}
+\end{equation*}
+
 
 
 \paragraph{Análisis del Control Polar de Siegwart (Punto a Punto)}~\\
@@ -230,7 +387,7 @@ Puede verse que por la geometría del chasis, el robot únicamente tiene 2 coord
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\textwidth]{Imagenes/ControlPolar.png}
+	\includegraphics[width=0.8\textwidth]{Imagenes/ControlPolar.png}
 	\caption{Variables control polar (VER DE HACER GRAFICO PROPIO).}
 	\label{fig:control_polar}
 \end{figure}
@@ -246,13 +403,23 @@ El error de posición del robot con respecto a la meta puede traducirse de las c
 
 Se propone entonces una ley de control proporcional:
 
-\begin{equation*}
-	v = k_{\rho}\rho ~\\
+\begin{equation*}	
+	\begin{bmatrix}
+		v \\
+		w 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		k_{\rho} & 0 & 0 \\
+		0 & k_{\alpha} & k_{\beta}
+	\end{bmatrix}
+	\begin{bmatrix}
+		\rho \\
+		\alpha \\
+		\beta
+	\end{bmatrix}
 \end{equation*}
 
-\begin{equation*}
-	\omega = k_{\alpha}\alpha + k_{\beta}\beta
-\end{equation*}
 
 $v$ hace que el robot avance mientras más lejos esté y $\omega$ ajusta el giro para apuntar a la meta ($\alpha$) y quedar alineado al llegar ($\beta$).
 
@@ -266,8 +433,21 @@ El desarrollo formal del modelo cinemático diferencial en coordenadas polares y
 
 \paragraph{Análisis del Control para algoritmo Pure Pursuit (Seguimiento de trayectorias)}
 
-\paragraph{Propuesta y justificación Control Híbrido}
+\subsubsection{Análisis Discreto e Implementación Algorítmica}
 
+
+\paragraph{Frecuencia de funcionamiento}~\\
+
+Desde una perspectiva física el lazo cinemático no puede recalcular el rumbo más rápido de lo que las ruedas cambian de velocidad. Si la cinemática intetara actualizar las consignas de velocidad $[v,w]$ a la misma frecuencia con la que trabaja la tracción, el control cinemático estaría respondiendo a estados transitorios e incompletos de los motores. Ejecutar el lazo de cinemática entre 5 y 10 veces más lento que el lazo de tracción asegura que, cada vez que la cinemática calcula una nueva consigna de velocidad para cada rueda, los motores ya alcanzaron régimen permanente de la consigna dada en el paso anterior.
+Queda entonces definida la frecuencia de funcionamiento del lazo de cinemática como:
+
+\begin{equation*}
+	f_{cinemática}=\frac{f_{traccion}}{10}
+\end{equation*}
+
+\begin{equation*}
+	\Delta t_{cinemática}=\Delta t_{traccion} 10
+\end{equation*}
 
 
 \subsection{Bloque de Mapeo y Estimación de Posición}
