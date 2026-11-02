@@ -77,4 +77,11 @@ out/
 !firmware/EDU-CIAA/.vscode/c_cpp_properties.json
 
 ## Kicad
+# Archivos temporales de bloqueo
 *.lck
+# Historial local del editor
+*.history/
+# Preferencias locales de KiCad
+*.kicad_prl
+
+
