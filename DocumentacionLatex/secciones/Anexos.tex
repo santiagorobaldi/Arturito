@@ -6,8 +6,16 @@
     \centering
     % Controla la altura máxima para no empujar el título
     \includegraphics[width=\textwidth, height=0.75\textheight, keepaspectratio]{imagenes/Esquematico.pdf}
-    \caption{Esquemático completo del sistema de control y potencia.}
+    \caption{Esquemático completo del sistema.}
     \label{fig:esquematico_anexo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	% Controla la altura máxima para no empujar el título
+	\includegraphics[width=\textwidth, height=0.75\textheight, keepaspectratio]{imagenes/Shield.pdf}
+	\caption{Esquemático completo del poncho del sistema.}
+	\label{fig:esquematico_shield_anexo}
 \end{figure}
 
 % ------------------------------------------------------------------------------
@@ -29,8 +37,8 @@
 5 & Portapilas 18650: uno de 1 celda y uno de 2 celdas en serie & 2 & Portapilas \\
 6 & Protección de celdas (BMS), no definida & \pq & \pq \\
 7 & Cargador de celdas, no definido & \pq & \pq \\
-8 & Capacitor electrolítico \SI{470}{\micro F}/\SI{16}{V} & 1 & Componente discreto \\
-9 & Capacitor cerámico \SI{100}{nF} (104) & 2 & Componente discreto \\
+8 & Capacitor electrolítico \SI{10}{\micro F} & 1 & Componente\\
+9 & Capacitor monolitico \SI{100}{nF} (104) & 6 & Componente\\
 10 & ESP32 DevKit v1 & 1 & Módulo \\
 11 & IMU MPU6050 & 1 & Módulo \\
 12 & Módulo sensor de distancia VL53L0X & 1 & Módulo \\
@@ -42,9 +50,15 @@
 17 & Chasis superior modular para prototipado (soporte de \emph{breadboard}) & 1 & Pieza impresa (ABS) \\
 18 & Chasis superior modular (soporte para placa EDU-CIAA) & 1 & Pieza impresa (ABS) \\
 19 & Varilla roscada M3 de \SI{1}{m} & 1 & Varilla \\
-21 & Tornillos M3 & 6 & Tornillería \\
-22 & Tuercas hexagonales M3 & 6 & Tornillería \\
+21 & Tornillos M3 & 8 & Tornillería \\
+22 & Tuercas hexagonales M3 & 16 & Tornillería \\
 23 & Apoyo trasero: patín impreso en ABS (o \emph{ball caster} de acero) & 1 & Pieza impresa / Comp. \\
+24 & Boton switch 4 pines & 1 & Componente \\
+25 & Diodo Schottky 15A 45V & 4 & Componente \\
+26 & Bornera 2 vías & 15 & Componente \\
+27 & Tira de 40 pines macho & 2 & Componente \\
+28 & Tira de 40 pines hembra & 1 & Componente \\
+
 \bottomrule
 \bottomrule
 \end{tabular}
