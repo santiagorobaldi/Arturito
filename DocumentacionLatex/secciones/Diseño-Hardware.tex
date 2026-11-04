@@ -296,6 +296,16 @@ Retroceso & Bajo & Alto (PWM) \\
 \subsubsection{Bus \texorpdfstring{I\textsuperscript{2}C}{I2C} y salidas PWM de sensores}\label{sec:i2c}
 El módulo VL53L0X y la IMU MPU6050 se comunican por I\textsuperscript{2}C (Tabla~\ref{tab:i2c}). Dado que los dos módulos AS5600 comparten la misma dirección fija (\texttt{0x36}) y no se pueden reprogramar, las dos unidades AS5600 no pueden compartir el mismo bus. Para resolverlo se investigó la datasheet del LPC4337 donde se halló que existen dos interfaces de comunicación  I\textsuperscript{2}C pero la placa EDU-CIAA solo expone una de ellas. Sin embargo, al revisar el esquemático para ver si los pines dedicados del microcontrolador estaban expuestos para su uso, se encontró que efectivamente los pines que la placa EDU-CIAA expone como aptos para comunicacion mediante RS232 estan conectados directamente a los pines del microcontrolador para la segunda interfaz de I\textsuperscript{2}C. Todavia faltan realizar las pruebas para ver si esta opcion es viable, en caso contrario se implementaran las comunicaciones con los encoders mediante PWM por la salida OUT de los encoders y utilizando input capture desde la EDU-CIAA.
 
+\subsubsection{Bus \texorpdfstring{I\textsuperscript{2}C}{I2C} y salidas PWM de sensores}\label{sec:i2c}
+El módulo VL53L0X y la IMU MPU6050 se comunican por I\textsuperscript{2}C (Tabla~\ref{tab:i2c}). Dado que los dos módulos AS5600 comparten la misma dirección fija (\texttt{0x36}) y esta no se puede reprogramar, no es posible conectarlos al mismo bus. Para resolverlo se investigó la hoja de datos del LPC4337, donde se halló que el microcontrolador dispone de dos interfaces I\textsuperscript{2}C, aunque la placa EDU-CIAA-NXP solo expone una de ellas. Sin embargo, al revisar el esquemático para verificar si los pines dedicados de la segunda interfaz estaban accesibles, se encontró que los pines que la placa expone para la comunicación RS232 están conectados directamente a los pines del microcontrolador correspondientes a la segunda interfaz I\textsuperscript{2}C.
+
+\paragraph{Pruebas de validación.}
+Se realizaron las pruebas mencionadas, conectando cada encoder a un bus I\textsuperscript{2}C distinto y operando junto con el bloque de tracción, con el fin de evaluar si las mediciones eran correctas. Los resultados fueron satisfactorios y confirmaron que utilizar los dos buses I\textsuperscript{2}C de la EDU-CIAA-NXP es una solución adecuada para nuestro hardware, ya que resuelve el problema de los dos encoders con la misma dirección fija.
+
+El único inconveniente fue el peor desempeño del bus cuyos pines no están expuestos de forma nativa en la EDU-CIAA-NXP: algunas lecturas del encoder conectado a este bus fallaban o la comunicación no se establecía correctamente. Al revisar el esquemático de la placa se notó la ausencia de resistencias de pull-up en esos pines. A modo de prueba, se incorporaron resistencias de pull-up externas de \SI{4.4}{\kilo\ohm} en este bus. Tras repetir las pruebas, ambos encoders funcionaron correctamente, sin pérdida de información ni fallos de comunicación.
+
+Dado el resultado obtenido, no fue necesario recurrir a la alternativa de leer los encoders mediante la salida PWM (pin OUT) con \textit{input capture}.
+
 \begin{table}[H]
 \centering
 \caption{Dispositivos conectados al bus I\textsuperscript{2}C.}
