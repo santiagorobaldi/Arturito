@@ -229,9 +229,9 @@ parada segura y la interfaz indicará la desconexión.
 
 \newpage
 
-\subsection{Estado actual y ensayos realizado}
-
-A la versión actual de firmware la llamamos V0 (Versión 0). Esta versión ya cuenta con la estructura base del workspace explicado anteriormente pero solo realiza el siguiente ciclo de percepción:
+\subsection{Versiones y ensayos realizado}
+\subsubsection{Pruebas IMU y ToF}
+ Esta versión ya cuenta con la estructura base del workspace explicado anteriormente pero solo realiza el siguiente ciclo de percepción:
 
 \begin{enumerate}
   \item Inicializa la IMU MPU6050 y el sensor de distancia VL53L0X.
@@ -247,21 +247,21 @@ A la versión actual de firmware la llamamos V0 (Versión 0). Esta versión ya c
 No hay todavía odometria XY, encoders, motores, navegación autónoma ni grilla de
 ocupación. No hay modos de funcionamiento por comandados ni comunicación inalámbrica.
 
-El firmware V0 fue cargado tanto en ESP32 como en EDU-CIAA y validado con Processing: se comprobó la
+El firmware fue cargado tanto en ESP32 como en EDU-CIAA y validado con Processing: se comprobó la
 recepción de las muestras serie y la visualización de orientación y distancia.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.6\textwidth]{imagenes/V0.png}
     \hfill
     \includegraphics[width=0.38\textwidth]{imagenes/f1.png}
-    \caption{Visualización de V0 en Processing (izquierda) y sensores montados en un auto a control remoto (derecha). \href{https://drive.google.com/file/d/1k8-xx6FHV0KANsshld4rqhePZVvpV37A/view?usp=drive_link}{Link para ver funcionamiento en video.}}
+    \caption{Visualización en Processing (izquierda) y sensores montados en un auto a control remoto (derecha). \href{https://drive.google.com/file/d/1k8-xx6FHV0KANsshld4rqhePZVvpV37A/view?usp=drive_link}{Link para ver funcionamiento en video.}}
     \label{fig:v0_y_sensores}
 \end{figure}
 
 \newpage
-\subsubsection{Cómo llegamos a V0}
+\subsubsection{Cómo llegamos a este punto}
 
-Firmware V0 es en realidad una versión final de un proceso de testeo de los sensores en ambas arquitecturas, de un proceso de interpretación de datos, de armado de workspace, de ejecución del programa con FreeRTOS, etc.
+El Firmware es en realidad una versión final de un proceso de testeo de los sensores en ambas arquitecturas, de un proceso de interpretación de datos, de armado de workspace, de ejecución del programa con FreeRTOS, etc.
 
 Algunos cosas interesantes de mensionar:
 \begin{description}
