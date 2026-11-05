@@ -39,7 +39,7 @@ Habiendo identificado la función de transferencia de la planta (motor), es posi
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{Imagenes/Lazo Interno-Motor.png}
-	\caption{Lazo interno de control de un motor. (MEJORAR, CAMBIAR PI POR C(S))}
+	\caption{Lazo interno de control de un motor.}
 	\label{fig:lazointernomotor}
 \end{figure}
 
@@ -93,7 +93,7 @@ Cuando las velocidades de referencia dadas exceden $\omega_{max}$ se aplica un e
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Imagenes/BloqueTraccion.png}
-	\caption{MEJORAR}
+	\caption{Flujo desaturación proporcional.}
 	\label{fig:bloquetraccion}
 \end{figure}
 
@@ -136,7 +136,7 @@ De esta forma el algoritmo solo conserva en memoria un único valor, resultando 
 
 \[u[k]=K_pe[k]+K_iI[k]\]
 
-VER DE HACER EL CODIGO ACA O EN ALGUN LADO, TAMBIEN MENCIONAR QUE EN EL CODIGO SE DEBERIA LIMITAR LA SALIDA DEL CONTROLADOR PI (u(s)) A MAX 100\% y MIN 0\%.
+\pendiente{Mencionar en algún lado o hacer el análisis de que la salida del controlador PI (PWM) debería ser Max 100\%.}
 
 \subsection{Bloque de Cinemática}
 
@@ -144,7 +144,7 @@ VER DE HACER EL CODIGO ACA O EN ALGUN LADO, TAMBIEN MENCIONAR QUE EN EL CODIGO S
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{Imagenes/BloqueCinematica_General.png}
-	\caption{Marcos Global y Local.}
+	\caption{Diagrama general de flujo del bloque de cinemática.}
 	\label{fig:diagrama_bc_general}
 \end{figure}
 
@@ -237,7 +237,7 @@ Dada la geometría radial del chasis, con 2 ruedas dispuestas en el mismo eje de
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Imagenes/CinematicaRobot.png}
-	\caption{Marco local de referencia del robot (VER CAPAZ DE PONER VECTORES VELOCIDAD TODOS DE UN COLOR).}
+	\caption{Marco Local de referencia del robot.}
 	\label{fig:diagrama_marco_local}
 \end{figure}
 
@@ -320,14 +320,14 @@ El subsistema de control se plantea como un control configurable de 3 modos.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{Imagenes/BloqueCinematica_EsquemaControlGeneral.png}
-	\caption{Planteo control (VER DE HACER GRAFICO PROPIO).}
+	\caption{Planteo Modos de Control.}
 	\label{fig:control_general}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\textwidth]{Imagenes/ControlCinematicaGeneral.png}
-	\caption{Planteo control (VER DE HACER GRAFICO PROPIO).}
+	\caption{Planteo control.}
 	\label{fig:control_cinematica_general}
 \end{figure}
 
@@ -388,7 +388,7 @@ Puede verse que por la geometría del chasis, el robot únicamente tiene 2 coord
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{Imagenes/ControlPolar.png}
-	\caption{Variables control polar (VER DE HACER GRAFICO PROPIO).}
+	\caption{Variables control polar.}
 	\label{fig:control_polar}
 \end{figure}
 
