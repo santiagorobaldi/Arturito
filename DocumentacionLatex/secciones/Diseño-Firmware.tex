@@ -259,7 +259,8 @@ recepción de las muestras serie y la visualización de orientación y distancia
 \end{figure}
 
 \newpage
-\subsubsection{Cómo llegamos a este punto}
+
+Cómo llegamos a este punto:
 
 El Firmware es en realidad una versión final de un proceso de testeo de los sensores en ambas arquitecturas, de un proceso de interpretación de datos, de armado de workspace, de ejecución del programa con FreeRTOS, etc.
 
@@ -293,3 +294,121 @@ El procedimiento de arranque de la libreria implementaba una verificación de in
 Tras analizar el bus de comunicación I2C mediante rutinas de escaneo, se constató que la variante física del módulo utilizado responde con el identificador 0x72 no 0x68. Entendimos que este comportamiento es habitual en hardware genéricos y para solucionar esta incompatibilidad se reestructuró la validación en el driver. La lógica fue modificada para admitir de forma flexible tanto el identificador nativo (0x68) como el valor identificado en el banco de pruebas (0x72).
 
 \end{description}
+
+
+\subsubsection{Estructura de compilación y ejecución de aplicaciones}
+
+A medida que avanzó el desarrollo del firmware, se incorporaron distintas aplicaciones de prueba para verificar individualmente los sensores, actuadores y módulos del sistema, antes de integrarlos en el funcionamiento general del rover.
+
+Uno de los objetivos fue mantener la compatibilidad con ambas arquitecturas, ESP32 y EDU-CIAA, evitando desarrollar dos versiones independientes de una misma aplicación. Para ello, se implementó un mecanismo común de inicialización y ejecución, adaptado a los requisitos particulares de cada plataforma.
+
+En el caso del ESP32, utilizando el framework Arduino, la ejecución requiere las funciones \texttt{setup()} y \texttt{loop()}, destinadas a la inicialización y ejecución repetitiva del programa, respectivamente. Por otro lado, la EDU-CIAA utiliza una función \texttt{main()}, desde la cual se inicializan los recursos de la placa y se controla el ciclo principal de ejecución.
+
+Para unificar ambos mecanismos se definieron dos funciones comunes:
+
+\begin{itemize}
+	\item \texttt{app\_init():} realiza la inicialización de los recursos y módulos necesarios para la aplicación seleccionada.
+	\item \texttt{app\_update():} ejecuta una iteración del funcionamiento de dicha aplicación.
+\end{itemize}
+
+Cada arquitectura dispone de un archivo de entrada propio (\texttt{entry\_esp32.cpp} y \texttt{entry\_educiaa.c}), encargado de inicializar los recursos generales de la plataforma y llamar a estas dos funciones. En ESP32, las llamadas se realizan desde \texttt{setup()} y \texttt{loop()}, mientras que en EDU-CIAA se efectúan desde \texttt{main()}, utilizando un ciclo \texttt{while(1)}.
+
+De esta manera, las aplicaciones de capa 3 no necesitan conocer el mecanismo de arranque de la placa donde se ejecutan. Las diferencias de hardware continúan resolviéndose mediante las implementaciones específicas de la HAL, conservando la separación por capas definida anteriormente.
+
+\paragraph{Selección y compilación de aplicaciones:}
+
+Cada prueba se implementa como una aplicación independiente que define las funciones \texttt{app\_init()} y \texttt{app\_update()}. Para ejecutarla, se seleccionan durante la compilación los archivos correspondientes a dicha aplicación, junto con los drivers y las implementaciones de HAL que necesita.
+
+El procedimiento de selección depende del entorno de desarrollo:
+
+\begin{description}
+	\item[ESP32:] Se utiliza PlatformIO, donde el archivo \texttt{platformio.ini} contiene distintos entornos de compilación. Cada entorno especifica los archivos fuente y las dependencias necesarias mediante \texttt{build\_src\_filter}, además de heredar una configuración común de la placa. Para ejecutar una prueba diferente, basta con seleccionar su entorno correspondiente.
+	
+	\item[EDU-CIAA:] Se utiliza el sistema de compilación basado en Make. El archivo \texttt{program.mk} define los modos de aplicación disponibles mediante la variable \texttt{APP\_MODE}, mientras que \texttt{rover/config.mk} selecciona los archivos fuente y las dependencias correspondientes. El modo puede indicarse directamente al ejecutar el comando \texttt{make}, sin necesidad de modificar el \texttt{Makefile} principal.
+\end{description}
+
+Esta organización permite realizar pruebas individuales de la IMU, el sensor ToF, los encoders, los motores y otros módulos, así como desarrollar ensayos que integren varios componentes.
+
+La principal ventaja es que una misma aplicación de prueba puede reutilizarse en ambas arquitecturas, cambiando únicamente el entorno de compilación y las implementaciones de hardware utilizadas. Además, permite incorporar nuevas pruebas sin modificar los puntos de entrada ni alterar las aplicaciones existentes, facilitando el desarrollo incremental y la detección de errores durante la integración.
+
+\subsubsection{Sistema de telemetría}
+
+Para facilitar las pruebas y el diagnóstico de los distintos módulos, se desarrolló un sistema de telemetría que permite transmitir información desde el rover hacia una computadora externa.
+
+Se buscó que las aplicaciones pudieran enviar información independientemente de la arquitectura utilizada, manteniendo una interfaz común y delegando las particularidades de comunicación a las implementaciones de HAL de cada placa.
+
+El sistema utiliza el ESP32 como encargado de establecer la comunicación inalámbrica mediante Wi-Fi. Actualmente funciona en modo Access Point (AP), creando una red propia denominada \texttt{Arturito}, a la cual puede conectarse una computadora sin necesidad de contar con un router externo. Sobre esta conexión se utiliza un servidor TCP, que transmite los mensajes de telemetría a través del puerto 3333.
+
+La implementación presenta dos modalidades según la arquitectura que ejecuta la aplicación:
+
+\begin{description}
+	
+	\item[Aplicación ejecutada en ESP32:]
+	La aplicación utiliza la interfaz de telemetría compartida, cuya implementación de HAL envía los mensajes directamente a través del módulo Wi-Fi del ESP32. De esta manera, un único firmware realiza tanto el procesamiento de la aplicación como la transmisión de sus resultados.
+	
+	\item[Aplicación ejecutada en EDU-CIAA:]
+	En este caso, la EDU-CIAA no dispone de conectividad Wi-Fi propia, por lo que utiliza una comunicación UART para transmitir los mensajes hacia el ESP32.
+	
+	Para ello, se carga en el ESP32 un firmware independiente que funciona como puente UART--Wi-Fi. Este programa recibe los mensajes enviados por EDU-CIAA y los retransmite mediante la conexión TCP, sin realizar el procesamiento de los datos recibidos.
+	
+\end{description}
+
+En ambos casos, las aplicaciones utilizan las mismas funciones de telemetría, sin necesidad de conocer el medio físico de transmisión. Esto permite mantener compartido el código de las pruebas y modificar la arquitectura utilizada sin alterar su funcionamiento general.
+
+La transmisión se realiza mediante mensajes de texto delimitados por saltos de línea, lo que facilita su recepción e interpretación desde una computadora.
+
+Se desarrolló una prueba específica de telemetría que transmite mensajes periódicos, con el objetivo de verificar la comunicación y el funcionamiento de ambas modalidades.
+
+   \begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\textwidth]{imagenes/wifi.png}
+	\caption{Telemetría para ambas arquitecturas}
+	\label{fig:wifi}
+\end{figure}
+
+\subsubsection{Pruebas de sensores y actuadores}
+
+Una vez establecida la estructura común de ejecución de aplicaciones y el sistema de telemetría, se desarrollaron distintas pruebas para verificar el funcionamiento de los sensores y actuadores del rover.
+
+Estas pruebas permitieron evaluar los módulos de forma independiente antes de avanzar hacia su integración. En todos los casos se mantuvo la arquitectura por capas, utilizando los mismos drivers y lógica de aplicación para ambas plataformas, con las correspondientes implementaciones de HAL.
+
+\begin{description}
+	
+	\item[Prueba de IMU (MPU6050):]
+	Se desarrolló una aplicación que inicializa y calibra el sensor, solicitando que el rover permanezca quieto durante este procedimiento.
+	
+	Una vez finalizada la calibración, se realizan lecturas periódicas de la velocidad angular para estimar el ángulo de orientación alrededor del eje Z. El ángulo calculado es transmitido mediante telemetría, permitiendo observar su comportamiento mientras se gira físicamente el sensor.
+	
+	Esta prueba permite verificar tanto la comunicación con la IMU como el funcionamiento del procesamiento de orientación implementado en las capas superiores.
+	
+	\item[Prueba de distancia (VL53L0X):]
+	Se implementó una aplicación para verificar las mediciones del sensor ToF mediante comunicación I2C.
+	
+	El sensor se inicializa utilizando el perfil de medición High Speed y se realizan lecturas periódicas de distancia. Para cada medición se transmiten dos valores: la distancia obtenida directamente del sensor y la distancia corregida mediante la función de calibración implementada.
+	
+	De esta manera, es posible comparar ambas mediciones y evaluar el comportamiento de la corrección aplicada. La prueba también contempla la detección de mediciones inválidas y errores de comunicación.
+	
+	\item[Pruebas de encoders (AS5600):]
+	Se desarrollaron pruebas para verificar la comunicación I2C con los encoders magnéticos instalados en las ruedas del rover.
+	
+	Inicialmente se realizaron lecturas de la posición angular absoluta de cada encoder, girando manualmente las ruedas y transmitiendo los valores obtenidos.
+	
+	Posteriormente, estas lecturas se utilizaron para calcular la velocidad angular a partir de la variación de posición y el tiempo transcurrido entre muestras, contemplando el salto de ángulo que se produce al completar una revolución.
+	
+	\item[Pruebas de motores (DRV8833):]
+	Se implementaron aplicaciones para comprobar el accionamiento de los motores mediante señales PWM generadas a través de la HAL correspondiente.
+	
+	Se ensayaron diferentes secuencias de movimiento, incluyendo avance, retroceso y giros sobre el propio eje. También se desarrollaron pruebas de trayectorias predefinidas, utilizando tiempos de actuación y diferentes valores de PWM.
+	
+	Estas primeras pruebas se realizaron en lazo abierto, sin utilizar realimentación de los encoders para corregir el movimiento.
+	
+	\item[Integración de motores y encoders:]
+	Finalmente, se combinaron las pruebas anteriores para accionar ambos motores y obtener simultáneamente información de los encoders.
+	
+	Se implementaron secuencias con distintos sentidos de giro y valores de PWM, mientras se calculaba y transmitía la velocidad angular de las ruedas en RPM.
+	
+	Esta integración permite relacionar la señal de control aplicada a los motores con la velocidad medida, constituyendo una primera base experimental para el desarrollo posterior del control de velocidad.
+	
+\end{description}
+
+Los resultados y mensajes de diagnóstico de estas pruebas se transmitieron mediante el sistema de telemetría, permitiendo observar el comportamiento de los distintos módulos desde una computadora externa.
