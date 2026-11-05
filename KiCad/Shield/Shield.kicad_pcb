@@ -88,9 +88,10 @@
 		)
 	)
 	(footprint "Arturito:PinSocket_1x19_P2.54mm_Vertical"
+		(locked yes)
 		(layer "F.Cu")
 		(uuid "061db6d0-a849-4961-a0ff-3b575f29780c")
-		(at 174.96 106.85 -90)
+		(at 169.3075 103.98 -90)
 		(descr "Through hole straight socket strip, 1x19, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x19 2.54mm single row")
 		(property "Reference" "J18"
@@ -153,14 +154,6 @@
 		(path "/a1cd1476-afe2-477f-bc60-7bfd16ac1ce3")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15"
-					"16" "17" "18" "19"
-				)
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -326,7 +319,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -340,7 +333,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 0 2.54 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -354,7 +347,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 5.08 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -368,7 +361,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 0 7.62 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -382,7 +375,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 10.16 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -396,7 +389,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 0 12.7 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -410,7 +403,7 @@
 		)
 		(pad "7" thru_hole oval
 			(at 0 15.24 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -424,7 +417,7 @@
 		)
 		(pad "8" thru_hole oval
 			(at 0 17.78 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -438,7 +431,7 @@
 		)
 		(pad "9" thru_hole oval
 			(at 0 20.32 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -452,7 +445,7 @@
 		)
 		(pad "10" thru_hole oval
 			(at 0 22.86 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -466,7 +459,7 @@
 		)
 		(pad "11" thru_hole oval
 			(at 0 25.4 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -480,7 +473,7 @@
 		)
 		(pad "12" thru_hole oval
 			(at 0 27.94 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -494,7 +487,7 @@
 		)
 		(pad "13" thru_hole oval
 			(at 0 30.48 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -508,7 +501,7 @@
 		)
 		(pad "14" thru_hole oval
 			(at 0 33.02 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -522,7 +515,7 @@
 		)
 		(pad "15" thru_hole oval
 			(at 0 35.56 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -536,7 +529,7 @@
 		)
 		(pad "16" thru_hole oval
 			(at 0 38.1 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -550,7 +543,7 @@
 		)
 		(pad "17" thru_hole oval
 			(at 0 40.64 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -564,7 +557,7 @@
 		)
 		(pad "18" thru_hole oval
 			(at 0 43.18 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -578,7 +571,7 @@
 		)
 		(pad "19" thru_hole oval
 			(at 0 45.72 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -606,13 +599,13 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "13f5a1d5-5f62-4171-8135-108feb9cd322")
-		(at 188.56 62.55 90)
+		(at 182.84 59.68 90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J5"
 			(at 1.27 -4.22 90)
 			(layer "F.SilkS")
-			(uuid "aec6a0a1-2307-4b47-b3d3-b3518b1743e1")
+			(uuid "a5734ec3-5e5c-4e49-9406-78634c25e590")
 			(effects
 				(font
 					(size 1 1)
@@ -623,7 +616,7 @@
 		(property "Value" "Enc_Izq_Pwr"
 			(at 1.27 4.22 90)
 			(layer "F.Fab")
-			(uuid "1c6d124e-909d-491a-b534-aa6dc13f43b2")
+			(uuid "6ae37e72-fdea-4dc2-91a4-a55b0e73261c")
 			(effects
 				(font
 					(size 1 1)
@@ -635,7 +628,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "af53f5bb-dcdf-4e20-a422-b889583710be")
+			(uuid "ad0d28dc-9a8a-4ab0-b24f-f09a1b2f5285")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -646,7 +639,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4c36c6c6-4b31-4195-9e6e-39254893b8a4")
+			(uuid "3d05ae7e-0c54-46c2-b6ce-02b368eda2fb")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -669,12 +662,6 @@
 		(path "/efca738a-f429-404f-a8e3-dcf248721fa0")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -945,8 +932,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -959,8 +946,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -987,13 +974,13 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "1772f7d9-b770-425a-a42e-885539b8dc90")
-		(at 187.6925 38.52 90)
+		(at 182.84 35.65 90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J17"
 			(at 1.27 -4.22 90)
 			(layer "F.SilkS")
-			(uuid "5915e07b-d18a-424d-a49b-21558e4df42b")
+			(uuid "50fc4327-97ce-44ea-8c79-2ded07ff8ff1")
 			(effects
 				(font
 					(size 1 1)
@@ -1004,7 +991,7 @@
 		(property "Value" "Pot_Mot_Izq"
 			(at 1.27 4.22 90)
 			(layer "F.Fab")
-			(uuid "6a7c128e-2dbc-48fc-aebc-7febbf5a4710")
+			(uuid "6c7139ff-193f-4169-9e73-e55a3049cf17")
 			(effects
 				(font
 					(size 1 1)
@@ -1016,7 +1003,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "46e4f0b1-8660-47c5-8bc2-3d4515e6fdf6")
+			(uuid "a4431a51-32e3-4e37-981a-c5e97d358d56")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1027,7 +1014,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "f760942f-3c52-430e-bb0f-721a609f6164")
+			(uuid "ec0aecb8-bf45-4818-9e3b-57e7024d6fa2")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1050,12 +1037,6 @@
 		(path "/8836b1d1-446b-4d50-b565-5928ee8187b0")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1326,8 +1307,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -1340,8 +1321,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -1368,7 +1349,7 @@
 	(footprint "Arturito:C_Disc_D3.0mm_W1.6mm_P2.50mm"
 		(layer "F.Cu")
 		(uuid "18b1273b-eff0-4d0b-9eb3-e58adde21960")
-		(at 119.3 75.99 -90)
+		(at 113.6475 73.12 -90)
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=3.0*1.6mm^2, Capacitor, http://www.vishay.com/docs/45233/krseries.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 3.0mm width 1.6mm Capacitor")
 		(property "Reference" "C8"
@@ -1431,12 +1412,6 @@
 		(path "/5056aa25-9842-4c77-94d6-725d3ec8d0c6")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1494,7 +1469,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
+			(size 1.74 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1507,7 +1482,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.5 0 270)
-			(size 1.7 2.5)
+			(size 1.74 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1534,13 +1509,13 @@
 	(footprint "Arturito:PinSocket_1x08_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "218b1a01-2372-47a4-b1a3-970399f813cc")
-		(at 149.1 138.95)
+		(at 143.4475 136.08)
 		(descr "Through hole straight socket strip, 1x08, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x08 2.54mm single row")
 		(property "Reference" "J8"
 			(at 0 -2.77 0)
 			(layer "F.SilkS")
-			(uuid "05a5d715-0329-480c-a1ee-30a41cf44cc4")
+			(uuid "f8dcc5d1-3531-410b-8e93-67ca637d73da")
 			(effects
 				(font
 					(size 1 1)
@@ -1551,7 +1526,7 @@
 		(property "Value" "Imu"
 			(at 0 20.55 0)
 			(layer "F.Fab")
-			(uuid "2c80b789-b1b6-4c69-a1b6-c6d4c8ee53ab")
+			(uuid "cb6e9199-d45d-4b44-88e8-ca1b7a3da15b")
 			(effects
 				(font
 					(size 1 1)
@@ -1563,7 +1538,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c84406f3-8cb0-4b47-b3ad-48ec3d151586")
+			(uuid "0d31b1af-2bf0-4f1b-a7c0-8c17bb18d09a")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1574,7 +1549,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "994e309b-19a8-4d23-bef6-d1a23589e98b")
+			(uuid "598c2b84-77a6-4e59-9749-15b224434292")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1597,12 +1572,6 @@
 		(path "/6ef9d306-4c18-4024-a617-0841e0f6064f")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6" "7" "8")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1768,7 +1737,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1782,7 +1751,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 0 2.54)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1796,7 +1765,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 5.08)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1810,7 +1779,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 0 7.62)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1824,7 +1793,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 10.16)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1838,7 +1807,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 0 12.7)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1852,7 +1821,7 @@
 		)
 		(pad "7" thru_hole oval
 			(at 0 15.24)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1866,7 +1835,7 @@
 		)
 		(pad "8" thru_hole oval
 			(at 0 17.78)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -1894,7 +1863,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "22dda85d-988e-49f0-a701-9595d7343a35")
-		(at 111.45 75.11 -90)
+		(at 105.7975 72.24 -90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J6"
@@ -1957,12 +1926,6 @@
 		(path "/a3de9223-7c8d-4175-af28-db592b2f57d9")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2233,8 +2196,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -2247,8 +2210,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -2275,7 +2238,7 @@
 	(footprint "Arturito:PinSocket_1x06_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "2bb9dfc1-b576-4715-a8f3-ede513bf8e7a")
-		(at 162.41 46.15 -90)
+		(at 156.7575 43.28 -90)
 		(descr "Through hole straight socket strip, 1x06, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x06 2.54mm single row")
 		(property "Reference" "J21"
@@ -2338,12 +2301,6 @@
 		(path "/c1670a63-d3c1-4537-b983-f180e604b33e")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2509,7 +2466,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2523,7 +2480,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 0 2.54 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2537,7 +2494,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 5.08 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2551,7 +2508,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 0 7.62 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2565,7 +2522,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 10.16 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2579,7 +2536,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 0 12.7 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -2607,7 +2564,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "2c176260-595c-4891-92ec-dd51e6847dfa")
-		(at 111.4 53.64 90)
+		(at 105.7975 48.4 -90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J16"
@@ -2670,93 +2627,17 @@
 		(path "/d039f26d-b62c-4753-ac9a-e0ae8e3ab2a7")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start 4.16 -3.22)
-			(end 4.16 3.22)
+			(start -1.62 3.22)
+			(end -1.62 -3.22)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "cecbdb75-ca43-49cd-ac67-d98a0b88a24e")
-		)
-		(fp_line
-			(start -1.62 -3.22)
-			(end 4.16 -3.22)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "1a2685a7-34fc-417e-bafa-6ee6f45c5e57")
-		)
-		(fp_line
-			(start -1.62 -2.7)
-			(end 4.16 -2.7)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "2cda6347-2ed8-4302-9231-8e56625f6503")
-		)
-		(fp_line
-			(start 3.57 2.6)
-			(end 4.16 2.6)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "238f3677-44e0-43aa-b506-db7326033696")
-		)
-		(fp_line
-			(start 1.03 2.6)
-			(end 1.51 2.6)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "26d13d1b-9c4f-4904-ba2a-53bf01f6c007")
-		)
-		(fp_line
-			(start -1.62 2.6)
-			(end -1.03 2.6)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "ab5c43bb-6329-47d9-9380-c083dacfb17d")
-		)
-		(fp_line
-			(start 4.16 3.22)
-			(end 3.57 3.22)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "264f4a87-d568-44fa-9115-17fb6d524cb4")
-		)
-		(fp_line
-			(start 1.51 3.22)
-			(end 1.03 3.22)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "54cc6beb-15d4-44c8-b082-5ab03469822e")
+			(uuid "8dc9ca25-1672-4377-9d1f-f23eb3e72bbc")
 		)
 		(fp_line
 			(start -1.03 3.22)
@@ -2769,14 +2650,84 @@
 			(uuid "eb2f21da-9cc8-4b64-884f-7fc695b029ec")
 		)
 		(fp_line
-			(start -1.62 3.22)
-			(end -1.62 -3.22)
+			(start 1.51 3.22)
+			(end 1.03 3.22)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "8dc9ca25-1672-4377-9d1f-f23eb3e72bbc")
+			(uuid "54cc6beb-15d4-44c8-b082-5ab03469822e")
+		)
+		(fp_line
+			(start 4.16 3.22)
+			(end 3.57 3.22)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "264f4a87-d568-44fa-9115-17fb6d524cb4")
+		)
+		(fp_line
+			(start -1.62 2.6)
+			(end -1.03 2.6)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "ab5c43bb-6329-47d9-9380-c083dacfb17d")
+		)
+		(fp_line
+			(start 1.03 2.6)
+			(end 1.51 2.6)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "26d13d1b-9c4f-4904-ba2a-53bf01f6c007")
+		)
+		(fp_line
+			(start 3.57 2.6)
+			(end 4.16 2.6)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "238f3677-44e0-43aa-b506-db7326033696")
+		)
+		(fp_line
+			(start -1.62 -2.7)
+			(end 4.16 -2.7)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "2cda6347-2ed8-4302-9231-8e56625f6503")
+		)
+		(fp_line
+			(start -1.62 -3.22)
+			(end 4.16 -3.22)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "1a2685a7-34fc-417e-bafa-6ee6f45c5e57")
+		)
+		(fp_line
+			(start 4.16 -3.22)
+			(end 4.16 3.22)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "cecbdb75-ca43-49cd-ac67-d98a0b88a24e")
 		)
 		(fp_poly
 			(pts
@@ -2802,94 +2753,14 @@
 			(uuid "658eca42-e5de-4f5e-bd78-a973139ed801")
 		)
 		(fp_line
-			(start 4.04 -3.1)
-			(end 4.04 3.1)
+			(start -1 3.1)
+			(end -1.5 2.6)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "eadc9512-1678-4641-8890-072021af6188")
-		)
-		(fp_line
-			(start -1.5 -3.1)
-			(end 4.04 -3.1)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "a9897721-8598-43c1-ad40-e4f73d74247d")
-		)
-		(fp_line
-			(start -1.5 -2.7)
-			(end 4.04 -2.7)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "56e1d154-0946-4384-bec0-9bd8f2e30a16")
-		)
-		(fp_line
-			(start 3.24 -0.834)
-			(end 1.706 0.7)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "09b5bd8c-4227-49d9-9ab1-41e88a11e9f4")
-		)
-		(fp_line
-			(start 0.7 -0.834)
-			(end -0.834 0.7)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "c775ae8d-5e09-40c5-97c0-f24885d8a86e")
-		)
-		(fp_line
-			(start 3.374 -0.7)
-			(end 1.84 0.834)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "c410ab1e-ebaa-4d16-b332-0fe29e0356f2")
-		)
-		(fp_line
-			(start 0.834 -0.7)
-			(end -0.7 0.834)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "851ae364-0829-49f0-902a-a1f1a6634bc0")
-		)
-		(fp_line
-			(start -1.5 2.6)
-			(end -1.5 -3.1)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "57af9605-2bc6-4935-8f89-edcb79246e1b")
-		)
-		(fp_line
-			(start -1.5 2.6)
-			(end 4.04 2.6)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "379cb01d-f49c-44e2-9fb0-3856606fbdbd")
+			(uuid "6cc6ed93-fae7-452f-bcc0-64c6e7b34f83")
 		)
 		(fp_line
 			(start 4.04 3.1)
@@ -2902,25 +2773,94 @@
 			(uuid "cb25289d-cf74-4a5b-b22e-f44c0f34a9bb")
 		)
 		(fp_line
-			(start -1 3.1)
-			(end -1.5 2.6)
+			(start -1.5 2.6)
+			(end 4.04 2.6)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "6cc6ed93-fae7-452f-bcc0-64c6e7b34f83")
+			(uuid "379cb01d-f49c-44e2-9fb0-3856606fbdbd")
 		)
-		(fp_circle
-			(center 2.54 0)
-			(end 3.64 0)
+		(fp_line
+			(start -1.5 2.6)
+			(end -1.5 -3.1)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
-			(fill no)
 			(layer "F.Fab")
-			(uuid "2e93f94c-8711-48a7-8847-3e98451375bb")
+			(uuid "57af9605-2bc6-4935-8f89-edcb79246e1b")
+		)
+		(fp_line
+			(start 0.834 -0.7)
+			(end -0.7 0.834)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "851ae364-0829-49f0-902a-a1f1a6634bc0")
+		)
+		(fp_line
+			(start 3.374 -0.7)
+			(end 1.84 0.834)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "c410ab1e-ebaa-4d16-b332-0fe29e0356f2")
+		)
+		(fp_line
+			(start 0.7 -0.834)
+			(end -0.834 0.7)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "c775ae8d-5e09-40c5-97c0-f24885d8a86e")
+		)
+		(fp_line
+			(start 3.24 -0.834)
+			(end 1.706 0.7)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "09b5bd8c-4227-49d9-9ab1-41e88a11e9f4")
+		)
+		(fp_line
+			(start -1.5 -2.7)
+			(end 4.04 -2.7)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "56e1d154-0946-4384-bec0-9bd8f2e30a16")
+		)
+		(fp_line
+			(start -1.5 -3.1)
+			(end 4.04 -3.1)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "a9897721-8598-43c1-ad40-e4f73d74247d")
+		)
+		(fp_line
+			(start 4.04 -3.1)
+			(end 4.04 3.1)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "eadc9512-1678-4641-8890-072021af6188")
 		)
 		(fp_circle
 			(center 0 0)
@@ -2932,6 +2872,17 @@
 			(fill no)
 			(layer "F.Fab")
 			(uuid "742b0fa5-1ef8-4c2e-86bb-3faba59c1fb8")
+		)
+		(fp_circle
+			(center 2.54 0)
+			(end 3.64 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "2e93f94c-8711-48a7-8847-3e98451375bb")
 		)
 		(fp_text user "${REFERENCE}"
 			(at 1.27 2 90)
@@ -2945,9 +2896,9 @@
 			)
 		)
 		(pad "1" thru_hole oval
-			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(at 0 0 270)
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -2959,9 +2910,9 @@
 			(uuid "374212e7-3eee-49e3-a256-81479904329e")
 		)
 		(pad "2" thru_hole oval
-			(at 2.54 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(at 2.54 0 270)
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -2986,9 +2937,10 @@
 		)
 	)
 	(footprint "Arturito:PinSocket_1x19_P2.54mm_Vertical"
+		(locked yes)
 		(layer "F.Cu")
 		(uuid "373c6f92-8f14-42fe-bb19-04c5dbb1ad5f")
-		(at 174.96 129.71 -90)
+		(at 169.3075 126.84 -90)
 		(descr "Through hole straight socket strip, 1x19, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x19 2.54mm single row")
 		(property "Reference" "J19"
@@ -3051,14 +3003,6 @@
 		(path "/dc2e7b5b-a994-4cb7-a222-ae2f97c75160")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15"
-					"16" "17" "18" "19"
-				)
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3224,7 +3168,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3238,7 +3182,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 0 2.54 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3252,7 +3196,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 5.08 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3266,7 +3210,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 0 7.62 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3280,7 +3224,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 10.16 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3294,7 +3238,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 0 12.7 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3308,7 +3252,7 @@
 		)
 		(pad "7" thru_hole oval
 			(at 0 15.24 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3322,7 +3266,7 @@
 		)
 		(pad "8" thru_hole oval
 			(at 0 17.78 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3336,7 +3280,7 @@
 		)
 		(pad "9" thru_hole oval
 			(at 0 20.32 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3350,7 +3294,7 @@
 		)
 		(pad "10" thru_hole oval
 			(at 0 22.86 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3364,7 +3308,7 @@
 		)
 		(pad "11" thru_hole oval
 			(at 0 25.4 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3378,7 +3322,7 @@
 		)
 		(pad "12" thru_hole oval
 			(at 0 27.94 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3392,7 +3336,7 @@
 		)
 		(pad "13" thru_hole oval
 			(at 0 30.48 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3406,7 +3350,7 @@
 		)
 		(pad "14" thru_hole oval
 			(at 0 33.02 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3420,7 +3364,7 @@
 		)
 		(pad "15" thru_hole oval
 			(at 0 35.56 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3434,7 +3378,7 @@
 		)
 		(pad "16" thru_hole oval
 			(at 0 38.1 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3448,7 +3392,7 @@
 		)
 		(pad "17" thru_hole oval
 			(at 0 40.64 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3462,7 +3406,7 @@
 		)
 		(pad "18" thru_hole oval
 			(at 0 43.18 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3476,7 +3420,7 @@
 		)
 		(pad "19" thru_hole oval
 			(at 0 45.72 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3504,7 +3448,7 @@
 	(footprint "Arturito:PinSocket_1x06_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "3a2d9780-97e3-4d36-9d10-6bb5f5f87094")
-		(at 162.23 37.3 -90)
+		(at 156.5775 34.43 -90)
 		(descr "Through hole straight socket strip, 1x06, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x06 2.54mm single row")
 		(property "Reference" "J20"
@@ -3567,12 +3511,6 @@
 		(path "/45433645-5b60-4b9b-9ce2-b66b9a3e7949")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5" "6")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3738,7 +3676,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3752,7 +3690,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 0 2.54 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3766,7 +3704,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 5.08 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3780,7 +3718,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 0 7.62 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3794,7 +3732,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 10.16 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3808,7 +3746,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 0 12.7 270)
-			(size 2.5 1.7)
+			(size 2.5 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -3836,7 +3774,7 @@
 	(footprint "Arturito:CP_Radial_D10.0mm_P5.00mm"
 		(layer "F.Cu")
 		(uuid "3f7c80b0-c17a-4c1c-a238-2cdb965a43a9")
-		(at 130.45 91.4)
+		(at 124.7975 88.53)
 		(descr "CP, Radial series, Radial, pin pitch=5.00mm, diameter=10mm, height=16mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 5.00mm diameter 10mm height 16mm Electrolytic Capacitor")
 		(property "Reference" "C3"
@@ -3899,12 +3837,6 @@
 		(path "/a76aebca-7418-49a5-99d2-4cf2f9a75a3f")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5891,9 +5823,9 @@
 				)
 			)
 		)
-		(pad "1" thru_hole oval
+		(pad "1" thru_hole circle
 			(at 0 0)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -5901,12 +5833,11 @@
 			(remove_unused_layers no)
 			(net "GND")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "5bd28741-15df-436b-81e6-bcc67007f342")
 		)
-		(pad "2" thru_hole oval
+		(pad "2" thru_hole circle
 			(at 5 0)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -5914,7 +5845,6 @@
 			(remove_unused_layers no)
 			(net "+5V")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "b9745ef6-a965-4aba-87d0-7182b8bcb331")
 		)
 		(embedded_fonts no)
@@ -5933,13 +5863,13 @@
 	(footprint "Arturito:D_A-405_P7.62mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "432b32ce-8104-47af-806e-aae9bb510ee4")
-		(at 119.09 58.1)
+		(at 113.49 53.45)
 		(descr "Diode, A-405 series, Axial, Horizontal, pin pitch=7.62mm, length*diameter=5.2*2.7mm^2, http://www.diodes.com/_files/packages/A-405.pdf")
 		(tags "Diode A-405 series Axial Horizontal pin pitch 7.62mm  length 5.2mm diameter 2.7mm")
 		(property "Reference" "D1"
 			(at 3.81 -2.47 0)
 			(layer "F.SilkS")
-			(uuid "6783ea73-0961-41f6-bf51-2de8ec99a50e")
+			(uuid "5fd8f6fd-c5b6-4ee1-8603-bf76f950630e")
 			(effects
 				(font
 					(size 1 1)
@@ -5950,7 +5880,7 @@
 		(property "Value" "D_Schottky"
 			(at 3.81 2.47 0)
 			(layer "F.Fab")
-			(uuid "4f363ab8-4a11-4bf1-a6b3-ad95f47276ba")
+			(uuid "c5d322d9-129e-40fb-b33f-9a012836ca24")
 			(effects
 				(font
 					(size 1 1)
@@ -5962,7 +5892,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "eac6db17-04cf-4ebe-9caa-3bf4cbb1a308")
+			(uuid "874d94c5-2ad2-4c54-9151-a8e78652ebc2")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5973,7 +5903,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "43874e40-752d-4cc2-bec1-d64bfd2b3296")
+			(uuid "51d1c5b9-c4be-4ea8-9536-b2778ffb2e67")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5996,12 +5926,6 @@
 		(path "/4244663c-a08b-443c-a602-29b08e59e446")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6201,7 +6125,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0)
-			(size 1.7 2.5)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -6215,7 +6139,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 7.62 0)
-			(size 1.7 2.5)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -6243,13 +6167,13 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "4a9cff88-4496-42e5-b12d-6a59ea6b6f28")
-		(at 111.5 58.07 -90)
+		(at 105.7975 53.466181 -90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J1"
 			(at 1.27 -4.22 270)
 			(layer "F.SilkS")
-			(uuid "16f05a4d-4421-405a-9ada-efc17b2fdc20")
+			(uuid "4adb712b-721d-46a2-bf3b-6e56ff7d7cfa")
 			(effects
 				(font
 					(size 1 1)
@@ -6260,7 +6184,7 @@
 		(property "Value" "Logic"
 			(at 1.27 4.22 270)
 			(layer "F.Fab")
-			(uuid "5af4be24-22d9-413d-a236-3aa6bfb6e72a")
+			(uuid "4cf1fac3-339f-4e85-9ebe-d7e4626a28a9")
 			(effects
 				(font
 					(size 1 1)
@@ -6272,7 +6196,7 @@
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "cd5a2869-2bb7-42a7-ae4c-6b303a6ff2c2")
+			(uuid "6c49a1d5-63a6-4302-bee2-96b60194a729")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6283,7 +6207,7 @@
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "74032d18-d21b-4a8c-b3a9-090fa2a2e63e")
+			(uuid "5a3ac3e3-06a9-4267-b3e7-4cae3bfe6af6")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6306,12 +6230,6 @@
 		(path "/b62f8f60-20e7-4be7-a05c-c8c65c40c68e")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6582,8 +6500,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -6596,8 +6514,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -6624,7 +6542,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "56eb5bbb-f28c-40e9-a874-93a61ba8c4f0")
-		(at 127.85 160.5)
+		(at 122.1975 157.63)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J12"
@@ -6687,12 +6605,6 @@
 		(path "/f2373585-564e-4444-bf00-6cd359477cc7")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6963,8 +6875,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -6977,8 +6889,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -7003,15 +6915,16 @@
 		)
 	)
 	(footprint "Arturito:PinHeader_2x20_P2.54mm_Vertical"
+		(locked yes)
 		(layer "F.Cu")
 		(uuid "621e24b4-9d58-4239-b551-78b74835eeae")
-		(at 185.391517 90.87)
+		(at 179.405 88)
 		(descr "Through hole straight pin header, 2x20, 2.54mm pitch, double rows")
 		(tags "Through hole pin header THT 2x20 2.54mm double row")
 		(property "Reference" "J3"
 			(at 1.27 -2.38 0)
 			(layer "F.SilkS")
-			(uuid "08cb47ac-79ea-44e5-8785-776abeff3e61")
+			(uuid "35ee31e0-5d10-4837-ad1c-a456f98682a0")
 			(effects
 				(font
 					(size 1 1)
@@ -7022,7 +6935,7 @@
 		(property "Value" "P1"
 			(at 1.27 50.64 0)
 			(layer "F.Fab")
-			(uuid "e4cc83db-10f7-4a7b-99b7-e9c95ef801bf")
+			(uuid "e96c658f-2f8b-459d-a841-4f975ccac6a0")
 			(effects
 				(font
 					(size 1 1)
@@ -7034,7 +6947,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "da13a7ac-065b-4e5f-88d3-cb0daf6ac3a5")
+			(uuid "a64cf5ab-1c21-4cc9-a6e6-21553435f76a")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7045,7 +6958,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "a641fc25-7b00-4c70-b978-0eda07504e76")
+			(uuid "ef7535aa-32ee-4e44-bdbd-8f727040db33")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7068,15 +6981,6 @@
 		(path "/2dff23bc-6d10-49ba-a267-e933b55af742")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "3" "5" "7" "9" "11" "13" "15" "17" "19" "21" "23" "25" "27"
-					"29" "31" "33" "35" "37" "39" "2" "4" "6" "8" "10" "12" "14" "16" "18"
-					"20" "22" "24" "26" "28" "30" "32" "34" "36" "38" "40"
-				)
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7233,7 +7137,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7247,7 +7151,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7261,7 +7165,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 2.54)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7275,7 +7179,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 2.54 2.54)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7289,7 +7193,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 5.08)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7303,7 +7207,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 2.54 5.08)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7317,7 +7221,7 @@
 		)
 		(pad "7" thru_hole oval
 			(at 0 7.62)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7331,7 +7235,7 @@
 		)
 		(pad "8" thru_hole oval
 			(at 2.54 7.62)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7345,7 +7249,7 @@
 		)
 		(pad "9" thru_hole oval
 			(at 0 10.16)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7359,7 +7263,7 @@
 		)
 		(pad "10" thru_hole oval
 			(at 2.54 10.16)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7373,7 +7277,7 @@
 		)
 		(pad "11" thru_hole oval
 			(at 0 12.7)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7387,7 +7291,7 @@
 		)
 		(pad "12" thru_hole oval
 			(at 2.54 12.7)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7401,7 +7305,7 @@
 		)
 		(pad "13" thru_hole oval
 			(at 0 15.24)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7415,7 +7319,7 @@
 		)
 		(pad "14" thru_hole oval
 			(at 2.54 15.24)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7429,7 +7333,7 @@
 		)
 		(pad "15" thru_hole oval
 			(at 0 17.78)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7443,7 +7347,7 @@
 		)
 		(pad "16" thru_hole oval
 			(at 2.54 17.78)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7457,7 +7361,7 @@
 		)
 		(pad "17" thru_hole oval
 			(at 0 20.32)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7471,7 +7375,7 @@
 		)
 		(pad "18" thru_hole oval
 			(at 2.54 20.32)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7485,7 +7389,7 @@
 		)
 		(pad "19" thru_hole oval
 			(at 0 22.86)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7499,7 +7403,7 @@
 		)
 		(pad "20" thru_hole oval
 			(at 2.54 22.86)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7513,7 +7417,7 @@
 		)
 		(pad "21" thru_hole oval
 			(at 0 25.4)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7527,7 +7431,7 @@
 		)
 		(pad "22" thru_hole oval
 			(at 2.54 25.4)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7541,7 +7445,7 @@
 		)
 		(pad "23" thru_hole oval
 			(at 0 27.94)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7555,7 +7459,7 @@
 		)
 		(pad "24" thru_hole oval
 			(at 2.54 27.94)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7569,7 +7473,7 @@
 		)
 		(pad "25" thru_hole oval
 			(at 0 30.48)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7583,7 +7487,7 @@
 		)
 		(pad "26" thru_hole oval
 			(at 2.54 30.48)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7597,7 +7501,7 @@
 		)
 		(pad "27" thru_hole oval
 			(at 0 33.02)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7611,7 +7515,7 @@
 		)
 		(pad "28" thru_hole oval
 			(at 2.54 33.02)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7625,7 +7529,7 @@
 		)
 		(pad "29" thru_hole oval
 			(at 0 35.56)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7639,7 +7543,7 @@
 		)
 		(pad "30" thru_hole oval
 			(at 2.54 35.56)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7653,7 +7557,7 @@
 		)
 		(pad "31" thru_hole oval
 			(at 0 38.1)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7667,7 +7571,7 @@
 		)
 		(pad "32" thru_hole oval
 			(at 2.54 38.1)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7681,7 +7585,7 @@
 		)
 		(pad "33" thru_hole oval
 			(at 0 40.64)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7695,7 +7599,7 @@
 		)
 		(pad "34" thru_hole oval
 			(at 2.54 40.64)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7709,7 +7613,7 @@
 		)
 		(pad "35" thru_hole oval
 			(at 0 43.18)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7723,7 +7627,7 @@
 		)
 		(pad "36" thru_hole oval
 			(at 2.54 43.18)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7737,7 +7641,7 @@
 		)
 		(pad "37" thru_hole oval
 			(at 0 45.72)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7751,7 +7655,7 @@
 		)
 		(pad "38" thru_hole oval
 			(at 2.54 45.72)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7765,7 +7669,7 @@
 		)
 		(pad "39" thru_hole oval
 			(at 0 48.26)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7779,7 +7683,7 @@
 		)
 		(pad "40" thru_hole oval
 			(at 2.54 48.26)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -7807,7 +7711,7 @@
 	(footprint "Arturito:C_Disc_D3.0mm_W1.6mm_P2.50mm"
 		(layer "F.Cu")
 		(uuid "680d7164-2926-423b-bed1-fed5380418da")
-		(at 119.25 70.24 -90)
+		(at 113.5975 67.37 -90)
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=3.0*1.6mm^2, Capacitor, http://www.vishay.com/docs/45233/krseries.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 3.0mm width 1.6mm Capacitor")
 		(property "Reference" "C9"
@@ -7870,12 +7774,6 @@
 		(path "/f938c83a-aec9-481b-9221-8207a4b43ce9")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7933,8 +7831,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -7946,8 +7844,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.5 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -7973,7 +7871,7 @@
 	(footprint "Arturito:D_A-405_P7.62mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "6ed2018d-72a2-4d74-aee2-d20a18720315")
-		(at 129.6 44.77 90)
+		(at 123.9475 41.9 90)
 		(descr "Diode, A-405 series, Axial, Horizontal, pin pitch=7.62mm, length*diameter=5.2*2.7mm^2, http://www.diodes.com/_files/packages/A-405.pdf")
 		(tags "Diode A-405 series Axial Horizontal pin pitch 7.62mm  length 5.2mm diameter 2.7mm")
 		(property "Reference" "D2"
@@ -8036,12 +7934,6 @@
 		(path "/83daf463-5f8c-459a-85ce-9cad719d2b8e")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8241,7 +8133,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -8255,7 +8147,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 7.62 0 90)
-			(size 1.7 2.5)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -8283,7 +8175,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "72dbe198-0a18-44d0-951b-9740ebd42742")
-		(at 130.8 31 180)
+		(at 125.1475 28.13 180)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J2"
@@ -8346,12 +8238,6 @@
 		(path "/163fec56-45db-4052-a541-40ccfbdc19e8")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8622,8 +8508,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 180)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -8636,8 +8522,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 180)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -8664,7 +8550,7 @@
 	(footprint "Arturito:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "9b43793b-f734-4284-8a80-fc9c0e41c452")
-		(at 171.5 152.84 90)
+		(at 165.8475 149.97 90)
 		(descr "Resistor, Axial_DIN0204 series, Axial, Horizontal, pin pitch=5.08mm, 0.167W, length*diameter=3.6*1.6mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0204 series Axial Horizontal pin pitch 5.08mm 0.167W length 3.6mm diameter 1.6mm")
 		(property "Reference" "R2"
@@ -8727,12 +8613,6 @@
 		(path "/b0f8f542-596f-4e9c-8186-f9b0af9215d8")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8808,9 +8688,9 @@
 				)
 			)
 		)
-		(pad "1" thru_hole oval
+		(pad "1" thru_hole circle
 			(at 0 0 90)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -8818,12 +8698,11 @@
 			(remove_unused_layers no)
 			(net "+3.3V")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "9c3f2c79-406d-44bc-929b-e3182f49a163")
 		)
-		(pad "2" thru_hole oval
+		(pad "2" thru_hole circle
 			(at 5.08 0 90)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -8831,7 +8710,6 @@
 			(remove_unused_layers no)
 			(net "/I2C1_SCL")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "8819a270-ceab-4c94-8c87-47f0f88669e1")
 		)
 		(embedded_fonts no)
@@ -8848,15 +8726,16 @@
 		)
 	)
 	(footprint "Arturito:PinHeader_2x20_P2.54mm_Vertical"
+		(locked yes)
 		(layer "F.Cu")
 		(uuid "a7e8d0e3-8aa3-46b3-8360-0026853d6acd")
-		(at 114.241517 90.87)
+		(at 108.285 88)
 		(descr "Through hole straight pin header, 2x20, 2.54mm pitch, double rows")
 		(tags "Through hole pin header THT 2x20 2.54mm double row")
 		(property "Reference" "J4"
 			(at 1.27 -2.38 0)
 			(layer "F.SilkS")
-			(uuid "558bc789-a5cd-4a3a-be4f-ee8d7372cf9d")
+			(uuid "e59fb70f-f909-4878-87c1-e8022e2a9ad1")
 			(effects
 				(font
 					(size 1 1)
@@ -8867,7 +8746,7 @@
 		(property "Value" "P2"
 			(at 1.27 50.64 0)
 			(layer "F.Fab")
-			(uuid "e9f9177f-d6b6-4f4e-ba2f-f4bae994050c")
+			(uuid "314c56f8-2a9c-4c73-9bb7-1732381ddb06")
 			(effects
 				(font
 					(size 1 1)
@@ -8879,7 +8758,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "ae209eda-80ea-49e3-bf6c-286a1a2d04b6")
+			(uuid "faa0d2f1-503f-4ef0-be1e-75fddc8963fa")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8890,7 +8769,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "889b2e88-a76c-48b9-9ebb-cfc5f1fa5dd5")
+			(uuid "2d2798b9-71e3-40c0-9921-8aaec63f5a60")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8913,15 +8792,6 @@
 		(path "/1efea457-411f-48a7-ac88-4bdc0523ec3e")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "3" "5" "7" "9" "11" "13" "15" "17" "19" "21" "23" "25" "27"
-					"29" "31" "33" "35" "37" "39" "2" "4" "6" "8" "10" "12" "14" "16" "18"
-					"20" "22" "24" "26" "28" "30" "32" "34" "36" "38" "40"
-				)
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9078,7 +8948,7 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9092,7 +8962,7 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9106,7 +8976,7 @@
 		)
 		(pad "3" thru_hole oval
 			(at 0 2.54)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9120,7 +8990,7 @@
 		)
 		(pad "4" thru_hole oval
 			(at 2.54 2.54)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9134,7 +9004,7 @@
 		)
 		(pad "5" thru_hole oval
 			(at 0 5.08)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9148,7 +9018,7 @@
 		)
 		(pad "6" thru_hole oval
 			(at 2.54 5.08)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9162,7 +9032,7 @@
 		)
 		(pad "7" thru_hole oval
 			(at 0 7.62)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9176,7 +9046,7 @@
 		)
 		(pad "8" thru_hole oval
 			(at 2.54 7.62)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9190,7 +9060,7 @@
 		)
 		(pad "9" thru_hole oval
 			(at 0 10.16)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9204,7 +9074,7 @@
 		)
 		(pad "10" thru_hole oval
 			(at 2.54 10.16)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9218,7 +9088,7 @@
 		)
 		(pad "11" thru_hole oval
 			(at 0 12.7)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9232,7 +9102,7 @@
 		)
 		(pad "12" thru_hole oval
 			(at 2.54 12.7)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9246,7 +9116,7 @@
 		)
 		(pad "13" thru_hole oval
 			(at 0 15.24)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9260,7 +9130,7 @@
 		)
 		(pad "14" thru_hole oval
 			(at 2.54 15.24)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9274,7 +9144,7 @@
 		)
 		(pad "15" thru_hole oval
 			(at 0 17.78)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9288,7 +9158,7 @@
 		)
 		(pad "16" thru_hole oval
 			(at 2.54 17.78)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9302,7 +9172,7 @@
 		)
 		(pad "17" thru_hole oval
 			(at 0 20.32)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9316,7 +9186,7 @@
 		)
 		(pad "18" thru_hole oval
 			(at 2.54 20.32)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9330,7 +9200,7 @@
 		)
 		(pad "19" thru_hole oval
 			(at 0 22.86)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9344,7 +9214,7 @@
 		)
 		(pad "20" thru_hole oval
 			(at 2.54 22.86)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9358,7 +9228,7 @@
 		)
 		(pad "21" thru_hole oval
 			(at 0 25.4)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9372,7 +9242,7 @@
 		)
 		(pad "22" thru_hole oval
 			(at 2.54 25.4)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9386,7 +9256,7 @@
 		)
 		(pad "23" thru_hole oval
 			(at 0 27.94)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9400,7 +9270,7 @@
 		)
 		(pad "24" thru_hole oval
 			(at 2.54 27.94)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9414,7 +9284,7 @@
 		)
 		(pad "25" thru_hole oval
 			(at 0 30.48)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9428,7 +9298,7 @@
 		)
 		(pad "26" thru_hole oval
 			(at 2.54 30.48)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9442,7 +9312,7 @@
 		)
 		(pad "27" thru_hole oval
 			(at 0 33.02)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9456,7 +9326,7 @@
 		)
 		(pad "28" thru_hole oval
 			(at 2.54 33.02)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9470,7 +9340,7 @@
 		)
 		(pad "29" thru_hole oval
 			(at 0 35.56)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9484,7 +9354,7 @@
 		)
 		(pad "30" thru_hole oval
 			(at 2.54 35.56)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9498,7 +9368,7 @@
 		)
 		(pad "31" thru_hole oval
 			(at 0 38.1)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9512,7 +9382,7 @@
 		)
 		(pad "32" thru_hole oval
 			(at 2.54 38.1)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9526,7 +9396,7 @@
 		)
 		(pad "33" thru_hole oval
 			(at 0 40.64)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9540,7 +9410,7 @@
 		)
 		(pad "34" thru_hole oval
 			(at 2.54 40.64)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9554,7 +9424,7 @@
 		)
 		(pad "35" thru_hole oval
 			(at 0 43.18)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9568,7 +9438,7 @@
 		)
 		(pad "36" thru_hole oval
 			(at 2.54 43.18)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9582,7 +9452,7 @@
 		)
 		(pad "37" thru_hole oval
 			(at 0 45.72)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9596,7 +9466,7 @@
 		)
 		(pad "38" thru_hole oval
 			(at 2.54 45.72)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9610,7 +9480,7 @@
 		)
 		(pad "39" thru_hole oval
 			(at 0 48.26)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9624,7 +9494,7 @@
 		)
 		(pad "40" thru_hole oval
 			(at 2.54 48.26)
-			(size 2.5 1.7)
+			(size 1.74 1.74)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -9652,7 +9522,7 @@
 	(footprint "Arturito:C_Disc_D3.0mm_W1.6mm_P2.50mm"
 		(layer "F.Cu")
 		(uuid "bb610e69-c41a-43b8-8cdc-55f3444d46b3")
-		(at 133.85 100.1 180)
+		(at 128.1975 97.23 180)
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=3.0*1.6mm^2, Capacitor, http://www.vishay.com/docs/45233/krseries.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 3.0mm width 1.6mm Capacitor")
 		(property "Reference" "C4"
@@ -9715,12 +9585,6 @@
 		(path "/c523f473-bf57-4bf1-86a6-3d5a5ba1df27")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9778,8 +9642,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 180)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -9791,8 +9655,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.5 0 180)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -9818,7 +9682,7 @@
 	(footprint "Arturito:C_Disc_D3.0mm_W1.6mm_P2.50mm"
 		(layer "F.Cu")
 		(uuid "cc30f56b-5d68-4454-9c4a-58509cb4c136")
-		(at 119.3 64.39 -90)
+		(at 113.6475 61.52 -90)
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=3.0*1.6mm^2, Capacitor, http://www.vishay.com/docs/45233/krseries.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 3.0mm width 1.6mm Capacitor")
 		(property "Reference" "C6"
@@ -9881,12 +9745,6 @@
 		(path "/db8f5cc0-1a38-4477-b4f5-960e8854df7c")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9944,8 +9802,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -9957,8 +9815,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.5 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -9984,7 +9842,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "cf2ce54a-b825-4758-980b-666d7cf9c564")
-		(at 186.7 85.09 90)
+		(at 181.0475 82.22 90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J7"
@@ -10047,12 +9905,6 @@
 		(path "/36009f81-5d13-4cb6-9f6c-b11a535776dd")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10323,8 +10175,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -10337,8 +10189,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -10365,7 +10217,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "d0cc8560-22de-4273-a782-0b3aa86a40cf")
-		(at 111.45 82.96 -90)
+		(at 105.7975 77.32 -90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J9"
@@ -10428,12 +10280,6 @@
 		(path "/b5d83469-2752-4545-ba4e-9f5ee6446dee")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -10704,8 +10550,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -10718,8 +10564,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -10746,13 +10592,13 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "e017cd44-f14e-4a42-985d-60981b9d0819")
-		(at 188.4925 53.77 90)
+		(at 182.84 50.9 90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J22"
 			(at 1.27 -4.22 90)
 			(layer "F.SilkS")
-			(uuid "179689ef-ee73-4415-95c6-4ed276547f89")
+			(uuid "47a3e9a1-4a37-47a0-ba71-360935b15353")
 			(effects
 				(font
 					(size 1 1)
@@ -10763,7 +10609,7 @@
 		(property "Value" "Int"
 			(at 1.27 4.22 90)
 			(layer "F.Fab")
-			(uuid "1e4d3fa7-5494-49e6-a005-0e942e351bc7")
+			(uuid "02ded8c2-54c9-482c-a5e2-1d8e4652ba2a")
 			(effects
 				(font
 					(size 1 1)
@@ -10775,7 +10621,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "00d8abf8-b399-4d29-bc49-733506573b90")
+			(uuid "c90b4a71-8296-4e79-a9ae-c1e5d8ac5f61")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10786,7 +10632,7 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "45a579fd-fe09-4dfd-9caa-cf0b98506c60")
+			(uuid "f25c21f5-e15f-4b4f-a28c-1d951421dcd9")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10809,12 +10655,6 @@
 		(path "/7eefa4e0-8e65-47a3-941d-2bc215d03de9")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11085,8 +10925,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11099,8 +10939,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11127,7 +10967,7 @@
 	(footprint "Arturito:C_Disc_D3.0mm_W1.6mm_P2.50mm"
 		(layer "F.Cu")
 		(uuid "e1ac43e1-e970-45d1-aa18-3a7e34bd725e")
-		(at 180.25 62.6 90)
+		(at 174.5975 59.73 90)
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=3.0*1.6mm^2, Capacitor, http://www.vishay.com/docs/45233/krseries.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 3.0mm width 1.6mm Capacitor")
 		(property "Reference" "C7"
@@ -11190,12 +11030,6 @@
 		(path "/6da42418-7f19-4f76-b472-8c2cc57a7665")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11253,8 +11087,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11266,8 +11100,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.5 0 90)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11293,7 +11127,7 @@
 	(footprint "Arturito:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "fee5fdc4-e252-45fa-adc9-26fc88f5b503")
-		(at 177.706 152.94 90)
+		(at 172.0535 150.07 90)
 		(descr "Resistor, Axial_DIN0204 series, Axial, Horizontal, pin pitch=5.08mm, 0.167W, length*diameter=3.6*1.6mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0204 series Axial Horizontal pin pitch 5.08mm 0.167W length 3.6mm diameter 1.6mm")
 		(property "Reference" "R1"
@@ -11356,12 +11190,6 @@
 		(path "/f4a36093-ce31-4525-891e-bc9b17f34715")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11437,9 +11265,9 @@
 				)
 			)
 		)
-		(pad "1" thru_hole oval
+		(pad "1" thru_hole circle
 			(at 0 0 90)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -11447,12 +11275,11 @@
 			(remove_unused_layers no)
 			(net "+3.3V")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "f8dd4c31-72ee-4231-a520-4837eb472a16")
 		)
-		(pad "2" thru_hole oval
+		(pad "2" thru_hole circle
 			(at 5.08 0 90)
-			(size 2.5 1.7)
+			(size 2.5 2.5)
 			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
@@ -11460,7 +11287,6 @@
 			(remove_unused_layers no)
 			(net "/I2C1_SDA")
 			(pintype "passive")
-			(thermal_bridge_angle 45)
 			(uuid "300d70aa-86bd-4dd1-9dfd-cf32420c6f88")
 		)
 		(embedded_fonts no)
@@ -11479,7 +11305,7 @@
 	(footprint "Arturito:TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "fff23e68-c27f-4c08-95a0-9b4c0db58f1c")
-		(at 111.45 70.03 -90)
+		(at 105.7975 67.16 -90)
 		(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 		(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
 		(property "Reference" "J11"
@@ -11542,12 +11368,6 @@
 		(path "/fe3c95e2-e228-4b97-a6c1-1f0f268aab7f")
 		(sheetname "/")
 		(sheetfile "Shield.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -11818,8 +11638,8 @@
 		)
 		(pad "1" thru_hole oval
 			(at 0 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11832,8 +11652,8 @@
 		)
 		(pad "2" thru_hole oval
 			(at 2.54 0 270)
-			(size 1.7 2.5)
-			(drill 1.1
+			(size 1.74 2.5)
+			(drill 0.8
 				(offset -0.016181 -0.016181)
 			)
 			(layers "*.Cu" "*.Mask")
@@ -11858,8 +11678,8 @@
 		)
 	)
 	(gr_line
-		(start 107.5875 27.37)
-		(end 107.5875 28.005)
+		(start 101.935 24.5)
+		(end 101.935 25.135)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11868,8 +11688,8 @@
 		(uuid "a3fd414b-45e6-4505-8456-198efac8d784")
 	)
 	(gr_line
-		(start 107.5875 28.005)
-		(end 107.5875 38.8)
+		(start 101.935 25.135)
+		(end 101.935 35.93)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11878,8 +11698,8 @@
 		(uuid "55f36261-53e1-479f-b9dc-4fc9f1653ae1")
 	)
 	(gr_line
-		(start 107.5875 38.8)
-		(end 110.1275 38.8)
+		(start 101.935 35.93)
+		(end 104.475 35.93)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11888,8 +11708,8 @@
 		(uuid "fa820822-e7b7-42e7-8107-e76f6f77730d")
 	)
 	(gr_line
-		(start 107.5875 45.785)
-		(end 107.5875 164.53)
+		(start 101.935 42.915)
+		(end 101.935 161.66)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11898,8 +11718,8 @@
 		(uuid "ecd1630e-104e-4ac5-9485-8fafc9bd8a36")
 	)
 	(gr_line
-		(start 107.5875 164.53)
-		(end 127.2725 164.53)
+		(start 101.935 161.66)
+		(end 121.62 161.66)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11908,8 +11728,8 @@
 		(uuid "fdbdf719-ce7a-46ea-8901-f302caf534d5")
 	)
 	(gr_line
-		(start 110.1275 38.8)
-		(end 111.3975 38.8)
+		(start 104.475 35.93)
+		(end 105.745 35.93)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11918,8 +11738,8 @@
 		(uuid "16d37c6e-8d14-4ea6-9c92-a336379f7542")
 	)
 	(gr_line
-		(start 110.1275 45.785)
-		(end 107.5875 45.785)
+		(start 104.475 42.915)
+		(end 101.935 42.915)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11928,8 +11748,8 @@
 		(uuid "58aa1b55-5a24-406a-b409-7091c470ce62")
 	)
 	(gr_line
-		(start 111.3975 38.8)
-		(end 111.3975 45.785)
+		(start 105.745 35.93)
+		(end 105.745 42.915)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11938,8 +11758,8 @@
 		(uuid "f7e7911b-eb15-40d3-abb1-7ba316f30d4d")
 	)
 	(gr_line
-		(start 111.3975 45.785)
-		(end 110.1275 45.785)
+		(start 105.745 42.915)
+		(end 104.475 42.915)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11948,8 +11768,8 @@
 		(uuid "ce6a86a0-76de-49dd-ba0a-b8e07dc5c5bd")
 	)
 	(gr_line
-		(start 118.3825 27.37)
-		(end 107.5875 27.37)
+		(start 112.73 24.5)
+		(end 101.935 24.5)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11958,8 +11778,8 @@
 		(uuid "98a869cf-9707-4bce-bcac-d84373982402")
 	)
 	(gr_line
-		(start 127.2725 164.53)
-		(end 170.4275 164.53)
+		(start 121.62 161.66)
+		(end 164.775 161.66)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11968,8 +11788,8 @@
 		(uuid "1badc1bb-1649-4095-8ed3-1fbe95a4b273")
 	)
 	(gr_line
-		(start 170.4275 164.53)
-		(end 193.3125 164.53)
+		(start 164.775 161.66)
+		(end 187.66 161.66)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11978,8 +11798,8 @@
 		(uuid "0eb8d1f5-e25c-4fa4-930f-ad140ab40b5e")
 	)
 	(gr_line
-		(start 181.8825 66.105)
-		(end 193.3125 66.105)
+		(start 176.23 63.235)
+		(end 187.66 63.235)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11988,8 +11808,8 @@
 		(uuid "2c3f8b0f-49df-47e2-8b43-509af605450e")
 	)
 	(gr_line
-		(start 181.8825 78.805)
-		(end 181.8825 66.105)
+		(start 176.23 75.935)
+		(end 176.23 63.235)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -11998,8 +11818,8 @@
 		(uuid "8ec59cc0-38ac-4077-82b7-da0a857b698d")
 	)
 	(gr_line
-		(start 183.1525 27.37)
-		(end 118.3825 27.37)
+		(start 177.5 24.5)
+		(end 112.73 24.5)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -12008,8 +11828,8 @@
 		(uuid "67f11685-b8fd-4c9a-81b0-ad9150081e85")
 	)
 	(gr_line
-		(start 193.3125 27.37)
-		(end 183.1525 27.37)
+		(start 187.66 24.5)
+		(end 177.5 24.5)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -12018,8 +11838,8 @@
 		(uuid "48d11df3-627b-4f15-aa94-b8393c04baed")
 	)
 	(gr_line
-		(start 193.3125 66.105)
-		(end 193.3125 27.37)
+		(start 187.66 63.235)
+		(end 187.66 24.5)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -12028,8 +11848,8 @@
 		(uuid "555603ea-e9e9-454c-9164-e244c24e39e3")
 	)
 	(gr_line
-		(start 193.3125 78.805)
-		(end 181.8825 78.805)
+		(start 187.66 75.935)
+		(end 176.23 75.935)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -12038,8 +11858,8 @@
 		(uuid "98df087e-105f-47f9-8fb4-90804f129b5e")
 	)
 	(gr_line
-		(start 193.3125 164.53)
-		(end 193.3125 78.805)
+		(start 187.66 161.66)
+		(end 187.66 75.935)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -12047,13 +11867,15 @@
 		(layer "Edge.Cuts")
 		(uuid "cb5bf5ad-c358-4dbd-b803-d9d2175e71d2")
 	)
-	(group "Connectors_EDUCIAA"
-		(uuid "7ca8a0ef-6b82-4bfb-9c5a-78ed035e1742")
-		(members "621e24b4-9d58-4239-b551-78b74835eeae" "a7e8d0e3-8aa3-46b3-8360-0026853d6acd")
-	)
-	(group "Connectors_ESP"
-		(uuid "b9a907a6-4cce-475f-be7d-6a5e448d84c2")
+	(group "Connectors_ESp"
+		(uuid "58f202d7-f14b-4085-ae54-c9c5343c712a")
+		(locked yes)
 		(members "061db6d0-a849-4961-a0ff-3b575f29780c" "373c6f92-8f14-42fe-bb19-04c5dbb1ad5f")
+	)
+	(group "Connectors_EDUCIAA"
+		(uuid "f993719d-a583-4891-909c-26ab07db6e74")
+		(locked yes)
+		(members "621e24b4-9d58-4239-b551-78b74835eeae" "a7e8d0e3-8aa3-46b3-8360-0026853d6acd")
 	)
 	(embedded_fonts no)
 )
