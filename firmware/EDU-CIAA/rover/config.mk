@@ -35,8 +35,8 @@ SRC += ../shared/libs/as5600/source/driver_as5600.c
 SRC += rover/src/layer1_hal/hal_i2c_educiaa.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c
 SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c
-else ifeq ($(APP_MODE),motor_square_test)
-SRC += ../shared/test/motor_square/test_app.c
+else ifneq ($(filter motor_square_test motor_pwm_test,$(APP_MODE)),)
+SRC += ../shared/test/$(patsubst %_test,%,$(APP_MODE))/test_app.c
 SRC += ../shared/layer2_drivers/driver_drv8833.c
 SRC += rover/src/layer1_hal/hal_time_educiaa.c
 SRC += rover/src/layer1_hal/hal_telemetry_educiaa.c

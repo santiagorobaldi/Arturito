@@ -14,10 +14,10 @@ typedef enum {//Puertos internos del componente
 
 // mapeo de puertos del driver a canales de hal_pwm
 static const hal_pwm_pin_t role_to_hal[DRV_PWM_COUNT] = {
-    [DRV_AIN1] = HAL_PWM_CH_1,
-    [DRV_AIN2] = HAL_PWM_CH_2,
-    [DRV_BIN1] = HAL_PWM_CH_3,
-    [DRV_BIN2] = HAL_PWM_CH_4,
+    [DRV_AIN1] = HAL_PWM_CH_6,
+    [DRV_AIN2] = HAL_PWM_CH_7,
+    [DRV_BIN1] = HAL_PWM_CH_8,
+    [DRV_BIN2] = HAL_PWM_CH_9,
 
 }; 
 

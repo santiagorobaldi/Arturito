@@ -21,7 +21,7 @@
 #define TWO_PI_F (2.0f * PI_F)
 #define WHEEL_COUNT 2U
 /* Ensayo actual: ambos motores y un AS5600 en I2C A. */
-#define READ_RIGHT_ENCODER false
+#define READ_RIGHT_ENCODER true
 #define STATUS_PERIOD_US 1000000U
 
 typedef struct {
