@@ -71,10 +71,10 @@ static pinInitLpc4337_t SCTdataList[] = {
    /* Sct n° | port | pin | name in board */
    /* CTOUT0 */ { 4 , 2 }, /* T_FIL2 */
    /* CTOUT1 */ { 4 , 1 }, /* T_FIL1 */
-   /* CTOUT2 */ { 2 , 10 }, /* LED1 (also for LCD1) */
+   /* CTOUT2 */ { 4 , 4 }, /* LED1 (also for LCD1) */
    /* CTOUT3 */ { 4 , 3 }, /* T_FIL3 */
-   /* CTOUT4 */ { 2 , 12 }, /* LED3 (also for LCD3) */
-   /* CTOUT5 */ { 2 , 11 }, /* LED2 (also for LCD2) */
+   /* CTOUT4 */ { 4 , 6 }, /* LED3 (also for LCD3) */
+   /* CTOUT5 */ { 4 , 5 }, /* LED2 (also for LCD2) */
    /* CTOUT6 */ { 6 , 5 }, /* GPIO2 */
    /* CTOUT7 */ { 6 , 12 }, /* GPIO8 */
    /* CTOUT8 */ { 1 , 3 }, /* MDC / SPI_MISO */

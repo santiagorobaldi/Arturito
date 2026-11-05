@@ -56,9 +56,9 @@ static const pwmMap_t hw[HAL_PWM_CH_COUNT] = {
     [HAL_PWM_CH_4] = PWM4,   // T_FIL3
     [HAL_PWM_CH_5] = PWM5,   // T_COL1
     [HAL_PWM_CH_6] = PWM6,   // GPIO8
-    [HAL_PWM_CH_7] = PWM7,   // LED1
-    [HAL_PWM_CH_8] = PWM8,   // LED2
-    [HAL_PWM_CH_9] = PWM9,   // LED3
+    [HAL_PWM_CH_7] = PWM7,   // LCD1
+    [HAL_PWM_CH_8] = PWM8,   // LCD2
+    [HAL_PWM_CH_9] = PWM9,   // LCD3
     [HAL_PWM_CH_10] = PWM10, // GPIO2
 };
 
