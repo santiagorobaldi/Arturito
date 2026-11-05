@@ -90,8 +90,9 @@ bool Adafruit_MPU6050::begin(uint8_t i2c_address, TwoWire *wire,
   Adafruit_BusIO_Register chip_id =
       Adafruit_BusIO_Register(i2c_dev, MPU6050_WHO_AM_I, 1);
 
-  // Este modulo compatible reporta 0x72 en WHO_AM_I.
-  if (chip_id.read() != 0x72) {
+  // Acepta los IDs reportados por los modulos usados en este proyecto.
+  const uint8_t who_am_i = chip_id.read();
+  if (who_am_i != 0x68 && who_am_i != 0x70 && who_am_i != 0x72) {
     return false;
   }
 

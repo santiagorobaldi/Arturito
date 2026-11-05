@@ -44,7 +44,7 @@ EDU-CIAA-NXP & LPC4337 & Placa & Procesamiento \\
 \subsection{Bloque de Sensado}
 % ------------------------------------------------------------------------------
 \subsubsection{Sensor de distancia: módulo VL53L0X}
-La medición de distancia se realiza con un sensor de tiempo de vuelo (ToF) VL53L0X, en un módulo \emph{breakout} de cuatro pines (\texttt{VIN}, \texttt{GND}, \texttt{SCL}, \texttt{SDA}) \cite{vl53mod}, fijo sobre el chasis. Mide distancias de hasta \SI{2}{m} mediante un emisor láser de haz angosto, lo que lo hace adecuado para la detección precisa de obstáculos y permite resolver los límites del entorno con buena definición angular. El módulo incorpora un regulador de \SI{2,8}{V}, resistencias de \emph{pull-up} y capacitores, y puede alimentarse con \SI{2,6}{V} a \SI{5,5}{V}; su consumo según la hoja de datos es de \SI{10}{mA}. Se comunica por I\textsuperscript{2}C y los proveedores informan un rango de medición de \SI{30}{mm} a \SI{2000}{mm}.
+La medición de distancia se realiza con un sensor de tiempo de vuelo (ToF) VL53L0X\cite{vl53mod}. Está fijo sobre el chasis y mide distancias de hasta \SI{2}{m} mediante un emisor láser de haz angosto, lo que lo hace adecuado para la detección precisa de obstáculos y permite resolver los límites del entorno con buena definición angular. El módulo puede alimentarse con \SI{2,6}{V} a \SI{5,5}{V}; su consumo según la hoja de datos es de \SI{10}{mA}. Se comunica por I\textsuperscript{2}C y los proveedores informan un rango de medición de \SI{30}{mm} a \SI{2000}{mm}.
 
 \subsubsection{Sensor de ángulo de rueda: módulo AS5600}
 Para estimar el giro de cada rueda se utilizan dos módulos AS5600 \cite{as5600mod}, uno por rueda. El AS5600 es un sensor magnético de posición angular absoluta de 12 bits (4096 posiciones por vuelta) con salidas I\textsuperscript{2}C, PWM y analógica. El módulo seleccionado funciona por defecto a \SI{3,3}{V}, tiene pines de paso \SI{2,54}{mm} e incluye un imán de magnetización diametral. Los detalles de montaje del imán y del módulo se describen en la Sección~\ref{sec:mecanica}.
@@ -53,7 +53,7 @@ Para estimar el giro de cada rueda se utilizan dos módulos AS5600 \cite{as5600m
 % ------------------------------------------------------------------------------
 \subsection{Bloque de Tracción y Actuación}
 % ------------------------------------------------------------------------------
-Según los requerimientos definidos en el TP1, este bloque debe contar con dos motores DC independientes para generar un movimiento diferencial, una rueda de apoyo auxiliar y un driver de potencia que module la energía provista por el subsistema de alimentación hacia los motores.
+Este bloque debe contar con dos motores DC independientes para generar un movimiento diferencial, una rueda de apoyo auxiliar y un driver de potencia que module la energía provista por el subsistema de alimentación hacia los motores.
 
 \subsubsection{Componentes y justificación}
 \begin{itemize}[nosep]
@@ -66,8 +66,6 @@ Según los requerimientos definidos en el TP1, este bloque debe contar con dos m
 \subsubsection{Características del motor GA12-N20}
 \begin{table}[H]
 \centering
-\caption{Características del motor GA12-N20 (hoja de datos del fabricante, Handson Technology).}
-\label{tab:motor}
 \small
 \begin{tabular}{L{6cm}L{5.5cm}}
 \toprule
@@ -89,6 +87,7 @@ Masa & \SI{10}{g} \\
 \bottomrule
 \end{tabular}
 \caption{Características del motor GA12-N20 (hoja de datos del fabricante, Handson Technology~\cite{ga12n20}).}
+\label{tab:motor}
 \end{table}
 
 
@@ -278,6 +277,7 @@ Aún no se definieron la protección de las celdas ni el cargador.
 % ------------------------------------------------------------------------------
 \subsubsection{Interfaz EDU-CIAA -- DRV8833}
 El DRV8833 se controla mediante cuatro entradas lógicas (\texttt{IN1}--\texttt{IN4}), dos por cada puente H (uno por motor), compatibles con la lógica de \SI{3,3}{V} de la EDU-CIAA.
+Los pines utilizados para cada entrada son GPIO18, LCD1, LCD2 y LCD3, respectivamente, como se muestra en el esquemático del sistema (Figura~\ref{fig:esquematico_anexo}) y en el del poncho (Figura~\ref{fig:esquematico_shield_anexo}).
 
 \begin{table}[H]
 \centering
@@ -292,10 +292,16 @@ Retroceso & Bajo & Alto (PWM) \\
 \bottomrule
 \end{tabular}
 \end{table}
-\pendiente{asignar los pines concretos de la EDU-CIAA (salidas PWM) a \texttt{IN1}--\texttt{IN4}.}
 
 \subsubsection{Bus \texorpdfstring{I\textsuperscript{2}C}{I2C} y salidas PWM de sensores}\label{sec:i2c}
-El módulo VL53L0X y la IMU MPU6050 se comunican por I\textsuperscript{2}C (Tabla~\ref{tab:i2c}). Dado que los dos módulos AS5600 comparten la misma dirección fija (\texttt{0x36}) y no se pueden reprogramar, las dos unidades AS5600 no pueden compartir el mismo bus. Para resolverlo se investigó la datasheet del LPC4337 donde se halló que existen dos interfaces de comunicación  I\textsuperscript{2}C pero la placa EDU-CIAA solo expone una de ellas. Sin embargo, al revisar el esquemático para ver si los pines dedicados del microcontrolador estaban expuestos para su uso, se encontró que efectivamente los pines que la placa EDU-CIAA expone como aptos para comunicacion mediante RS232 estan conectados directamente a los pines del microcontrolador para la segunda interfaz de I\textsuperscript{2}C. Todavia faltan realizar las pruebas para ver si esta opcion es viable, en caso contrario se implementaran las comunicaciones con los encoders mediante PWM por la salida OUT de los encoders y utilizando input capture desde la EDU-CIAA.
+El módulo VL53L0X y la IMU MPU6050 se comunican por I\textsuperscript{2}C (Tabla~\ref{tab:i2c}). Dado que los dos módulos AS5600 comparten la misma dirección fija (\texttt{0x36}) y esta no se puede reprogramar, no es posible conectarlos al mismo bus. Para resolverlo se investigó la hoja de datos del LPC4337, donde se halló que el microcontrolador dispone de dos interfaces I\textsuperscript{2}C, aunque la placa EDU-CIAA-NXP solo expone una de ellas. Sin embargo, al revisar el esquemático para verificar si los pines dedicados de la segunda interfaz estaban accesibles, se encontró que los pines que la placa expone para la comunicación RS232 están conectados directamente a los pines del microcontrolador correspondientes a la segunda interfaz I\textsuperscript{2}C.
+
+\paragraph{Pruebas de validación.}
+Se realizaron las pruebas mencionadas, conectando cada encoder a un bus I\textsuperscript{2}C distinto y operando junto con el bloque de tracción, con el fin de evaluar si las mediciones eran correctas. Los resultados fueron satisfactorios y confirmaron que utilizar los dos buses I\textsuperscript{2}C de la EDU-CIAA-NXP es una solución adecuada para nuestro hardware, ya que resuelve el problema de los dos encoders con la misma dirección fija.
+
+El único inconveniente fue el peor desempeño del bus cuyos pines no están expuestos de forma nativa en la EDU-CIAA-NXP: algunas lecturas del encoder conectado a este bus fallaban o la comunicación no se establecía correctamente. Al revisar el esquemático de la placa se notó la ausencia de resistencias de pull-up en esos pines. A modo de prueba, se incorporaron resistencias de pull-up externas de \SI{4.4}{\kilo\ohm} en este bus. Tras repetir las pruebas, ambos encoders funcionaron correctamente, sin pérdida de información ni fallos de comunicación.
+
+Dado el resultado obtenido, no fue necesario recurrir a la alternativa de leer los encoders mediante la salida PWM (pin OUT) con \textit{input capture}.
 
 \begin{table}[H]
 \centering
@@ -324,6 +330,9 @@ IMU MPU6050 & 0x68 / 0x69 & Seleccionable con el pin \texttt{AD0} \\
   \item Un capacitor cerámico de \SI{100}{nF} (código 104), soldado directamente en los bornes de cada motor, para filtrar el ruido de conmutación (EMI).
 \end{itemize}
 \end{visar}
+
+El circuito esquemático está presente en el anexo como la figura~\ref{fig:esquematico_anexo} y el esquemático del pongo, en la figura~\ref{fig:esquematico_shield_anexo})
+
 \pendiente{Evaluar la adición de los componentes discretos de filtrado. Insertar el esquemático completo realizado en KiCad.}
 
 % ------------------------------------------------------------------------------
@@ -368,7 +377,7 @@ El chasis del robot se concibió bajo una filosofía de diseño modular y apilab
 \begin{itemize}[nosep]
     \item \textbf{Proceso de manufactura:} impresión 3D por Fabricación por Filamento Fundido (FFF) en una impresora Creality Ender-3 S1.
     \item \textbf{Material:} ABS, por su resistencia mecánica y al impacto.
-    \item \textbf{Unión de niveles:} la vinculación estructural vertical entre plataformas se resuelve mediante varillas roscadas y tuercas estandarizadas M3 y M6.
+    \item \textbf{Unión de niveles:} la vinculación estructural vertical entre plataformas se resuelve mediante varillas roscadas y tuercas estandarizadas M3.
 \end{itemize}
 
 \subsubsection{Requisitos del chasis}
