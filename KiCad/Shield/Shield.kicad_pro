@@ -146,7 +146,7 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.5,
         "min_connection": 0.0,
         "min_copper_edge_clearance": 0.5,
         "min_groove_width": 0.0,
@@ -509,7 +509,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.2,
+        "clearance": 0.5,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -520,7 +520,7 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.2,
+        "track_width": 1.0,
         "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,
@@ -675,7 +675,7 @@
         "uuid": "5cc37e52-9cad-490f-9ed1-04d4ff264832"
       }
     ],
-    "used_designators": "R1-2,J1-23,#FLG1-4,D1-2,#PWR1-4,#PWR6-9,#PWR12,#PWR17-20,#PWR24-31,C3-4,C6-9,U6",
+    "used_designators": "R1-2,J1-23,#FLG1-4,D1-2,#PWR1-12,#PWR17-20,#PWR24-31,C3-4,C6-9,U6",
     "variants": []
   },
   "sheets": [
