@@ -62,11 +62,11 @@
           "hatch_thickness": 1.0,
           "min_clearance": 0.5,
           "min_island_area": 10.0,
-          "min_thickness": 0.25,
+          "min_thickness": 1.0,
           "pad_connection": 1,
           "remove_islands": 0,
           "thermal_relief_gap": 0.5,
-          "thermal_relief_spoke_width": 0.5
+          "thermal_relief_spoke_width": 1.5
         }
       },
       "diff_pair_dimensions": [
@@ -254,7 +254,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "1.0"
     },
     "layer_pairs": [],
     "layer_presets": [],
