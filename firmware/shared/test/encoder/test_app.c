@@ -57,10 +57,7 @@ static void init_encoder(encoder_t encoder, hal_i2c_bus_t bus,
     float angle_rad = 0.0f;
     const encoder_status_t read_status = encoder_get_angle_rad(encoder, &angle_rad);
     report_status(name, "primera lectura real", read_status);
-    encoder_ready[encoder] = (read_status == ENCODER_OK);
-    if (!encoder_ready[encoder]) {
-        telemetry_app_send_line("Encoder sin lectura valida; se omite hasta reiniciar.");
-    }
+    encoder_ready[encoder] = true;
 }
 
 static void read_encoder(encoder_t encoder, const char *name)
@@ -106,7 +103,6 @@ void app_init(void)
     init_encoder(ENC_IZQ, HAL_I2C_BUS_A, "IZQ (bus A)");
     init_encoder(ENC_DER, HAL_I2C_BUS_B, "DER (bus B)");
     telemetry_app_send_line("Girar las ruedas a mano: angulo absoluto entre 0 y 2*pi rad.");
-    telemetry_app_send_line("Si fallo el inicio de un encoder, reiniciar para reintentar.");
 }
 
 void app_update(void)

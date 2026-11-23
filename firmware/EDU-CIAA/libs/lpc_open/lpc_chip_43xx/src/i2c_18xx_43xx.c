@@ -440,6 +440,31 @@ int Chip_I2C_MasterTransfer(I2C_ID_T id, I2C_XFER_T *xfer)
 	return (int) xfer->status;
 }
 
+I2C_STATUS_T Chip_I2C_MasterTransferTimed(I2C_ID_T id, I2C_XFER_T *xfer,
+										uint32_t (*now_us)(void), uint32_t timeout_us)
+{
+	LPC_I2C_T *ip = i2c[id].ip;
+	const uint32_t start_us = now_us();
+
+	xfer->status = I2C_STATUS_BUSY;
+	startMasterXfer(ip);
+	while (xfer->status == I2C_STATUS_BUSY) {
+		if (now_us() - start_us >= timeout_us) {
+			return I2C_STATUS_TIMEOUT;
+		}
+		if (Chip_I2C_IsStateChanged(id)) {
+			handleMasterXferState(ip, xfer);
+		}
+	}
+
+	while (!isI2CBusFree(ip)) {
+		if (now_us() - start_us >= timeout_us) {
+			return I2C_STATUS_TIMEOUT;
+		}
+	}
+	return xfer->status;
+}
+
 /* Master tx only */
 int Chip_I2C_MasterSend(I2C_ID_T id, uint8_t slaveAddr, const uint8_t *buff, uint8_t len)
 {

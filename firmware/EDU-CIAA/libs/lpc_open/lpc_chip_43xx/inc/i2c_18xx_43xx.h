@@ -114,6 +114,7 @@ typedef enum {
 	I2C_STATUS_BUSERR,	/**< Bus error in I2C transfer */
 	I2C_STATUS_BUSY,	/**< I2C is busy doing transfer */
 	I2C_STATUS_SLAVENAK,/**< NAK received after SLA+W or SLA+R */
+	I2C_STATUS_TIMEOUT,
 } I2C_STATUS_T;
 
 /**
@@ -215,6 +216,10 @@ uint32_t Chip_I2C_GetClockRate(I2C_ID_T id);
  * from slave be stored and the number of data to get from slave respectilvely.
  */
 int Chip_I2C_MasterTransfer(I2C_ID_T id, I2C_XFER_T *xfer);
+
+/* Exclusive, master-only polling. Reset the peripheral after either timeout. */
+I2C_STATUS_T Chip_I2C_MasterTransferTimed(I2C_ID_T id, I2C_XFER_T *xfer,
+										uint32_t (*now_us)(void), uint32_t timeout_us);
 
 /**
  * @brief	Transmit data to I2C slave using I2C Master mode
