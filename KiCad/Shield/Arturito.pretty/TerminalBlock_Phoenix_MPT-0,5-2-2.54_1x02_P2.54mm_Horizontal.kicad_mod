@@ -5,10 +5,10 @@
 	(layer "F.Cu")
 	(descr "Terminal Block Phoenix MPT-0,5-2-2.54, 2 pins, pitch 2.54mm, size 5.54x6.2mm, drill diameter 1.1mm, pad diameter 2.2mm, http://www.mouser.com/ds/2/324/ItemDetail_1725656-920552.pdf")
 	(tags "THT Terminal Block Phoenix MPT-0,5-2-2.54 pitch 2.54mm size 5.54x6.2mm drill 1.1mm pad 2.2mm")
-	(property "Reference" "J11"
-		(at 1.27 -4.22 180)
+	(property "Reference" "J1"
+		(at 1.27 -4.22 0)
 		(layer "F.SilkS")
-		(uuid "21e0cb41-a570-43cd-b694-4b21e7c3bc98")
+		(uuid "a3312f49-b177-402b-9fb2-f85554503070")
 		(effects
 			(font
 				(size 1 1)
@@ -16,10 +16,10 @@
 			)
 		)
 	)
-	(property "Value" "ToF_Pwr"
-		(at 1.27 4.22 180)
+	(property "Value" "Logic"
+		(at 1.27 4.22 0)
 		(layer "F.Fab")
-		(uuid "15620924-fa82-47aa-a05f-012c7e8a30e7")
+		(uuid "4c4c481c-d5c0-4b96-a70f-ca9b69aba7ac")
 		(effects
 			(font
 				(size 1 1)
@@ -28,10 +28,10 @@
 		)
 	)
 	(property "Datasheet" ""
-		(at 0 0 180)
+		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "872c3bca-8fd0-468e-b056-1651b5f34350")
+		(uuid "9b51702d-78cd-4382-ac77-3233d45a472c")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -39,10 +39,10 @@
 		)
 	)
 	(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-		(at 0 0 180)
+		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "a301756d-955c-4268-a8bb-5778004fd7ba")
+		(uuid "0e4c305d-9565-4137-932a-1701f841548d")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -50,10 +50,10 @@
 		)
 	)
 	(property "KiLib_Generator" "terminal_block/Phoenix"
-		(at 0 0 180)
+		(at 0 0 0)
 		(layer "F.SilkS")
 		(hide yes)
-		(uuid "4afe323e-bdcf-4cda-8d53-95212f4ea92f")
+		(uuid "a81be9f6-0434-4b77-9344-7d74759cd0a5")
 		(effects
 			(font
 				(size 1 1)
@@ -74,7 +74,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "eb5714af-1f05-44af-a6e9-8bd618511fe1")
+		(uuid "23b59aa9-1fb2-4898-b41c-ead96f4215fa")
 	)
 	(fp_line
 		(start -1.62 -2.7)
@@ -84,7 +84,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2676e9f4-9795-4efd-9d9f-d3d63948b8ea")
+		(uuid "0b9b95b0-f7e7-4d31-ae1c-0d99e652ceb3")
 	)
 	(fp_line
 		(start -1.62 2.6)
@@ -94,7 +94,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "6ed6508d-a424-4c02-98a4-b6d149341e55")
+		(uuid "d5117991-2d05-4cc9-bd1d-b09b9f9eed8c")
 	)
 	(fp_line
 		(start -1.62 3.22)
@@ -104,7 +104,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2952a743-6c48-4569-ba82-4b647c5dcf1b")
+		(uuid "d3e3bab3-ac5d-49da-8dc8-027fb5f6cb7d")
 	)
 	(fp_line
 		(start -1.03 3.22)
@@ -114,7 +114,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "f9c3bdfd-e0fc-4257-a469-8a6e43230a88")
+		(uuid "d9d18c47-b387-4986-9d4e-904600bb3af9")
 	)
 	(fp_line
 		(start 1.03 2.6)
@@ -124,7 +124,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "eaabd6bd-268b-412b-a8e9-8410e9bbcf73")
+		(uuid "138a61d6-6cc8-4f04-8688-876eb08004fd")
 	)
 	(fp_line
 		(start 1.51 3.22)
@@ -134,7 +134,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "12579af8-b669-4ca2-b2de-de37bae98ed2")
+		(uuid "3923ed8f-9f5b-4dd9-a3ab-bd8da3d87687")
 	)
 	(fp_line
 		(start 3.57 2.6)
@@ -144,7 +144,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "ff53cbbd-3dd2-4b7b-8968-860ab4c4da48")
+		(uuid "9ef631f2-f64e-47f5-9f90-1de265bd273e")
 	)
 	(fp_line
 		(start 4.16 -3.22)
@@ -154,7 +154,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "31315f13-4d52-4f12-af30-ed3918dc24af")
+		(uuid "99e5e75a-867a-4b61-8065-61387aeafaa3")
 	)
 	(fp_line
 		(start 4.16 3.22)
@@ -164,7 +164,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c944aed1-0855-4e03-a095-a1c3620c4eb6")
+		(uuid "055e0e0e-aa17-4c26-aef8-22b1a7c209f0")
 	)
 	(fp_poly
 		(pts
@@ -176,7 +176,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "e588f88f-4684-4620-a070-866ecdd205c3")
+		(uuid "03364880-7e1e-4399-8e3d-01139398a584")
 	)
 	(fp_rect
 		(start -2 -3.6)
@@ -187,7 +187,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "b87c81c0-b472-41a4-8404-c90c13e69e24")
+		(uuid "a428a534-7587-4e94-bfe0-bd04e2eab1eb")
 	)
 	(fp_line
 		(start -1.5 -3.1)
@@ -197,7 +197,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "e019d628-2682-4b07-ae44-397617524b50")
+		(uuid "22148435-b829-4be4-8d60-c9e810650993")
 	)
 	(fp_line
 		(start -1.5 -2.7)
@@ -207,7 +207,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "08294441-ae2c-4a8b-81c4-02072fce730c")
+		(uuid "63d6ccd2-b847-4b87-9119-46b053122b33")
 	)
 	(fp_line
 		(start -1.5 2.6)
@@ -217,7 +217,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "4600b2f6-0c0d-4b01-9d0e-cac652d633c2")
+		(uuid "4a8b1ad6-18b1-4b81-a555-0b23cba293ea")
 	)
 	(fp_line
 		(start -1.5 2.6)
@@ -227,7 +227,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "08cc16cb-a361-499c-bc5e-f56754503fdc")
+		(uuid "002fcd76-4b2f-4166-aa4f-a4f2ba44c2fa")
 	)
 	(fp_line
 		(start -1 3.1)
@@ -237,7 +237,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "eadc8b2c-8080-4fa1-882f-b03322a35834")
+		(uuid "80c2c35f-cfce-41e2-a6b8-aee3200c97e5")
 	)
 	(fp_line
 		(start 0.7 -0.834)
@@ -247,7 +247,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "52be13b3-5035-4c27-bf6a-d8d8c823e57c")
+		(uuid "ff25e256-f737-49ad-a3a4-6a2fdf57510a")
 	)
 	(fp_line
 		(start 0.834 -0.7)
@@ -257,7 +257,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "e9363022-e906-4978-aeed-ade78d6c1910")
+		(uuid "c1332fd6-49c6-414b-b69e-63acd40ed4db")
 	)
 	(fp_line
 		(start 3.24 -0.834)
@@ -267,7 +267,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "d7b73051-60ec-4b9a-bc5b-141aac2a02f0")
+		(uuid "1f5c45c7-17c5-4499-ae94-5c3b287e715b")
 	)
 	(fp_line
 		(start 3.374 -0.7)
@@ -277,7 +277,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "e8768499-4124-42a8-bd05-fad657ae5a56")
+		(uuid "e3fa7f23-e9ef-4973-98a1-f16e47bd23f2")
 	)
 	(fp_line
 		(start 4.04 -3.1)
@@ -287,7 +287,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "305a053a-5b58-4491-8ede-55cb24e005f8")
+		(uuid "e9b5ec6f-a252-425d-8b7e-36be75bb8a41")
 	)
 	(fp_line
 		(start 4.04 3.1)
@@ -297,7 +297,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "d04ef4d5-2829-45d0-9986-02d88fbfd53d")
+		(uuid "aed8d5f8-ae2d-4034-8791-972e18a0196f")
 	)
 	(fp_circle
 		(center 0 0)
@@ -308,7 +308,7 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "8e235a46-b222-46a7-ad0a-f88f6f8e930d")
+		(uuid "839247b0-ec49-491c-8eea-7a1b2786ca62")
 	)
 	(fp_circle
 		(center 2.54 0)
@@ -319,12 +319,12 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "6a6a1034-2cb6-4976-9d4a-c3ba4d56ebe2")
+		(uuid "882483fd-7a15-497b-9dd6-c1b3edb7797f")
 	)
 	(fp_text user "${REFERENCE}"
-		(at 1.27 2 180)
+		(at 1.27 2 0)
 		(layer "F.Fab")
-		(uuid "feecea41-fa31-41ae-9de1-f0b1e9e59b98")
+		(uuid "b692a661-aacc-48fa-b360-df0c22447d35")
 		(effects
 			(font
 				(size 1 1)
@@ -334,25 +334,25 @@
 	)
 	(pad "1" thru_hole oval
 		(at 0 0)
-		(size 1.7 2.5)
+		(size 1.74 2.5)
 		(drill 0.8
 			(offset -0.016181 -0.016181)
 		)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(thermal_bridge_angle 45)
-		(uuid "c5f3e79f-77a7-4226-8857-c183bf653913")
+		(uuid "d722f49e-a082-480a-bb29-54dc5d4a5765")
 	)
 	(pad "2" thru_hole oval
 		(at 2.54 0)
-		(size 1.7 2.5)
+		(size 1.74 2.5)
 		(drill 0.8
 			(offset -0.016181 -0.016181)
 		)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(thermal_bridge_angle 45)
-		(uuid "18ddbfd3-7642-46e4-bb99-0ed38f1c8ea2")
+		(uuid "e2e429d9-c4d6-42c1-b9ce-2d0835477caf")
 	)
 	(embedded_fonts no)
 	(model "${KICAD10_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal.step"
