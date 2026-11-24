@@ -19,9 +19,18 @@ INCLUDES += -I../shared/layer3_app/localization
 INCLUDES += -I../shared/layer3_app/sensing
 INCLUDES += -I../shared/layer3_app/telemtry
 
+ifneq ($(APP_MODE),freertos_test)
 SRC += ../shared/layer3_app/telemtry/telemetry_app.c
+endif
 
-ifeq ($(APP_MODE),clock_test)
+ifeq ($(APP_MODE),freertos_test)
+USE_FREERTOS=y
+FREERTOS_HEAP_TYPE=none
+# El Makefile fija OUT despues de incluir este archivo. Separar los objetos
+# evita reutilizar sAPI compilada sin USE_FREERTOS al cambiar de modo.
+override OUT = $(PROGRAM_PATH_AND_NAME)/out/freertos_test
+SRC += ../shared/test/freertos/test_app.c
+else ifeq ($(APP_MODE),clock_test)
 INCLUDES += -I../shared/test/hal_time
 SRC += ../shared/test/hal_time/test_app.c
 SRC += ../shared/test/hal_time/test_hal_time.c

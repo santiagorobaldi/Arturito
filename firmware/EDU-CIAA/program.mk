@@ -21,6 +21,8 @@ else ifeq ($(APP_MODE),motor_square_test)
 else ifeq ($(APP_MODE),motor_pwm_test)
 else ifeq ($(APP_MODE),motor_encoder_test)
 # La configuracion del rover selecciona motores y encoders.
+else ifeq ($(APP_MODE),freertos_test)
+# La configuracion del rover selecciona el test minimo de FreeRTOS.
 else
-$(error APP_MODE debe ser clock_test, tof_test, telemetry_test, imu_test, encoder_test, motor_square_test, motor_pwm_test, motor_encoder_test o rover)
+$(error APP_MODE debe ser clock_test, tof_test, telemetry_test, imu_test, encoder_test, motor_square_test, motor_pwm_test, motor_encoder_test, freertos_test o rover)
 endif
